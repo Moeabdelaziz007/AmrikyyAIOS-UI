@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
 // Fix: Import missing icon components.
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, AnalyticsHubIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, OrionIcon, AnalyticsHubIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -46,7 +46,7 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   cognitoBrowser: BrowserIcon,
   atlas: AtlasIcon,
   cortex: CortexIcon,
-  orion: BrowserIcon,
+  orion: OrionIcon,
   analyticsHub: AnalyticsHubIcon,
 };
 

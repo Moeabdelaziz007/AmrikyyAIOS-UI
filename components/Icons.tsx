@@ -25,6 +25,7 @@ export const MayaIcon: React.FC<{className?: string}> = ({className}) => (<Mater
 export const JulesIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>smart_toy</MaterialIcon>);
 export const CortexIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>hub</MaterialIcon>);
 export const AtlasIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>smart_toy</MaterialIcon>);
+export const OrionIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>public</MaterialIcon>);
 
 export const WorkflowIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>account_tree</MaterialIcon>);
 export const FlightsIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>flight</MaterialIcon>);

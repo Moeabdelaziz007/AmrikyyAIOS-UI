@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppID, WindowInstance, TaskbarTheme } from '../types';
-import { AnalyticsHubIcon, CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkspaceIcon, WorkflowIcon, SkillForgeIcon, SettingsIcon } from './Icons';
+import { AnalyticsHubIcon, CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkspaceIcon, WorkflowIcon, SkillForgeIcon, SettingsIcon, AtlasIcon, CortexIcon, OrionIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -22,6 +22,9 @@ const appIcons: Record<string, React.FC<{className?: string}>> = {
   workflow: WorkflowIcon,
   skillForge: SkillForgeIcon,
   settings: SettingsIcon,
+  atlas: AtlasIcon,
+  cortex: CortexIcon,
+  orion: OrionIcon,
 };
 
 
