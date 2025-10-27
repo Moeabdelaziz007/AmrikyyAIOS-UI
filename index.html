@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amrikyy AI OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono&display=swap');
+      
+      body {
+        /* background-image is now handled by the animated canvas */
+        background-color: #0A0E1A;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary-blue': '#3B82F6',
+              'primary-purple': '#8B5CF6',
+              'primary-cyan': '#06B6D4',
+              'primary-pink': '#EC4899',
+              'bg-primary': '#0A0E1A',
+              'bg-secondary': '#111827',
+              'bg-tertiary': '#1F2937',
+              'text-primary': '#F9FAFB',
+              'text-secondary': '#9CA3AF',
+              'text-muted': '#6B7280',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['Poppins', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            borderRadius: {
+              'sm': '8px',
+              'md': '12px',
+              'lg': '16px',
+              'xl': '24px',
+            },
+            keyframes: {
+              'fade-in': {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              'slide-up': {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+              'pulse-glow': {
+                '0%, 100%': { 'box-shadow': '0 0 0px var(--glow-color)' },
+                '50%': { 'box-shadow': '0 0 20px 5px var(--glow-color)' },
+              },
+              'orb-pulse': {
+                '0%, 100%': { transform: 'scale(1)', opacity: '0.6' },
+                '50%': { transform: 'scale(1.05)', opacity: '1' },
+              },
+              'ring-spin': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' },
+              },
+              'app-icon-glow': {
+                '0%, 100%': { 'box-shadow': '0 0 15px -5px var(--glow-color)' },
+                '50%': { 'box-shadow': '0 0 30px -5px var(--glow-color)' },
+              },
+              'hologram-flicker': {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.95' },
+              },
+              'hologram-glow': {
+                '0%, 100%': { filter: 'brightness(100%) drop-shadow(0 0 10px var(--glow-color))' },
+                '50%': { filter: 'brightness(120%) drop-shadow(0 0 20px var(--glow-color))' },
+              },
+               'glitch-anim': {
+                '0%': { clip: 'rect(32px, 9999px, 89px, 0)' },
+                '25%': { clip: 'rect(43px, 9999px, 100px, 0)' },
+                '50%': { clip: 'rect(19px, 9999px, 3px, 0)' },
+                '75%': { clip: 'rect(78px, 9999px, 52px, 0)' },
+                '100%': { clip: 'rect(9px, 9999px, 73px, 0)' },
+              },
+            },
+            animation: {
+              'fade-in': 'fade-in 0.5s ease-out forwards',
+              'slide-up': 'slide-up 0.5s ease-out forwards',
+              'pulse-glow': 'pulse-glow 2s infinite ease-in-out',
+              'orb-pulse': 'orb-pulse 4s infinite ease-in-out',
+              'ring-spin': 'ring-spin 20s linear infinite',
+              'app-icon-glow': 'app-icon-glow 3s infinite ease-in-out',
+              'hologram-flicker': 'hologram-flicker 0.1s infinite',
+              'hologram-glow': 'hologram-glow 2s ease-in-out infinite',
+              'glitch-anim': 'glitch-anim 2.5s infinite linear alternate-reverse',
+            }
+          },
+        },
+      };
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-bg-primary text-text-primary font-sans">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
