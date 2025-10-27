@@ -19,6 +19,7 @@ import LunaApp from './components/apps/LunaApp';
 import KarimApp from './components/apps/KarimApp';
 import ScoutApp from './components/apps/ScoutApp';
 import MayaApp from './components/apps/MayaApp';
+import WorkflowStudioApp from './components/apps/WorkflowStudioApp';
 
 const appComponents: Record<AppID, React.FC> = {
   chat: ChatApp,
@@ -34,6 +35,7 @@ const appComponents: Record<AppID, React.FC> = {
   karim: KarimApp,
   scout: ScoutApp,
   maya: MayaApp,
+  workflow: WorkflowStudioApp,
 };
 
 const appTitles: Record<AppID, string> = {
@@ -50,6 +52,7 @@ const appTitles: Record<AppID, string> = {
   karim: 'Agent: Karim',
   scout: 'Agent: Scout',
   maya: 'Agent: Maya',
+  workflow: 'Workflow Studio',
 };
 
 const App: React.FC = () => {

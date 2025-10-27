@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
 
+// FIX: Added the required `subAgents` property to each agent object to match the `Agent` type.
 const agents: Agent[] = [
   { 
     name: 'Luna', 
@@ -10,7 +10,8 @@ const agents: Agent[] = [
     icon: '🌟', 
     tasks: 45, 
     color: 'from-blue-500 to-cyan-400',
-    hologram: { color: 'text-primary-cyan', glow: '#06B6D4', task: 'Analyzing Paris flights...' }
+    hologram: { color: 'text-primary-cyan', glow: '#06B6D4', task: 'Analyzing Paris flights...' },
+    subAgents: ['gemini-pro', 'google-flights', 'google-maps'],
   },
   { 
     name: 'Karim', 
@@ -18,7 +19,8 @@ const agents: Agent[] = [
     icon: '💰', 
     tasks: 32, 
     color: 'from-yellow-500 to-orange-400',
-    hologram: { color: 'text-yellow-400', glow: '#FBBF24', task: 'Optimizing Tokyo budget...' }
+    hologram: { color: 'text-yellow-400', glow: '#FBBF24', task: 'Optimizing Tokyo budget...' },
+    subAgents: ['gemini-pro', 'google-search'],
   },
   { 
     name: 'Scout', 
@@ -26,7 +28,8 @@ const agents: Agent[] = [
     icon: '🔍', 
     tasks: 28, 
     color: 'from-purple-500 to-indigo-400',
-    hologram: { color: 'text-primary-purple', glow: '#8B5CF6', task: 'Scanning for Hawaii deals...' }
+    hologram: { color: 'text-primary-purple', glow: '#8B5CF6', task: 'Scanning for Hawaii deals...' },
+    subAgents: ['google-search'],
   },
   { 
     name: 'Maya', 
@@ -34,7 +37,8 @@ const agents: Agent[] = [
     icon: '💬', 
     tasks: 51, 
     color: 'from-pink-500 to-rose-400',
-    hologram: { color: 'text-primary-pink', glow: '#EC4899', task: 'Resolving booking issue...' }
+    hologram: { color: 'text-primary-pink', glow: '#EC4899', task: 'Resolving booking issue...' },
+    subAgents: ['gemini-pro'],
   }
 ];
 

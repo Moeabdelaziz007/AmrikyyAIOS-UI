@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { SubAgentID } from '../types';
 
 export const ChatIcon: React.FC<{className: string}> = ({className}) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,28 +84,60 @@ export const MapIcon: React.FC<{ className: string }> = ({ className }) => (
 
 export const LunaIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l4 4L13 3l4 4L21 3m-9 18l-4-4L3 21l4-4L3 13l4 4m14-4l-4 4L21 21l-4-4L21 13l-4 4M12 5v14" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2.25c.966 0 1.932.189 2.829.558a11.96 11.96 0 014.372 4.372c.369.897.558 1.863.558 2.829s-.189 1.932-.558 2.829a11.96 11.96 0 01-4.372 4.372c-.897.369-1.863.558-2.829.558s-1.932-.189-2.829-.558a11.96 11.96 0 01-4.372-4.372A11.96 11.96 0 012.25 12c0-.966.189-1.932.558-2.829a11.96 11.96 0 014.372-4.372A11.96 11.96 0 019.171 2.808 11.96 11.96 0 0112 2.25zM12 8.25v7.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.25 12h7.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2.25l1.125 1.125M12 21.75l1.125-1.125M2.25 12l1.125 1.125M21.75 12l-1.125 1.125" />
     </svg>
 );
 
 export const KarimIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-6h.01M6 12H5m14 0h-1" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-6h.01M6 12H5m14 0h-1" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
     </svg>
 );
 
 export const ScoutIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1018 0 9 9 0 00-18 0zm4-4a5 5 0 1010 0 5 5 0 00-10 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12L3 12m9 9L12 3" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.5 14.5a3.5 3.5 0 11-5 0 3.5 3.5 0 015 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.5 19.5L14 14m3.5-3.5a8 8 0 11-16 0 8 8 0 0116 0z" />
     </svg>
 );
 
 export const MayaIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h10a2 2 0 012 2v10z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.5 8.5a.5.5 0 10-1 0 .5.5 0 001 0zM9.5 8.5a.5.5 0 10-1 0 .5.5 0 001 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11.5c1.5 1.5 3 1.5 3 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0" />
     </svg>
 );
+
+export const WorkflowIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+    </svg>
+);
+
+export const FlightsIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.5 11.5h17" />
+    </svg>
+);
+
+export const YouTubeIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+
+export const subAgentIcons: Record<SubAgentID, React.FC<{className: string}>> = {
+    'gemini-pro': ChatIcon,
+    'gemini-flash-image': ImageIcon,
+    'veo': VideoIcon,
+    'google-search': SearchIcon,
+    'google-maps': MapIcon,
+    'google-flights': FlightsIcon,
+    'youtube': YouTubeIcon,
+};

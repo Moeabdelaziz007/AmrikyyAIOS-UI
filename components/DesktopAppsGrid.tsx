@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AppID } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon } from './Icons';
 
 interface DesktopAppsGridProps {
     onOpen: (appId: AppID) => void;
@@ -9,6 +9,7 @@ interface DesktopAppsGridProps {
 
 const apps: { id: AppID; name: string; icon: React.FC<{ className: string }>; color: string, glowColor: string }[] = [
     { id: 'chat', name: 'AI Chat', icon: ChatIcon, color: 'from-blue-500 to-primary-blue', glowColor: '#3B82F6' },
+    { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon, color: 'from-purple-500 to-primary-purple', glowColor: '#8B5CF6' },
     { id: 'search', name: 'AI Search', icon: SearchIcon, color: 'from-sky-500 to-cyan-400', glowColor: '#06B6D4'},
     { id: 'maps', name: 'AI Maps', icon: MapIcon, color: 'from-teal-500 to-emerald-500', glowColor: '#10B981'},
     { id: 'luna', name: 'Agent Luna', icon: LunaIcon, color: 'from-blue-500 to-cyan-400', glowColor: '#06B6D4' },

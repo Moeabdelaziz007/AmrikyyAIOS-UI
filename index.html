@@ -96,6 +96,14 @@
                 '75%': { clip: 'rect(78px, 9999px, 52px, 0)' },
                 '100%': { clip: 'rect(9px, 9999px, 73px, 0)' },
               },
+              'node-fade-in': {
+                '0%': { opacity: '0', transform: 'scale(0.9)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
+              'line-draw': {
+                'from': { 'stroke-dashoffset': '1000' },
+                'to': { 'stroke-dashoffset': '0' },
+              },
             },
             animation: {
               'fade-in': 'fade-in 0.5s ease-out forwards',
@@ -107,6 +115,8 @@
               'hologram-flicker': 'hologram-flicker 0.1s infinite',
               'hologram-glow': 'hologram-glow 2s ease-in-out infinite',
               'glitch-anim': 'glitch-anim 2.5s infinite linear alternate-reverse',
+              'node-fade-in': 'node-fade-in 0.5s ease-out forwards',
+              'line-draw': 'line-draw 2s ease-out forwards',
             }
           },
         },
