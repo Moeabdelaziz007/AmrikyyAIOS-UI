@@ -41,6 +41,39 @@ export const groundedSearch = async (prompt: string, thinkingMode: boolean): Pro
     }
 };
 
+// Fix: Implement and export mapsSearch function
+export const mapsSearch = async (prompt: string, location: {latitude: number, longitude: number}): Promise<{ text: string, sources: {title: string, uri: string}[] }> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return { text: "Simulated maps response: La Trattoria is a great Italian restaurant nearby.", sources: [] };
+    }
+    
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const response: GenerateContentResponse = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                tools: [{googleMaps: {}}],
+                toolConfig: {
+                    retrievalConfig: { latLng: location }
+                }
+            },
+        });
+        
+        const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+        const sources = groundingChunks
+            .map(chunk => ({ title: chunk.maps?.title || '', uri: chunk.maps?.uri || ''}))
+            .filter(source => source.uri);
+
+        return { text: response.text, sources };
+    } catch (error) {
+        console.error("Error calling Gemini Maps API:", error);
+        return { text: "An error occurred while searching maps.", sources: [] };
+    }
+};
+
+
 // Travel Plan Generation
 export const generateTravelPlan = async (tripDetails: { destination: string, startDate: string, endDate: string, budget: string }): Promise<TravelPlan> => {
     if (!API_KEY) {
@@ -224,5 +257,141 @@ export const generateSeoIdeas = async (url: string, topic: string): Promise<{ ke
     } catch (error) {
         console.error("Error generating SEO ideas:", error);
         throw new Error("Failed to generate SEO ideas.");
+    }
+};
+
+// Fix: Implement and export generateImage function
+export const generateImage = async (prompt: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return 'https://via.placeholder.com/512/1e1b42/FFFFFF?text=Simulated+Image';
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: { parts: [{ text: prompt }] },
+            config: {
+                responseModalities: [Modality.IMAGE],
+            },
+        });
+        for (const part of response.candidates[0].content.parts) {
+            if (part.inlineData) {
+                const base64ImageBytes: string = part.inlineData.data;
+                return `data:image/png;base64,${base64ImageBytes}`;
+            }
+        }
+        throw new Error("No image data found in response.");
+    } catch (error) {
+        console.error("Error generating image:", error);
+        throw new Error("Failed to generate image.");
+    }
+};
+
+// Fix: Implement and export editImage function
+export const editImage = async (prompt: string, imageBase64: string, mimeType: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return 'https://via.placeholder.com/512/1e1b42/FFFFFF?text=Simulated+Edit';
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: {
+                parts: [
+                    { inlineData: { data: imageBase64, mimeType: mimeType } },
+                    { text: prompt },
+                ],
+            },
+            config: {
+                responseModalities: [Modality.IMAGE],
+            },
+        });
+        for (const part of response.candidates[0].content.parts) {
+            if (part.inlineData) {
+                const base64ImageBytes: string = part.inlineData.data;
+                return `data:image/png;base64,${base64ImageBytes}`;
+            }
+        }
+        throw new Error("No image data found in response.");
+    } catch (error) {
+        console.error("Error editing image:", error);
+        throw new Error("Failed to edit image.");
+    }
+};
+
+// Fix: Implement and export generateVideoFromImage async generator
+export async function* generateVideoFromImage(
+    prompt: string,
+    imageBase64: string,
+    mimeType: string,
+    aspectRatio: '16:9' | '9:16'
+): AsyncGenerator<{ status: 'processing' | 'completed' | 'error', progress: number, message: string, url?: string }> {
+    if (!API_KEY) {
+        yield { status: 'processing', progress: 30, message: 'Simulating video generation...' };
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        yield { status: 'processing', progress: 70, message: 'Finalizing video...' };
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        yield { status: 'completed', progress: 100, message: 'Simulation complete.', url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' };
+        return;
+    }
+
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+    try {
+        yield { status: 'processing', progress: 10, message: 'Sending request to Veo...' };
+
+        let operation = await ai.models.generateVideos({
+            model: 'veo-3.1-fast-generate-preview',
+            prompt: prompt,
+            image: { imageBytes: imageBase64, mimeType: mimeType },
+            config: { numberOfVideos: 1, resolution: '720p', aspectRatio: aspectRatio }
+        });
+
+        yield { status: 'processing', progress: 30, message: 'Video generation in progress... this may take a few minutes.' };
+        
+        let progress = 30;
+        while (!operation.done) {
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            operation = await ai.operations.getVideosOperation({ operation: operation });
+            progress = Math.min(progress + 10, 90); // Simulate progress
+            yield { status: 'processing', progress, message: 'Checking video status...' };
+        }
+
+        const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
+        if (downloadLink) {
+            yield { status: 'completed', progress: 100, message: 'Video generated successfully!', url: `${downloadLink}&key=${API_KEY}` };
+        } else {
+            const errorMessage = "Video generation finished, but no download link was found.";
+            yield { status: 'error', progress: 100, message: errorMessage };
+        }
+    } catch (error: any) {
+        console.error("Error generating video:", error);
+        let message = "An error occurred during video generation.";
+        if(error.message.includes("Requested entity was not found")) {
+            message = "API key is invalid or has insufficient permissions. Please select a valid key.";
+        }
+        yield { status: 'error', progress: 100, message };
+    }
+}
+
+// Fix: Implement and export analyzeVideo function
+export const analyzeVideo = async (videoBase64: string, mimeType: string, prompt: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return "This is a mock analysis. The video appears to show a cat playing with a ball of yarn.";
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const videoPart = { inlineData: { mimeType, data: videoBase64 } };
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-pro',
+            contents: { parts: [videoPart, { text: prompt }] },
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error analyzing video:", error);
+        return "Failed to analyze video.";
     }
 };

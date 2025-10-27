@@ -187,4 +187,6 @@ export const subAgentIcons: Record<SubAgentID, React.FC<{className: string}>> = 
     'youtube': YouTubeIcon,
     'gemini-flash-lite': SparklesIcon,
     'gemini-tts': SpeakerIcon,
+    // Fix: Add missing 'gemini-music' icon to satisfy the Record type.
+    'gemini-music': SpeakerIcon,
 };

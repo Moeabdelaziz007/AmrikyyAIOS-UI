@@ -1,9 +1,12 @@
 import React from 'react';
 
+// Fix: Add all new application IDs to the AppID type to resolve compilation errors.
 export type AppID = 
   'chat' | 'terminal' | 'files' | 'settings' | 
   'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 
-  'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer';
+  'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer' |
+  'search' | 'maps' | 'transcriber' | 'videoAnalyzer' | 'image' | 'video' |
+  'veo' | 'nanoBanana' | 'youtube' | 'gmail';
 
 export interface TravelPlan {
   destination: string;

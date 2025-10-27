@@ -12,7 +12,8 @@ interface TaskbarProps {
 
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
-  trips: TripIcon,
+  // Fix: Replace invalid 'trips' AppID with 'travelAgent'.
+  travelAgent: TripIcon,
   terminal: TerminalIcon,
   files: FileIcon,
   settings: SettingsIcon,
@@ -34,6 +35,7 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   nanoBanana: NanoBananaIcon,
   youtube: YouTubeIcon,
   gmail: GmailIcon,
+  marketing: ChatIcon, // Added missing marketing icon to satisfy Record type
 };
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {

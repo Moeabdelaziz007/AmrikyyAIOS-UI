@@ -10,7 +10,8 @@ const apps: { id: AppID; name: string; icon: React.FC<{ className: string }>; co
     { id: 'chat', name: 'AI Chat', icon: ChatIcon, color: 'from-blue-500 to-primary-blue' },
     { id: 'voice', name: 'Voice AI', icon: VoiceAssistantIcon, color: 'from-cyan-500 to-primary-cyan' },
     { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon, color: 'from-purple-500 to-primary-purple' },
-    { id: 'trips', name: 'Trip Planner', icon: TripIcon, color: 'from-sky-500 to-cyan-400' },
+    // Fix: Replace invalid 'trips' AppID with 'travelAgent'.
+    { id: 'travelAgent', name: 'Trip Planner', icon: TripIcon, color: 'from-sky-500 to-cyan-400' },
     { id: 'search', name: 'AI Search', icon: SearchIcon, color: 'from-sky-500 to-cyan-400'},
     { id: 'maps', name: 'AI Maps', icon: MapIcon, color: 'from-teal-500 to-emerald-500'},
     { id: 'transcriber', name: 'Transcriber', icon: MicrophoneIcon, color: 'from-fuchsia-500 to-pink-500' },

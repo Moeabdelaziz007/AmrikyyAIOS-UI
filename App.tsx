@@ -22,6 +22,18 @@ const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp
 const TravelAgentApp = lazy(() => import('./components/apps/TravelAgentApp'));
 const MarketingApp = lazy(() => import('./components/apps/MarketingApp'));
 const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
+// Fix: Import newly added app components
+const SearchApp = lazy(() => import('./components/apps/SearchApp'));
+const MapsApp = lazy(() => import('./components/apps/MapsApp'));
+const TranscriberApp = lazy(() => import('./components/apps/TranscriberApp'));
+const VideoAnalyzerApp = lazy(() => import('./components/apps/VideoAnalyzerApp'));
+const ImageGeneratorApp = lazy(() => import('./components/apps/ImageGeneratorApp'));
+const VideoGeneratorApp = lazy(() => import('./components/apps/VideoGeneratorApp'));
+const VeoApp = lazy(() => import('./components/apps/VeoApp'));
+const NanoBananaApp = lazy(() => import('./components/apps/NanoBananaApp'));
+const YouTubeApp = lazy(() => import('./components/apps/YouTubeApp'));
+const GmailApp = lazy(() => import('./components/apps/GmailApp'));
+
 
 const Window = lazy(() => import('./components/Window'));
 
@@ -40,6 +52,17 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   travelAgent: TravelAgentApp,
   marketing: MarketingApp,
   travelPlanViewer: TravelPlanViewerApp,
+  // Fix: Register new app components
+  search: SearchApp,
+  maps: MapsApp,
+  transcriber: TranscriberApp,
+  videoAnalyzer: VideoAnalyzerApp,
+  image: ImageGeneratorApp,
+  video: VideoGeneratorApp,
+  veo: VeoApp,
+  nanoBanana: NanoBananaApp,
+  youtube: YouTubeApp,
+  gmail: GmailApp,
 };
 
 const appTitles: Record<AppID, string> = {
@@ -57,6 +80,17 @@ const appTitles: Record<AppID, string> = {
   travelAgent: 'Travel Agent Pro',
   marketing: 'Marketing Copilot',
   travelPlanViewer: 'AI Travel Plan',
+  // Fix: Add titles for new apps
+  search: 'AI Search',
+  maps: 'AI Maps',
+  transcriber: 'Audio Transcriber',
+  videoAnalyzer: 'Video Analyzer',
+  image: 'AI Image Generator',
+  video: 'AI Video Generator',
+  veo: 'Veo Video Hub',
+  nanoBanana: 'Nano Banana Image Hub',
+  youtube: 'YouTube',
+  gmail: 'Gmail',
 };
 
 const AppLoadingSpinner: React.FC = () => (
