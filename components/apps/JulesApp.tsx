@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
-import { agents, subAgentDetails } from '../../data/agents';
+import { agents } from '../../data/agents';
+import { skills } from '../../data/skills';
 
 const julesAgent = agents.find(a => a.id === 'jules') as Agent;
+const equippedSkills = skills.filter(s => julesAgent.skillIDs.includes(s.id));
 
 const JulesApp: React.FC = () => {
     const [status, setStatus] = useState('Idle');
@@ -27,7 +29,21 @@ const JulesApp: React.FC = () => {
                 Jules is the core system diagnostics and self-healing agent. He monitors OS performance, debugs issues, and ensures system stability.
             </p>
         </div>
-        <div className="max-w-md w-full mt-4 text-center">
+        <div className="max-w-md w-full mt-4">
+            <h2 className="text-xl font-bold font-display text-center mb-3">Equipped Skills</h2>
+            <div className="flex justify-center flex-wrap gap-4 p-4 bg-black/20 rounded-lg border border-white/10">
+                {equippedSkills.map(skill => {
+                    const Icon = skill.icon;
+                    return (
+                        <div key={skill.id} title={skill.name} className="flex flex-col items-center gap-2 text-text-secondary hover:text-text-primary transition-colors w-20 text-center">
+                            <Icon className="w-10 h-10" />
+                            <span className="text-xs">{skill.name}</span>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+        <div className="max-w-md w-full mt-2 text-center">
             <button 
                 onClick={runDiagnostics}
                 disabled={status === 'Running...'}

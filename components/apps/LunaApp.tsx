@@ -1,9 +1,11 @@
 import React from 'react';
 import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
-import { agents, subAgentDetails } from '../../data/agents';
+import { agents } from '../../data/agents';
+import { skills } from '../../data/skills';
 
 const lunaAgent = agents.find(a => a.id === 'luna') as Agent;
+const equippedSkills = skills.filter(s => lunaAgent.skillIDs.includes(s.id));
 
 const LunaApp: React.FC = () => {
   return (
@@ -19,15 +21,14 @@ const LunaApp: React.FC = () => {
             </p>
         </div>
         <div className="max-w-md w-full mt-4">
-            <h2 className="text-xl font-bold font-display text-center mb-3">Core Tools</h2>
-            <div className="flex justify-center gap-4 p-4 bg-black/20 rounded-lg border border-white/10">
-                {lunaAgent.subAgents.map(id => {
-                    const subAgent = subAgentDetails[id];
-                    const Icon = subAgent.icon;
+            <h2 className="text-xl font-bold font-display text-center mb-3">Equipped Skills</h2>
+            <div className="flex justify-center flex-wrap gap-4 p-4 bg-black/20 rounded-lg border border-white/10">
+                {equippedSkills.map(skill => {
+                    const Icon = skill.icon;
                     return (
-                        <div key={id} title={subAgent.name} className="flex flex-col items-center gap-2 text-text-secondary hover:text-text-primary transition-colors">
+                        <div key={skill.id} title={skill.name} className="flex flex-col items-center gap-2 text-text-secondary hover:text-text-primary transition-colors w-20 text-center">
                             <Icon className="w-10 h-10" />
-                            <span className="text-xs">{subAgent.name}</span>
+                            <span className="text-xs">{skill.name}</span>
                         </div>
                     );
                 })}

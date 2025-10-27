@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AppID } from '../types';
-import { ChatIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, TerminalIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon } from './Icons';
+import { ChatIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, TerminalIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon } from './Icons';
 
 interface AppLauncherProps {
     onOpen: (appId: AppID) => void;
@@ -21,6 +21,8 @@ const MarketingIcon: React.FC<{className: string}> = ({className}) => (
 );
 
 const allApps: { id: AppID; name: string; icon: React.FC<{ className: string }>; }[] = [
+    { id: 'creatorStudio', name: 'Creator Studio', icon: CreatorStudioIcon },
+    { id: 'cognitoBrowser', name: 'Cognito Browser', icon: BrowserIcon },
     { id: 'chat', name: 'AI Chat', icon: ChatIcon },
     { id: 'voice', name: 'Voice AI', icon: VoiceAssistantIcon },
     { id: 'travelAgent', name: 'Travel Agent', icon: TravelAgentIcon },
@@ -28,6 +30,8 @@ const allApps: { id: AppID; name: string; icon: React.FC<{ className: string }>;
     { id: 'smartwatch', name: 'Smart Watch', icon: SmartWatchIcon },
     { id: 'marketing', name: 'Marketing', icon: MarketingIcon },
     { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon },
+    { id: 'skillForge', name: 'Skill Forge', icon: SkillForgeIcon },
+    { id: 'chronoVault', name: 'Chrono Vault', icon: ChronoVaultIcon },
     { id: 'eventLog', name: 'Event Log', icon: EventLogIcon },
     { id: 'jules', name: 'Jules Agent', icon: JulesIcon },
     { id: 'files', name: 'Files', icon: FileIcon },

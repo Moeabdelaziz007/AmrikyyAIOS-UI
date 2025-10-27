@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon } from './Icons';
+// Fix: Import missing icon components.
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, AnalyticsHubIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -10,6 +11,7 @@ interface TaskbarProps {
   activeWindowId: number | null;
 }
 
+// Fix: Add missing properties 'atlas', 'cortex', 'orion', and 'analyticsHub' to satisfy the Record<AppID, ...> type.
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
   travelAgent: TripIcon,
@@ -38,6 +40,14 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   smartwatch: SmartWatchIcon,
   workspace: WorkspaceIcon,
   eventLog: EventLogIcon,
+  creatorStudio: CreatorStudioIcon,
+  skillForge: SkillForgeIcon,
+  chronoVault: ChronoVaultIcon,
+  cognitoBrowser: BrowserIcon,
+  atlas: AtlasIcon,
+  cortex: CortexIcon,
+  orion: BrowserIcon,
+  analyticsHub: AnalyticsHubIcon,
 };
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {

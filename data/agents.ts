@@ -1,5 +1,4 @@
-import { Agent, SubAgent, SubAgentID, AgentID } from '../types';
-import { subAgentIcons, CortexIcon } from '../components/Icons';
+import { Agent } from '../types';
 
 export const agents: Agent[] = [
   { 
@@ -15,7 +14,7 @@ export const agents: Agent[] = [
         task: 'Analyzing Paris flights...',
         aberrationColors: ['#06B6D4', '#8B5CF6']
     },
-    subAgents: ['gemini-pro', 'google-flights', 'google-maps'],
+    skillIDs: ['gemini-pro-text', 'flight-search', 'maps-search'],
   },
   { 
     id: 'karim',
@@ -30,7 +29,7 @@ export const agents: Agent[] = [
         task: 'Optimizing Tokyo budget...',
         aberrationColors: ['#FBBF24', '#EF4444']
     },
-    subAgents: ['gemini-pro', 'google-search'],
+    skillIDs: ['gemini-pro-text', 'web-search'],
   },
   { 
     id: 'scout',
@@ -45,7 +44,7 @@ export const agents: Agent[] = [
         task: 'Scanning for Hawaii deals...',
         aberrationColors: ['#8B5CF6', '#EC4899']
     },
-    subAgents: ['google-search'],
+    skillIDs: ['web-search', 'flight-search'],
   },
   { 
     id: 'maya',
@@ -60,7 +59,7 @@ export const agents: Agent[] = [
         task: 'Resolving booking issue...',
         aberrationColors: ['#EC4899', '#8B5CF6']
     },
-    subAgents: ['gemini-pro'],
+    skillIDs: ['gemini-pro-text', 'fast-text', 'text-to-speech'],
   },
   {
     id: 'jules',
@@ -75,7 +74,7 @@ export const agents: Agent[] = [
         task: 'Running system diagnostics...',
         aberrationColors: ['#34D399', '#06B6D4']
     },
-    subAgents: ['gemini-pro'],
+    skillIDs: ['gemini-pro-text'],
   },
   {
     id: 'cortex',
@@ -90,7 +89,22 @@ export const agents: Agent[] = [
         task: 'Synthesizing team ideas...',
         aberrationColors: ['#FB923C', '#06B6D4']
     },
-    subAgents: ['gemini-pro', 'youtube'],
+    skillIDs: ['gemini-pro-text', 'youtube-search'],
+  },
+  {
+    id: 'atlas',
+    name: 'Atlas',
+    role: 'Business & Monetization Strategist',
+    icon: '📈',
+    tasks: 8,
+    color: 'from-stone-500 to-gray-500',
+    hologram: {
+        color: 'text-gray-300',
+        glow: '#A8A29E',
+        task: 'Analyzing market trends...',
+        aberrationColors: ['#A8A29E', '#3B82F6']
+    },
+    skillIDs: ['gemini-pro-text', 'web-search'],
   },
   {
     id: 'orion',
@@ -105,19 +119,6 @@ export const agents: Agent[] = [
         task: 'Orchestrating A2A Communication Bus...',
         aberrationColors: ['#3B82F6', '#EC4899']
     },
-    subAgents: ['gemini-pro', 'gemini-flash-image', 'veo', 'google-search', 'google-maps', 'google-flights', 'youtube', 'gemini-flash-lite', 'gemini-tts', 'gemini-music'],
+    skillIDs: ['gemini-pro-text', 'image-generation', 'video-generation', 'web-search', 'maps-search', 'flight-search', 'youtube-search', 'fast-text', 'text-to-speech', 'music-generation'],
   }
 ];
-
-export const subAgentDetails: Record<SubAgentID, SubAgent> = {
-    'gemini-pro': { id: 'gemini-pro', name: 'Gemini Pro', description: 'Advanced reasoning and text generation.', icon: subAgentIcons['gemini-pro'] },
-    'gemini-flash-image': { id: 'gemini-flash-image', name: 'Nano Banana', description: 'Image generation and editing.', icon: subAgentIcons['gemini-flash-image'] },
-    'veo': { id: 'veo', name: 'Veo', description: 'High-quality video generation.', icon: subAgentIcons['veo'] },
-    'google-search': { id: 'google-search', name: 'Google Search', description: 'Real-time web search grounding.', icon: subAgentIcons['google-search'] },
-    'google-maps': { id: 'google-maps', name: 'Google Maps', description: 'Location and place information.', icon: subAgentIcons['google-maps'] },
-    'google-flights': { id: 'google-flights', name: 'Google Flights', description: 'Flight data and price analysis.', icon: subAgentIcons['google-flights'] },
-    'youtube': { id: 'youtube', name: 'YouTube', description: 'Video platform integration.', icon: subAgentIcons['youtube'] },
-    'gemini-flash-lite': { id: 'gemini-flash-lite', name: 'Gemini Flash Lite', description: 'Low-latency text generation.', icon: subAgentIcons['gemini-flash-lite'] },
-    'gemini-tts': { id: 'gemini-tts', name: 'Gemini TTS', description: 'Text-to-speech conversion.', icon: subAgentIcons['gemini-tts'] },
-    'gemini-music': { id: 'gemini-music', name: 'Gemini Music', description: 'AI music generation.', icon: subAgentIcons['gemini-tts'] },
-};

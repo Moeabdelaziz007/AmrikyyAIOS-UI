@@ -1,12 +1,30 @@
 import React from 'react';
 
+// A "Skill" is a discrete capability the AI system can have.
+export type SkillID =
+  'gemini-pro-text' | 'image-generation' | 'video-generation' | 'web-search' |
+  'maps-search' | 'flight-search' | 'youtube-search' | 'fast-text' | 'text-to-speech' | 'music-generation';
+
+export type SkillCategory = 'Language' | 'Vision' | 'Audio' | 'Logic' | 'Knowledge';
+
+export interface Skill {
+  id: SkillID;
+  name: string;
+  description: string;
+  category: SkillCategory;
+  icon: React.FC<{className: string}>;
+}
+
+
 // Fix: Add all new application IDs to the AppID type to resolve compilation errors.
+// FIX: Added 'atlas', 'cortex', and 'orion' to AppID to allow them to be used as applications. This resolves an error in DesktopAppsGrid.tsx.
 export type AppID = 
   'chat' | 'terminal' | 'files' | 'settings' | 
-  'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 
+  'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'atlas' | 'cortex' | 'orion' |
   'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer' |
   'search' | 'maps' | 'transcriber' | 'videoAnalyzer' | 'image' | 'video' |
-  'veo' | 'nanoBanana' | 'youtube' | 'gmail' | 'smartwatch' | 'workspace' | 'eventLog';
+  'veo' | 'nanoBanana' | 'youtube' | 'gmail' | 'smartwatch' | 'workspace' | 'eventLog' |
+  'skillForge' | 'chronoVault' | 'creatorStudio' | 'cognitoBrowser' | 'analyticsHub';
 
 export interface TravelPlan {
   destination: string;
@@ -46,18 +64,7 @@ export interface Message {
   sources?: {title: string, uri: string}[];
 }
 
-export type SubAgentID = 
-  'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 
-  'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts' | 'gemini-music';
-
-export interface SubAgent {
-    id: SubAgentID;
-    name: string;
-    description: string;
-    icon: React.FC<{className: string}>;
-}
-
-export type AgentID = 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion' | 'cortex';
+export type AgentID = 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion' | 'cortex' | 'atlas';
 export interface Agent {
   id: AgentID;
   name: string;
@@ -71,13 +78,19 @@ export interface Agent {
     task: string;
     aberrationColors: [string, string];
   };
-  subAgents: SubAgentID[];
+  skillIDs: SkillID[]; // Agents are now defined by the skills they possess.
+}
+
+// FIX: Added missing SubAgent interface to resolve compilation error in SubAgentNode.tsx.
+export interface SubAgent {
+  name: string;
+  icon: React.FC<{className: string}>;
 }
 
 export type Theme = 'dark' | 'light' | 'neon-noir' | 'synthwave-sunset';
 export type WallpaperID = '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
 export type TaskbarTheme = 'glass' | 'solid' | 'transparent';
-export type WindowStyle = 'gemini' | 'macos' | 'futuristic';
+export type WindowStyle = 'gemini' | 'macos' | 'futuristic' | 'cyberpunk';
 
 
 export interface Settings {
@@ -146,4 +159,24 @@ export interface Workspace {
   contentUrl?: string;
   notes?: string;
   members: User[];
+}
+
+export interface Project {
+    id: string;
+    name: string;
+    description: string;
+    status: 'Active' | 'Paused' | 'Completed';
+    earnings: number;
+}
+
+export interface SystemEntity {
+  id: AppID | AgentID;
+  name: string;
+  icon: string;
+  goal: string;
+  description: string;
+  workflow: {
+    icon: string;
+    label: string;
+  }[];
 }

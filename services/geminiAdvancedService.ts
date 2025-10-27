@@ -173,7 +173,7 @@ export const generateWorkflowFromPrompt = async (prompt: string): Promise<Workfl
         };
     }
     const ai = new GoogleGenAI({ apiKey: API_KEY });
-    const systemInstruction = `You are an expert workflow designer. Based on the user's prompt, create a logical sequence of steps to accomplish the task. Use the available agent IDs: 'luna' (travel planning), 'scout' (deal finding), 'karim' (budgeting), 'maya' (customer support), 'jules' (coding/debugging), 'orion' (master agent for complex tasks). The output must be a valid JSON object representing the workflow.`;
+    const systemInstruction = `You are an expert workflow designer. Based on the user's prompt, create a logical sequence of steps. Each step should be assigned to an agent that possesses the necessary skills. Available agent IDs are 'luna' (planning), 'scout' (searching), 'karim' (finance), 'maya' (communication), 'jules' (technical), 'orion' (orchestration), 'atlas' (business). A travel plan needs Luna, Scout, and Karim. A business plan needs Atlas. A coding task needs Jules. Break down the user's request into a series of nodes and connect them logically. The output must be a valid JSON object.`;
 
     try {
         const response = await ai.models.generateContent({
@@ -259,6 +259,43 @@ export const generateSeoIdeas = async (url: string, topic: string): Promise<{ ke
         throw new Error("Failed to generate SEO ideas.");
     }
 };
+
+export const summarizeText = async (text: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return "This is a simulated summary of the provided text content.";
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: `Summarize the following text concisely: "${text}"`,
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error generating summary:", error);
+        throw new Error("Failed to summarize text.");
+    }
+};
+
+export const generateDailyInsight = async (): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return "The best way to predict the future is to invent it.";
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: "Generate a short, insightful, and inspiring quote or thought for the day related to technology, creativity, or the future.",
+        });
+        return response.text.replace(/"/g, ''); // Remove quotes from the response
+    } catch (error) {
+        console.error("Error generating daily insight:", error);
+        return "Embrace the challenges of today to build a better tomorrow.";
+    }
+};
+
 
 // Fix: Implement and export generateImage function
 export const generateImage = async (prompt: string): Promise<string> => {

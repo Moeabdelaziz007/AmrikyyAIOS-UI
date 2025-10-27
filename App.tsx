@@ -7,6 +7,10 @@ import PoweredByGemini from './components/PoweredByGemini';
 import TrendingWidget from './components/TrendingWidget';
 import WorkflowDashboardWidget from './components/WorkflowDashboardWidget';
 import { generateTravelPlan, generateWorkflowFromPrompt } from './services/geminiAdvancedService';
+import DailyBriefingWidget from './components/DailyBriefingWidget';
+// Fix: Import DesktopAppsGrid component to resolve 'Cannot find name' error.
+import DesktopAppsGrid from './components/DesktopAppsGrid';
+
 
 // Lazy load all application components for code-splitting and performance
 const ChatApp = lazy(() => import('./components/apps/ChatApp'));
@@ -36,10 +40,18 @@ const GmailApp = lazy(() => import('./components/apps/GmailApp'));
 const SmartWatchApp = lazy(() => import('./components/apps/SmartWatchApp'));
 const WorkspaceApp = lazy(() => import('./components/apps/WorkspaceApp'));
 const EventLogApp = lazy(() => import('./components/apps/EventLogApp'));
+const SkillForgeApp = lazy(() => import('./components/apps/SkillForgeApp'));
+const ChronoVaultApp = lazy(() => import('./components/apps/ChronoVaultApp'));
+const CreatorStudioApp = lazy(() => import('./components/apps/CreatorStudioApp'));
+const CognitoBrowserApp = lazy(() => import('./components/apps/CognitoBrowserApp'));
+const AnalyticsHubApp = lazy(() => import('./components/apps/AnalyticsHubApp'));
+// Fix: Lazy load AgentsDashboardApp to use as a placeholder for new agent apps.
+const AgentsDashboardApp = lazy(() => import('./components/apps/AgentsDashboardApp'));
 
 
 const Window = lazy(() => import('./components/Window'));
 
+// Fix: Add missing 'atlas', 'cortex', and 'orion' properties to satisfy the Record<AppID, ...> type.
 const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   chat: ChatApp,
   terminal: TerminalApp,
@@ -50,6 +62,9 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   scout: ScoutApp,
   maya: MayaApp,
   jules: JulesApp,
+  atlas: AgentsDashboardApp,
+  cortex: AgentsDashboardApp,
+  orion: AgentsDashboardApp,
   voice: VoiceAssistantApp,
   workflow: WorkflowStudioApp,
   travelAgent: TravelAgentApp,
@@ -68,8 +83,14 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   smartwatch: SmartWatchApp,
   workspace: WorkspaceApp,
   eventLog: EventLogApp,
+  skillForge: SkillForgeApp,
+  chronoVault: ChronoVaultApp,
+  creatorStudio: CreatorStudioApp,
+  cognitoBrowser: CognitoBrowserApp,
+  analyticsHub: AnalyticsHubApp,
 };
 
+// Fix: Add missing 'atlas', 'cortex', and 'orion' titles to satisfy the Record<AppID, string> type.
 const appTitles: Record<AppID, string> = {
   chat: 'Amrikyy AI Chat',
   terminal: 'Terminal',
@@ -80,6 +101,9 @@ const appTitles: Record<AppID, string> = {
   scout: 'Agent: Scout',
   maya: 'Agent: Maya',
   jules: 'Agent: Jules',
+  atlas: 'Agent: Atlas',
+  cortex: 'Agent: Cortex',
+  orion: 'Agent: Orion',
   voice: 'AI Voice Assistant',
   workflow: 'Workflow Studio',
   travelAgent: 'Travel Agent Pro',
@@ -98,11 +122,16 @@ const appTitles: Record<AppID, string> = {
   smartwatch: 'Smart Watch',
   workspace: 'Collaborative Workspace',
   eventLog: 'System Event Log',
+  skillForge: 'Skill Forge',
+  chronoVault: 'Chrono Vault',
+  creatorStudio: 'Creator Studio',
+  cognitoBrowser: 'Cognito Browser',
+  analyticsHub: 'Analytics Hub',
 };
 
 const AppLoadingSpinner: React.FC = () => (
     <div className="w-full h-full flex items-center justify-center bg-transparent">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin"></div>
     </div>
 );
 
@@ -115,9 +144,9 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<Settings>({
     theme: 'dark',
     wallpaper: '/wallpaper.svg',
-    accentColor: '#3B82F6',
+    accentColor: '#00f0ff',
     taskbarTheme: 'glass',
-    windowStyle: 'gemini',
+    windowStyle: 'cyberpunk',
   });
 
   const [alarms, setAlarms] = useState<Alarm[]>([
@@ -129,10 +158,8 @@ const App: React.FC = () => {
   ]);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.className = ''; // Clear all previous theme classes
-    root.classList.add(settings.theme);
-    root.style.setProperty('--accent-color', settings.accentColor);
+    // The new design is dark by default, no need to manage theme classes on root
+    document.documentElement.style.setProperty('--accent-color', settings.accentColor);
   }, [settings]);
 
   const handleSettingsChange = useCallback((newSettings: Partial<Settings>) => {
@@ -221,18 +248,23 @@ const App: React.FC = () => {
   const activeWindowId = windows.length > 0 ? windows.filter(w => !w.isMinimized).sort((a, b) => b.zIndex - a.zIndex)[0]?.id : null;
   
   return (
-    <main 
-      className="w-screen h-screen bg-bg-primary bg-cover bg-center overflow-hidden transition-colors duration-500"
-      style={{ backgroundImage: `url(${settings.wallpaper})` }}
-    >
+    <main className="w-screen h-screen overflow-hidden">
       <HologramWallpaper />
       <PoweredByGemini />
-      <div className="hidden md:block">
-        <TrendingWidget />
-        <WorkflowDashboardWidget onOpenApp={openWindow} />
-      </div>
       
+      {/* Desktop Widget Dashboard */}
+      <div className="absolute top-4 right-4 z-20 hidden md:flex flex-col gap-4 animate-slide-in-right w-full max-w-sm">
+        <div className="glass-effect rounded-xl p-4 flex flex-col gap-4">
+          <DailyBriefingWidget />
+          <WorkflowDashboardWidget onOpenApp={openWindow} />
+          <TrendingWidget />
+        </div>
+      </div>
+
+
       <div className="relative w-full h-full">
+        <DesktopAppsGrid onOpen={openWindow} />
+
         {isAppLauncherOpen && <AppLauncher onOpen={openWindow} onClose={() => setIsAppLauncherOpen(false)} />}
 
         <Suspense fallback={null}>
@@ -242,8 +274,8 @@ const App: React.FC = () => {
                   id={window.id}
                   initialX={window.x}
                   initialY={window.y}
-                  initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' || window.appId === 'workspace' ? 1024 : window.appId === 'smartwatch' ? 360 : window.width}
-                  initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' || window.appId === 'workspace' ? 768 : window.appId === 'smartwatch' ? 600 : window.height}
+                  initialWidth={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub'].includes(window.appId) ? 1024 : window.appId === 'smartwatch' ? 360 : window.width}
+                  initialHeight={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub'].includes(window.appId) ? 768 : window.appId === 'smartwatch' ? 600 : window.height}
                   title={window.title}
                   zIndex={window.zIndex}
                   isMinimized={window.isMinimized}
@@ -271,9 +303,11 @@ const App: React.FC = () => {
                               props.setAlarms = setAlarms;
                               props.automations = automations;
                               props.setAutomations = setAutomations;
+                          } else if (window.appId === 'cognitoBrowser') {
+                              props.onOpenWindow = openWindow;
                           }
                           
-                          return <AppComponent {...props} />;
+                          return <AppComponent {...props} onOpenApp={openWindow} />;
                       })()
                     }
                   </Suspense>

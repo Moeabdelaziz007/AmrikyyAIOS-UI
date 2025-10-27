@@ -34,21 +34,11 @@ const useMediaQuery = (query: string) => {
 
 
 const WindowControls: React.FC<{ onClose: () => void; onMinimize: () => void; style: WindowStyle; title: string; }> = ({ onClose, onMinimize, style, title }) => {
-    if (style === 'gemini') {
-        return (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center space-x-2 opacity-0 group-hover/titlebar:opacity-100 transition-opacity">
-                <button onClick={onClose} aria-label={`Close ${title} window`} className="window-control h-3.5 w-3.5 rounded-full bg-red-500 hover:bg-red-400" />
-                <button onClick={onMinimize} aria-label={`Minimize ${title} window`} className="window-control h-3.5 w-3.5 rounded-full bg-yellow-500 hover:bg-yellow-400" />
-                <button aria-label="Maximize window (disabled)" className="window-control h-3.5 w-3.5 rounded-full bg-green-500 hover:bg-green-400 cursor-not-allowed" />
-            </div>
-        );
-    }
-    // macOS & Futuristic styles
     return (
         <div className="flex items-center space-x-2">
-            <button onClick={onClose} aria-label={`Close ${title} window`} className="window-control h-4 w-4 rounded-full bg-red-500 hover:bg-red-400" />
-            <button onClick={onMinimize} aria-label={`Minimize ${title} window`} className="window-control h-4 w-4 rounded-full bg-yellow-500 hover:bg-yellow-400" />
-            <button aria-label="Maximize window (disabled)" className="window-control h-4 w-4 rounded-full bg-green-500 hover:bg-green-400 cursor-not-allowed" />
+            <button onClick={onClose} aria-label={`Close ${title} window`} className="window-control size-3 rounded-full bg-red-400/80 hover:bg-red-400" />
+            <button onClick={onMinimize} aria-label={`Minimize ${title} window`} className="window-control size-3 rounded-full bg-yellow-400/80 hover:bg-yellow-400" />
+            <button aria-label="Maximize window (disabled)" className="window-control size-3 rounded-full bg-green-400/80 hover:bg-green-400 cursor-not-allowed" />
         </div>
     );
 };
@@ -110,6 +100,14 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
   }
 
   const styleConfig = {
+      cyberpunk: {
+          container: `glass-effect rounded-xl transition-shadow,border duration-300 ${isActive ? 'shadow-2xl shadow-neon-cyan/20 border-neon-cyan/50' : ''}`,
+          titlebar: 'h-10 justify-between px-4',
+          title: 'font-medium text-sm',
+          body: '',
+          background: 'transparent',
+      },
+      // Keep old styles for compatibility, though cyberpunk is now default
       macos: {
           container: `shadow-2xl shadow-black/50 border ${isActive ? 'ring-2 ring-accent border-accent/50' : 'border-border-color'}`,
           titlebar: 'h-10 bg-black/20 justify-between px-3',
@@ -132,7 +130,7 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
           background: 'var(--bg-primary)',
       },
   }
-  const currentStyle = styleConfig[windowStyle];
+  const currentStyle = styleConfig[windowStyle] || styleConfig['cyberpunk'];
   
   const mobileStyles: React.CSSProperties = {
       position: 'absolute',
@@ -141,8 +139,6 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       height: '100%',
       zIndex,
       resize: 'none',
-      background: currentStyle.background,
-      backdropFilter: windowStyle !== 'futuristic' ? 'blur(20px)' : 'none',
   };
 
   const desktopStyles: React.CSSProperties = {
@@ -154,8 +150,6 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       minWidth: '300px',
       minHeight: '200px',
       resize: 'both',
-      background: currentStyle.background,
-      backdropFilter: windowStyle !== 'futuristic' ? 'blur(20px)' : 'none',
   };
 
   return (
@@ -166,20 +160,18 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       aria-modal="true"
       aria-labelledby={`window-title-${id}`}
       tabIndex={-1}
-      className={`absolute flex flex-col overflow-hidden animate-slide-up focus:outline-none transition-shadow,border duration-300 ${isMobile ? 'rounded-none' : 'rounded-lg'} ${currentStyle.container}`}
+      className={`absolute flex flex-col overflow-hidden animate-slide-up focus:outline-none ${isMobile ? 'rounded-none' : ''} ${currentStyle.container}`}
       style={isMobile ? mobileStyles : desktopStyles}
       onMouseDown={onFocus}
     >
       <div
-        className={`relative flex items-center flex-shrink-0 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isMobile ? '!cursor-default' : ''} ${currentStyle.titlebar}`}
+        className={`relative flex items-center flex-shrink-0 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isMobile ? '!cursor-default' : ''} ${currentStyle.titlebar} border-b border-white/10`}
         onMouseDown={handleMouseDown}
       >
-          {windowStyle === 'gemini' && isActive && <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-blue via-primary-purple to-primary-pink opacity-30 animate-gradient-pan [background-size:200%_auto]" style={{ filter: 'blur(20px)'}} />}
+          <span id={`window-title-${id}`} className={`text-white/80 ${currentStyle.title}`}>{title}</span>
           <WindowControls onClose={onClose} onMinimize={onMinimize} style={windowStyle} title={title} />
-          <span id={`window-title-${id}`} className={`text-text-primary ${currentStyle.title}`}>{title}</span>
-          <div />
       </div>
-      <div className={`flex-grow overflow-auto bg-bg-tertiary ${currentStyle.body}`}>
+      <div className={`flex-grow overflow-auto bg-background-dark/80 ${currentStyle.body}`}>
         {children}
       </div>
     </div>
