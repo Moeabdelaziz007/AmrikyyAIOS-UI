@@ -1,70 +1,97 @@
 
 import React from 'react';
-import { SubAgent, SubAgentID } from '../../types';
-import { subAgentIcons, WorkflowIcon } from '../Icons';
+import { SubAgent, SubAgentID, Agent } from '../../types';
+import { subAgentIcons } from '../Icons';
 import SubAgentNode from '../SubAgentNode';
 
-const subAgentLibrary: Record<SubAgentID, SubAgent> = {
-    'gemini-pro': { id: 'gemini-pro', name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
-    'gemini-flash-image': { id: 'gemini-flash-image', name: 'Nano Banana', icon: subAgentIcons['gemini-flash-image'] },
-    'veo': { id: 'veo', name: 'Veo', icon: subAgentIcons['veo'] },
-    'google-search': { id: 'google-search', name: 'Google Search', icon: subAgentIcons['google-search'] },
-    'google-maps': { id: 'google-maps', name: 'Google Maps', icon: subAgentIcons['google-maps'] },
-    'google-flights': { id: 'google-flights', name: 'Google Flights', icon: subAgentIcons['google-flights'] },
-    'youtube': { id: 'youtube', name: 'YouTube Uploader', icon: subAgentIcons['youtube'] },
-};
+interface WorkflowStudioAppProps {
+    isWorkflowRunning: boolean;
+    currentStep: number;
+    finalPlan: any | null;
+    onViewPlan: () => void;
+}
 
-const workflowSteps = [
-    { subAgent: subAgentLibrary['gemini-pro'], description: "Write script for 'Top 5 Paris Spots'", status: 'Completed' },
-    { subAgent: subAgentLibrary['gemini-flash-image'], description: "Generate scene illustrations", status: 'Completed' },
-    { subAgent: subAgentLibrary['veo'], description: "Create video from illustrations", status: 'Active' },
-    { subAgent: subAgentLibrary['youtube'], description: "Upload to YouTube", status: 'Pending' },
-]
+const travelWorkflowAgents: Agent[] = [
+  { name: 'Luna', role: 'Trip Planner', icon: '🌟', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
+  { name: 'Scout', role: 'Deal Finder', icon: '🔍', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['google-search'] },
+  { name: 'Karim', role: 'Budget Optimizer', icon: '💰', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
+  { name: 'Maya', role: 'Plan Compiler', icon: '💬', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
+];
 
-const WorkflowStudioApp: React.FC = () => {
+const travelWorkflowSteps = [
+    { agent: travelWorkflowAgents[0], description: "Generating Itinerary..." },
+    { agent: travelWorkflowAgents[1], description: "Finding Deals & Links..." },
+    { agent: travelWorkflowAgents[2], description: "Creating Budget Breakdown..." },
+    { agent: travelWorkflowAgents[3], description: "Compiling Final Plan..." },
+];
+
+const agentToSubAgent = (agent: Agent): SubAgent => ({
+    id: agent.name.toLowerCase() as SubAgentID,
+    name: agent.name,
+    icon: ({ className }) => <span className={`${className} text-4xl`}>{agent.icon}</span>
+});
+
+const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ isWorkflowRunning, currentStep, finalPlan, onViewPlan }) => {
+    
+    const getStatus = (stepIndex: number): 'Completed' | 'Active' | 'Pending' => {
+        if (!isWorkflowRunning && !finalPlan) return 'Pending';
+        if (stepIndex < currentStep) return 'Completed';
+        if (stepIndex === currentStep && isWorkflowRunning) return 'Active';
+        if (finalPlan) return 'Completed';
+        return 'Pending';
+    }
+
+    const workflowTitle = "Automated Travel Plan Generation";
+
     return (
         <div className="h-full w-full flex bg-bg-tertiary rounded-b-md text-white p-4 gap-4 overflow-hidden">
-            {/* Toolbox */}
-            <div className="w-64 flex-shrink-0 bg-black/20 rounded-lg p-4 border border-white/10 flex flex-col">
-                <h2 className="font-display font-bold text-xl mb-4 text-primary-purple">Sub-Agent Toolbox</h2>
-                <div className="grid grid-cols-2 gap-3 overflow-y-auto">
-                    {Object.values(subAgentLibrary).map(agent => {
-                        const Icon = agent.icon;
-                        return (
-                            <div key={agent.id} className="p-2 flex flex-col items-center gap-1 bg-white/5 rounded-md text-center cursor-grab active:cursor-grabbing">
-                                <Icon className="w-8 h-8 text-text-secondary" />
-                                <span className="text-xs font-semibold">{agent.name}</span>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-
             {/* Canvas */}
             <div className="flex-grow bg-black/20 rounded-lg border border-white/10 p-4 flex flex-col items-center justify-center">
-                 <h1 className="font-display text-2xl font-bold mb-6">Workflow: Create & Upload a Travel YouTube Video</h1>
+                 <h1 className="font-display text-2xl font-bold mb-6 text-center">{workflowTitle}</h1>
                  <div className="relative flex items-center justify-center gap-12">
-                    {/* SVG Lines connecting the nodes */}
                      <svg className="absolute top-0 left-0 w-full h-full" style={{ zIndex: 0 }}>
-                         <path d="M 100 50 H 220" stroke="#4F46E5" strokeWidth="2" strokeDasharray="1000" className="animate-line-draw" style={{ animationDelay: '0.5s' }} fill="none" />
-                         <path d="M 300 50 H 420" stroke="#4F46E5" strokeWidth="2" strokeDasharray="1000" className="animate-line-draw" style={{ animationDelay: '1.0s' }} fill="none" />
-                         <path d="M 500 50 H 620" stroke="#4F46E5" strokeWidth="2" strokeDasharray="1000" className="animate-line-draw" style={{ animationDelay: '1.5s' }} fill="none" />
+                        <defs>
+                            <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#3B82F6" />
+                                <stop offset="100%" stopColor="#8B5CF6" />
+                            </linearGradient>
+                        </defs>
+                         {travelWorkflowSteps.slice(0, -1).map((_, index) => (
+                            <path 
+                                key={index}
+                                d={`M ${100 + index * 192} 96 H ${220 + index * 192}`} 
+                                stroke="url(#line-grad)" 
+                                strokeWidth="3" 
+                                fill="none"
+                                strokeDasharray="1000"
+                                className={getStatus(index) === 'Completed' ? 'animate-line-draw' : ''}
+                                style={{ strokeDashoffset: getStatus(index) === 'Completed' ? 0 : 1000, transition: 'stroke-dashoffset 1s ease-in-out' }}
+                            />
+                         ))}
                      </svg>
 
-                     {workflowSteps.map((step, index) => (
+                     {travelWorkflowSteps.map((step, index) => (
                          <SubAgentNode 
-                            key={step.subAgent.id}
-                            subAgent={step.subAgent} 
+                            key={step.agent.name}
+                            subAgent={agentToSubAgent(step.agent)}
                             description={step.description}
-                            status={step.status as 'Completed' | 'Active' | 'Pending'}
+                            status={getStatus(index)}
                             style={{ animationDelay: `${index * 0.2}s` }}
                         />
                      ))}
                  </div>
-                 <button className="mt-8 flex items-center gap-2 py-2 px-5 font-bold rounded-lg bg-gradient-to-r from-primary-purple to-indigo-500 hover:brightness-110 active:scale-95 transition-all duration-200">
-                    <WorkflowIcon className="w-5 h-5" />
-                    Execute Workflow
-                 </button>
+                 <div className="h-20 mt-8">
+                    {finalPlan ? (
+                        <button onClick={onViewPlan} className="mt-8 flex items-center gap-2 py-2 px-5 font-bold rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:brightness-110 active:scale-95 transition-all duration-200 animate-fade-in">
+                            View Generated Plan
+                        </button>
+                    ) : (
+                        <div className="mt-8 flex items-center gap-2 py-2 px-5 text-text-secondary animate-fade-in">
+                            <div className={`w-5 h-5 border-2 border-current border-t-transparent rounded-full ${isWorkflowRunning ? 'animate-spin' : ''}`}></div>
+                            <span>{isWorkflowRunning ? 'AI Agents are working...' : 'Waiting for workflow to start...'}</span>
+                        </div>
+                    )}
+                 </div>
             </div>
         </div>
     );

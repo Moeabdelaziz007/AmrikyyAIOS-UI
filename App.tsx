@@ -1,11 +1,12 @@
 
 import React, { useState, useCallback, Suspense, lazy, useEffect } from 'react';
-import { WindowInstance, AppID, Settings } from './types';
+import { WindowInstance, AppID, Settings, TravelPlan } from './types';
 import Window from './components/Window';
 import Dock from './components/Dock';
 import AIOrb from './components/AIOrb';
 import AnimatedBackground from './components/AnimatedBackground';
 import DesktopAppsGrid from './components/DesktopAppsGrid';
+import { generateTravelPlan } from './services/geminiAdvancedService';
 
 // Lazy load all application components for code-splitting and performance
 const ChatApp = lazy(() => import('./components/apps/ChatApp'));
@@ -22,6 +23,7 @@ const KarimApp = lazy(() => import('./components/apps/KarimApp'));
 const ScoutApp = lazy(() => import('./components/apps/ScoutApp'));
 const MayaApp = lazy(() => import('./components/apps/MayaApp'));
 const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp'));
+const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
 
 const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   chat: ChatApp,
@@ -38,6 +40,7 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   scout: ScoutApp,
   maya: MayaApp,
   workflow: WorkflowStudioApp,
+  travelPlanViewer: TravelPlanViewerApp,
 };
 
 const appTitles: Record<AppID, string> = {
@@ -55,6 +58,7 @@ const appTitles: Record<AppID, string> = {
   scout: 'Agent: Scout',
   maya: 'Agent: Maya',
   workflow: 'Workflow Studio',
+  travelPlanViewer: 'AI Travel Plan',
 };
 
 const AppLoadingSpinner: React.FC = () => (
@@ -73,6 +77,10 @@ const App: React.FC = () => {
     accentColor: '#3B82F6',
   });
 
+  const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
+  const [workflowStep, setWorkflowStep] = useState(0);
+  const [finalPlan, setFinalPlan] = useState<TravelPlan | null>(null);
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('dark', 'light');
@@ -84,9 +92,9 @@ const App: React.FC = () => {
     setSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
-  const openWindow = useCallback((appId: AppID) => {
+  const openWindow = useCallback((appId: AppID, appProps: any = {}) => {
     setWindows(prevWindows => {
-      const existingWindow = prevWindows.find(w => w.appId === appId);
+      const existingWindow = prevWindows.find(w => w.appId === appId && !w.appProps); // Don't focus if it has specific props
       if (existingWindow) {
         return prevWindows.map(w =>
           w.id === existingWindow.id ? { ...w, zIndex: nextZIndex, isMinimized: false } : w
@@ -103,6 +111,7 @@ const App: React.FC = () => {
         height: 600,
         zIndex: nextZIndex,
         isMinimized: false,
+        appProps,
       };
       setNextId(prev => prev + 1);
       setNextZIndex(prev => prev + 1);
@@ -110,6 +119,41 @@ const App: React.FC = () => {
     });
     setNextZIndex(prev => prev + 1);
   }, [nextId, nextZIndex]);
+
+  const startTravelWorkflow = useCallback(async (details: { destination: string, startDate: string, endDate: string, budget: string }) => {
+      setFinalPlan(null);
+      setIsWorkflowRunning(true);
+      setWorkflowStep(0);
+      openWindow('workflow');
+      
+      const stepRunner = (step: number) => {
+          setWorkflowStep(step);
+          return new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500)); // simulate work
+      }
+
+      try {
+          await stepRunner(0); // Luna: Generating Itinerary
+          await stepRunner(1); // Scout: Finding Deals
+          await stepRunner(2); // Karim: Creating Budget
+          
+          const plan = await generateTravelPlan(details);
+          
+          await stepRunner(3); // Maya: Compiling Final Plan
+          setFinalPlan(plan);
+
+      } catch (error) {
+          console.error("Workflow failed:", error);
+          // Future: Open a notification window with the error.
+      } finally {
+          setIsWorkflowRunning(false);
+      }
+
+  }, [openWindow]);
+
+  const openPlanViewer = useCallback(() => {
+      if (!finalPlan) return;
+      openWindow('travelPlanViewer', { plan: finalPlan });
+  }, [finalPlan, openWindow]);
 
   const closeWindow = (id: number) => {
     setWindows(windows.filter(w => w.id !== id));
@@ -149,8 +193,8 @@ const App: React.FC = () => {
               id={window.id}
               initialX={window.x}
               initialY={window.y}
-              initialWidth={window.width}
-              initialHeight={window.height}
+              initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' ? 1024 : window.width}
+              initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' ? 768 : window.height}
               title={window.title}
               zIndex={window.zIndex}
               isMinimized={window.isMinimized}
@@ -160,9 +204,25 @@ const App: React.FC = () => {
               onFocus={() => focusWindow(window.id)}
             >
               <Suspense fallback={<AppLoadingSpinner />}>
-                {window.appId === 'settings' 
-                    ? <SettingsApp settings={settings} onSettingsChange={handleSettingsChange} />
-                    : React.createElement(appComponents[window.appId])
+                {
+                  (() => {
+                      const AppComponent = appComponents[window.appId];
+                      const props: any = window.appProps || {};
+
+                      if (window.appId === 'settings') {
+                          props.settings = settings;
+                          props.onSettingsChange = handleSettingsChange;
+                      } else if (window.appId === 'trips') {
+                          props.startTravelWorkflow = startTravelWorkflow;
+                      } else if (window.appId === 'workflow') {
+                          props.isWorkflowRunning = isWorkflowRunning;
+                          props.currentStep = workflowStep;
+                          props.finalPlan = finalPlan;
+                          props.onViewPlan = openPlanViewer;
+                      }
+                      
+                      return <AppComponent {...props} />;
+                  })()
                 }
               </Suspense>
             </Window>

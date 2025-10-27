@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AppID, WindowInstance } from '../types';
 // FIX: Import missing icons to satisfy the Record<AppID, ...> type.
@@ -28,6 +27,8 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   scout: ScoutIcon,
   maya: MayaIcon,
   workflow: WorkflowIcon,
+  // FIX: Add missing 'travelPlanViewer' icon to satisfy the Record<AppID, ...> type.
+  travelPlanViewer: TripIcon,
 };
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {

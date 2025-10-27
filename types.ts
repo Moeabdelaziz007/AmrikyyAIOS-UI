@@ -1,7 +1,26 @@
+
 // FIX: Import React to provide types for React.FC.
 import React from 'react';
 
-export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 'workflow';
+export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 'workflow' | 'travelPlanViewer';
+
+export interface TravelPlan {
+  destination: string;
+  tripTitle: string;
+  itinerary: {
+    day: number;
+    title: string;
+    activities: string[];
+  }[];
+  budget: {
+    category: string;
+    cost: number;
+  }[];
+  dealsAndLinks: {
+    title: string;
+    url: string;
+  }[];
+}
 
 export interface WindowInstance {
   id: number;
@@ -13,6 +32,7 @@ export interface WindowInstance {
   height: number;
   zIndex: number;
   isMinimized: boolean;
+  appProps?: any;
 }
 
 export interface Message {

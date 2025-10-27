@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
 import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon } from './Icons';
@@ -26,6 +25,8 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   scout: ScoutIcon,
   maya: MayaIcon,
   workflow: WorkflowIcon,
+  // FIX: Add missing 'travelPlanViewer' icon to satisfy the Record<AppID, ...> type.
+  travelPlanViewer: TripIcon,
 };
 
 const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
