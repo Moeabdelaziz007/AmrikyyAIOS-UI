@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
-import { ChatIcon, AgentIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -12,7 +13,6 @@ interface DockProps {
 
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
-  agents: AgentIcon,
   trips: TripIcon,
   terminal: TerminalIcon,
   files: FileIcon,
@@ -21,6 +21,10 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   video: VideoIcon,
   search: SearchIcon,
   maps: MapIcon,
+  luna: LunaIcon,
+  karim: KarimIcon,
+  scout: ScoutIcon,
+  maya: MayaIcon,
 };
 
 const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
@@ -42,7 +46,10 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
       { id: 'chat', name: 'Chat' },
       { id: 'search', name: 'Search' },
       { id: 'maps', name: 'Maps' },
-      { id: 'agents', name: 'Agents' },
+      { id: 'luna', name: 'Luna' },
+      { id: 'karim', name: 'Karim' },
+      { id: 'scout', name: 'Scout' },
+      { id: 'maya', name: 'Maya' },
       { id: 'trips', name: 'Trips' },
       { id: 'image', name: 'Image Gen' },
       { id: 'video', name: 'Video Gen' },

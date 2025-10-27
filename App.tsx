@@ -1,9 +1,9 @@
+
 import React, { useState, useCallback } from 'react';
 import { WindowInstance, AppID } from './types';
 import Window from './components/Window';
 import Dock from './components/Dock';
 import ChatApp from './components/apps/ChatApp';
-import AgentsDashboardApp from './components/apps/AgentsDashboardApp';
 import TripPlannerApp from './components/apps/TripPlannerApp';
 import TerminalApp from './components/apps/TerminalApp';
 import FilesApp from './components/apps/FilesApp';
@@ -15,10 +15,13 @@ import MapsApp from './components/apps/MapsApp';
 import AIOrb from './components/AIOrb';
 import AnimatedBackground from './components/AnimatedBackground';
 import DesktopAppsGrid from './components/DesktopAppsGrid';
+import LunaApp from './components/apps/LunaApp';
+import KarimApp from './components/apps/KarimApp';
+import ScoutApp from './components/apps/ScoutApp';
+import MayaApp from './components/apps/MayaApp';
 
 const appComponents: Record<AppID, React.FC> = {
   chat: ChatApp,
-  agents: AgentsDashboardApp,
   trips: TripPlannerApp,
   terminal: TerminalApp,
   files: FilesApp,
@@ -27,11 +30,14 @@ const appComponents: Record<AppID, React.FC> = {
   video: VideoGeneratorApp,
   search: SearchApp,
   maps: MapsApp,
+  luna: LunaApp,
+  karim: KarimApp,
+  scout: ScoutApp,
+  maya: MayaApp,
 };
 
 const appTitles: Record<AppID, string> = {
   chat: 'Amrikyy AI Chat',
-  agents: 'AI Agents Dashboard',
   trips: 'Trip Planner',
   terminal: 'Terminal',
   files: 'File Explorer',
@@ -40,6 +46,10 @@ const appTitles: Record<AppID, string> = {
   video: 'AI Video Generator',
   search: 'AI Search',
   maps: 'AI Maps',
+  luna: 'Agent: Luna',
+  karim: 'Agent: Karim',
+  scout: 'Agent: Scout',
+  maya: 'Agent: Maya',
 };
 
 const App: React.FC = () => {

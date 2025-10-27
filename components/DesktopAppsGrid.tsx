@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { AppID } from '../types';
-import { ChatIcon, AgentIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon } from './Icons';
 
 interface DesktopAppsGridProps {
     onOpen: (appId: AppID) => void;
@@ -10,7 +11,10 @@ const apps: { id: AppID; name: string; icon: React.FC<{ className: string }>; co
     { id: 'chat', name: 'AI Chat', icon: ChatIcon, color: 'from-blue-500 to-primary-blue', glowColor: '#3B82F6' },
     { id: 'search', name: 'AI Search', icon: SearchIcon, color: 'from-sky-500 to-cyan-400', glowColor: '#06B6D4'},
     { id: 'maps', name: 'AI Maps', icon: MapIcon, color: 'from-teal-500 to-emerald-500', glowColor: '#10B981'},
-    { id: 'agents', name: 'Agents', icon: AgentIcon, color: 'from-purple-500 to-primary-purple', glowColor: '#8B5CF6' },
+    { id: 'luna', name: 'Agent Luna', icon: LunaIcon, color: 'from-blue-500 to-cyan-400', glowColor: '#06B6D4' },
+    { id: 'karim', name: 'Agent Karim', icon: KarimIcon, color: 'from-yellow-500 to-orange-400', glowColor: '#FBBF24' },
+    { id: 'scout', name: 'Agent Scout', icon: ScoutIcon, color: 'from-purple-500 to-indigo-400', glowColor: '#8B5CF6' },
+    { id: 'maya', name: 'Agent Maya', icon: MayaIcon, color: 'from-pink-500 to-rose-400', glowColor: '#EC4899' },
     { id: 'image', name: 'Image Gen', icon: ImageIcon, color: 'from-pink-500 to-primary-pink', glowColor: '#EC4899'},
     { id: 'video', name: 'Video Gen', icon: VideoIcon, color: 'from-rose-500 to-red-500', glowColor: '#EF4444'},
     { id: 'files', name: 'Files', icon: FileIcon, color: 'from-yellow-500 to-amber-500', glowColor: '#F59E0B'},

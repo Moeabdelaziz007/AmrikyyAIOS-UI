@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const ChatIcon: React.FC<{className: string}> = ({className}) => (
@@ -77,5 +78,33 @@ export const MapIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+
+export const LunaIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l4 4L13 3l4 4L21 3m-9 18l-4-4L3 21l4-4L3 13l4 4m14-4l-4 4L21 21l-4-4L21 13l-4 4M12 5v14" />
+    </svg>
+);
+
+export const KarimIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-6h.01M6 12H5m14 0h-1" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+    </svg>
+);
+
+export const ScoutIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1018 0 9 9 0 00-18 0zm4-4a5 5 0 1010 0 5 5 0 00-10 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12L3 12m9 9L12 3" />
+    </svg>
+);
+
+export const MayaIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h10a2 2 0 012 2v10z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.5 8.5a.5.5 0 10-1 0 .5.5 0 001 0zM9.5 8.5a.5.5 0 10-1 0 .5.5 0 001 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11.5c1.5 1.5 3 1.5 3 0" />
     </svg>
 );

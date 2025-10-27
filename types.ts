@@ -1,5 +1,5 @@
 
-export type AppID = 'chat' | 'agents' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps';
+export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya';
 
 export interface WindowInstance {
   id: number;
