@@ -67,6 +67,8 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   clio: MarketingIcon,
   growthHub: GrowthHubIcon,
   resourceHub: ResourceHubIcon,
+  // FIX: Add missing pricing icon to satisfy record type.
+  pricing: PricingIcon,
 };
 
 

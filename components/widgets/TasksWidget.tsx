@@ -1,12 +1,11 @@
 import React from 'react';
+import { Task } from '../../types';
 
-const mockTasks = [
-    { id: 1, text: 'Draft marketing copy for Project Phoenix', completed: false },
-    { id: 2, text: 'Review Q3 budget with Karim agent', completed: false },
-    { id: 3, text: 'Finalize Tokyo trip itinerary', completed: true },
-];
+interface TasksWidgetProps {
+    tasks: Task[];
+}
 
-const TasksWidget: React.FC = () => {
+const TasksWidget: React.FC<TasksWidgetProps> = ({ tasks }) => {
     return (
         <div>
             <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
@@ -16,7 +15,7 @@ const TasksWidget: React.FC = () => {
                 </div>
             </div>
             <div className="space-y-2 p-4">
-                {mockTasks.map(task => (
+                {tasks.map(task => (
                     <div key={task.id} className="flex items-center gap-2">
                         <input type="checkbox" checked={task.completed} readOnly className="size-4 rounded bg-white/10 border-white/20 accent-rose-400" />
                         <label className={`text-sm ${task.completed ? 'line-through text-text-muted' : ''}`}>{task.text}</label>

@@ -26,7 +26,9 @@ export type AppID =
   'devToolkit' | 'agora' | 'nexusChat' | 
   'devConsole' | 'apiDocs' | 'growthHub' | 'resourceHub' |
   // FIX: Add missing AppIDs for agents used in Taskbar.tsx
-  'atlas' | 'cortex' | 'orion' | 'helios' | 'leo' | 'zara' | 'rex' | 'clio';
+  'atlas' | 'cortex' | 'orion' | 'helios' | 'leo' | 'zara' | 'rex' | 'clio' |
+  // FIX: Add missing 'pricing' AppID used in Store and VideoGenerator apps.
+  'pricing';
 
 export interface TravelPlan {
   destination: string;

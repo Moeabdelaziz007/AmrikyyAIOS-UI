@@ -43,6 +43,7 @@ export const translations = {
     'app_titles.devToolkit': 'Developer Toolkit',
     'app_titles.growthHub': 'Growth Hub',
     'app_titles.resourceHub': 'Resource Hub',
+    'app_titles.pricing': 'Pricing & Plans',
 
     'agent_prefix.agent': 'Agent',
 
@@ -241,6 +242,7 @@ export const translations = {
     'app_titles.devToolkit': 'مجموعة أدوات المطور',
     'app_titles.growthHub': 'مركز النمو',
     'app_titles.resourceHub': 'مركز الموارد',
+    'app_titles.pricing': 'الأسعار والخطط',
 
     'agent_prefix.agent': 'عميل',
 

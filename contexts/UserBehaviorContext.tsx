@@ -13,6 +13,7 @@ const UserBehaviorContext = createContext<UserBehaviorContextType | undefined>(u
 
 export const UserBehaviorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [actions, setActions] = useState<UserAction[]>([]);
+  // FIX: Explicitly type the initial state to match the state's type definition.
   const [appFrequency, setAppFrequency] = useState<Record<AppID, number>>({});
 
   const logAction = useCallback((appId: AppID, details?: Record<string, any>) => {
@@ -22,9 +23,7 @@ export const UserBehaviorProvider: React.FC<{ children: React.ReactNode }> = ({ 
     
     setAppFrequency(prev => ({
         ...prev,
-        // FIX: Using a ternary operator for a more explicit type check to ensure
-        // the count is correctly incremented, resolving a potential type inference issue.
-        [appId]: prev[appId] ? prev[appId] + 1 : 1,
+        [appId]: (prev[appId] || 0) + 1,
     }));
   }, []);
   

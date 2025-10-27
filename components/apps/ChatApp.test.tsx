@@ -2,14 +2,29 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ChatApp from './ChatApp';
 import * as geminiService from '../../services/geminiService';
+import { SystemVoice } from '../../types';
 
 // Mock the geminiService to control its behavior in tests
 vi.mock('../../services/geminiService', () => ({
   generateResponse: vi.fn(),
 }));
 
+// FIX: Mock audio services to prevent errors in test environment.
+vi.mock('../../services/geminiAdvancedService', () => ({
+    generateSpeech: vi.fn().mockResolvedValue('mock-base64-audio'),
+}));
+vi.mock('../../utils/audioUtils', () => ({
+    decode: vi.fn(),
+    playDecodedAudio: vi.fn(),
+}));
+
 describe('ChatApp', () => {
   const mockGenerateResponse = geminiService.generateResponse as vi.Mock;
+  const mockSpeechSettings = {
+    voice: 'Kore' as SystemVoice,
+    rate: 1.0,
+    pitch: 0,
+  };
 
   beforeEach(() => {
     // Reset mocks before each test
@@ -18,7 +33,8 @@ describe('ChatApp', () => {
 
   it('sends a user message and displays both the user and AI messages', async () => {
     mockGenerateResponse.mockResolvedValue('This is the AI response.');
-    render(<ChatApp />);
+    // FIX: Provide the required speechSettings prop.
+    render(<ChatApp speechSettings={mockSpeechSettings} />);
 
     const input = screen.getByPlaceholderText('Type your message...');
     const sendButton = screen.getByRole('button', { name: /send message/i });
@@ -49,7 +65,8 @@ describe('ChatApp', () => {
     });
     mockGenerateResponse.mockReturnValue(delayedPromise);
     
-    render(<ChatApp />);
+    // FIX: Provide the required speechSettings prop.
+    render(<ChatApp speechSettings={mockSpeechSettings} />);
 
     const input = screen.getByPlaceholderText('Type your message...');
     const sendButton = screen.getByRole('button', { name: /send message/i });

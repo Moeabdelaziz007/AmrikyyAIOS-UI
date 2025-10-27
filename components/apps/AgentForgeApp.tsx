@@ -3,6 +3,7 @@ import { CustomAgent, SkillID } from '../../types';
 import { skills } from '../../data/skills';
 import { AgentForgeIcon, SparklesIcon } from '../Icons';
 import { suggestAgentPersona } from '../../services/geminiAdvancedService';
+import ConfirmationDialog from '../ConfirmationDialog';
 
 interface AgentForgeAppProps {
     onAddAgent: (agent: CustomAgent) => void;
@@ -16,6 +17,7 @@ const AgentForgeApp: React.FC<AgentForgeAppProps> = ({ onAddAgent, onClose }) =>
     const [selectedSkills, setSelectedSkills] = useState<Set<SkillID>>(new Set());
     const [isDeployed, setIsDeployed] = useState(false);
     const [isSuggesting, setIsSuggesting] = useState(false);
+    const [isConfirmingDeploy, setIsConfirmingDeploy] = useState(false);
 
     const handleSkillToggle = (skillId: SkillID) => {
         setSelectedSkills(prev => {
@@ -61,6 +63,11 @@ const AgentForgeApp: React.FC<AgentForgeAppProps> = ({ onAddAgent, onClose }) =>
         }
     };
     
+    const requestDeploy = () => {
+        if (!name || !role) return;
+        setIsConfirmingDeploy(true);
+    };
+
     if (isDeployed) {
         return (
             <div className="h-full w-full flex flex-col items-center justify-center bg-bg-tertiary rounded-b-md text-white p-6 text-center animate-fade-in">
@@ -138,12 +145,20 @@ const AgentForgeApp: React.FC<AgentForgeAppProps> = ({ onAddAgent, onClose }) =>
                         </div>
                     </div>
                     <div className="mt-auto">
-                        <button onClick={handleDeploy} className="w-full px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:brightness-110 active:scale-95 transition-all disabled:opacity-50" disabled={!name || !role}>
+                        <button onClick={requestDeploy} className="w-full px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:brightness-110 active:scale-95 transition-all disabled:opacity-50" disabled={!name || !role}>
                             Deploy Agent
                         </button>
                     </div>
                 </aside>
             </div>
+            <ConfirmationDialog
+                isOpen={isConfirmingDeploy}
+                onClose={() => setIsConfirmingDeploy(false)}
+                onConfirm={handleDeploy}
+                title="Confirm Agent Deployment"
+                message={`Are you sure you want to deploy agent "${name}"? It will become available across the OS.`}
+                confirmText="Deploy"
+            />
         </div>
     );
 };

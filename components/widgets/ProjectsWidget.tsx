@@ -1,12 +1,11 @@
 import React from 'react';
 import { Project } from '../../types';
 
-const mockProjects: Project[] = [
-    { id: '1', name: 'AI Itinerary Service', description: 'Creating custom travel plans for clients.', status: 'Active', earnings: 1250 },
-    { id: '2', name: 'SEO Copywriting Gig', description: 'Writing SEO-optimized articles for tech blogs.', status: 'Active', earnings: 800 },
-];
+interface ProjectsWidgetProps {
+    projects: Project[];
+}
 
-const ProjectsWidget: React.FC = () => {
+const ProjectsWidget: React.FC<ProjectsWidgetProps> = ({ projects }) => {
     return (
         <div>
             <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
@@ -16,7 +15,7 @@ const ProjectsWidget: React.FC = () => {
                 </div>
             </div>
             <div className="space-y-3 p-4">
-                {mockProjects.map(project => (
+                {projects.map(project => (
                     <div key={project.id}>
                         <div className="flex justify-between items-center">
                             <p className="text-sm font-semibold">{project.name}</p>

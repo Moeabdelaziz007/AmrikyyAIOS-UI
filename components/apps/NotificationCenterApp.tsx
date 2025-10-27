@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNotification } from '../../contexts/NotificationContext';
 import { NotificationCenterIcon } from '../Icons';
 import { Notification } from '../../types';
+import ConfirmationDialog from '../ConfirmationDialog';
 
 const NotificationCenterApp: React.FC = () => {
     const { notifications, clearHistory } = useNotification();
+    const [isConfirmingClear, setIsConfirmingClear] = useState(false);
     
     const categoryStyles: Record<Notification['category'], {icon: string, color: string}> = {
         'System': { icon: 'settings', color: 'text-cyan-400' },
         'Agent': { icon: 'smart_toy', color: 'text-purple-400' },
         'App': { icon: 'apps', color: 'text-green-400' },
+    };
+
+    const handleConfirmClear = () => {
+        clearHistory();
+        setIsConfirmingClear(false);
     };
 
     return (
@@ -19,7 +26,7 @@ const NotificationCenterApp: React.FC = () => {
                     <NotificationCenterIcon className="w-8 h-8 text-primary-cyan"/>
                     <h1 className="font-display text-2xl font-bold">Notification Center</h1>
                 </div>
-                <button onClick={clearHistory} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                <button onClick={() => setIsConfirmingClear(true)} disabled={notifications.length === 0} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-50">
                     Clear All
                 </button>
             </header>
@@ -47,6 +54,13 @@ const NotificationCenterApp: React.FC = () => {
                     </div>
                 )}
             </main>
+            <ConfirmationDialog
+                isOpen={isConfirmingClear}
+                onClose={() => setIsConfirmingClear(false)}
+                onConfirm={handleConfirmClear}
+                title="Clear All Notifications"
+                message="Are you sure you want to permanently delete all notifications? This action cannot be undone."
+            />
         </div>
     );
 };

@@ -71,9 +71,13 @@ const Window = lazy(() => import('./components/Window'));
 const ProactiveSuggestionsWidget = lazy(() => import('./components/widgets/ProactiveSuggestionsWidget'));
 const WorkspaceHubWidget = lazy(() => import('./components/widgets/WorkspaceHubWidget'));
 const ViralFeedWidget = lazy(() => import('./components/widgets/ViralFeedWidget'));
+const QuickActionsWidget = lazy(() => import('./components/widgets/QuickActionsWidget'));
+// FIX: Add pricing app component lazy load, pointing to settings as a fallback.
+const PricingApp = lazy(() => import('./components/apps/SettingsApp'));
 
 
-const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
+// FIX: Use React.ComponentType which is a broader type and accepts FC and other component types, resolving assignment errors.
+const appComponents: Record<AppID, React.LazyExoticComponent<React.ComponentType<any>>> = {
   chat: ChatApp,
   terminal: TerminalApp,
   files: FilesApp,
@@ -126,6 +130,8 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   zara: AgentProfileApp,
   rex: AgentProfileApp,
   clio: AgentProfileApp,
+  // FIX: Add missing pricing app component.
+  pricing: PricingApp,
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -360,6 +366,8 @@ const App: React.FC = () => {
     devToolkit: t('app_titles.devToolkit'),
     growthHub: t('app_titles.growthHub'),
     resourceHub: t('app_titles.resourceHub'),
+    // FIX: Add pricing title
+    pricing: 'Pricing & Plans',
   }), [t]);
 
   const addCustomAgent = useCallback((agent: CustomAgent | CommunityAgent) => {
@@ -505,10 +513,11 @@ const App: React.FC = () => {
     { id: 'workflow', name: t('desktop_apps.workflow'), icon: WorkflowIcon },
     { id: 'agentForge', name: t('desktop_apps.agentForge'), icon: AgentForgeIcon },
     { id: 'chronoVault', name: t('desktop_apps.chronoVault'), icon: ChronoVaultIcon },
+    // FIX: Update custom agent icon function to accept className prop.
     ...customAgents.map(agent => ({
         id: agent.id as AppID,
         name: agent.name,
-        icon: agent.avatarVisual ? () => <img src={`/avatars/${agent.avatarVisual}.png`} alt={agent.name} className="w-full h-full object-cover" /> : () => <span className="text-4xl">{agent.icon}</span>
+        icon: agent.avatarVisual ? ({ className }: {className?: string}) => <img src={`/avatars/${agent.avatarVisual}.png`} alt={agent.name} className={`w-full h-full object-cover ${className ?? ''}`} /> : ({ className }: {className?: string}) => <span className={`text-4xl ${className ?? ''}`}>{agent.icon}</span>
     }))
   ], [customAgents, t]);
 
@@ -536,10 +545,11 @@ const App: React.FC = () => {
     { id: 'devToolkit', name: t('app_launcher.devToolkit'), icon: DevToolkitIcon },
     { id: 'growthHub', name: t('app_launcher.growthHub'), icon: GrowthHubIcon },
     { id: 'resourceHub', name: t('app_launcher.resourceHub'), icon: ResourceHubIcon },
+    // FIX: Update custom agent icon function to accept className prop.
     ...customAgents.map(agent => ({
         id: agent.id as AppID,
         name: agent.name,
-        icon: () => <span className="text-2xl">{agent.icon}</span>
+        icon: ({ className }: { className?: string }) => <span className={`text-2xl ${className ?? ''}`}>{agent.icon}</span>
     }))
   ], [customAgents, t]);
 
@@ -550,7 +560,7 @@ const App: React.FC = () => {
           <>
             <Suspense fallback={null}><WorkspaceHubWidget isConnected={isSignedIn} events={calendarEvents} files={driveFiles} messages={gmailMessages} /></Suspense>
             <Suspense fallback={null}><ProactiveSuggestionsWidget onOpenApp={openWindow} /></Suspense>
-            <Suspense fallback={null}><ProjectsWidget projects={projects} onOpenApp={openWindow} /></Suspense>
+            <Suspense fallback={null}><ProjectsWidget projects={projects} /></Suspense>
             <Suspense fallback={null}><TasksWidget tasks={tasks.filter(t => !t.completed)} /></Suspense>
           </>
         );
@@ -566,6 +576,7 @@ const App: React.FC = () => {
       default:
         return (
           <>
+            <Suspense fallback={null}><QuickActionsWidget onOpenApp={openWindow} /></Suspense>
             <Suspense fallback={null}><ViralFeedWidget posts={viralPosts} /></Suspense>
             <WorkflowDashboardWidget onOpenApp={openWindow} />
             <TrendingWidget />
