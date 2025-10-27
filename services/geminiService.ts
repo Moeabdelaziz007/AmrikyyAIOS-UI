@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, GenerateContentResponse, Content } from "@google/genai";
 
 const API_KEY = process.env.API_KEY;
@@ -8,20 +9,17 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-// FIX: Updated history parameter to use Content type from @google/genai.
 export const generateResponse = async (prompt: string, history: Content[]): Promise<string> => {
   if (!API_KEY) {
-    // Simulate a delay and return a mock response if API key is not available
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    return "This is a simulated response. To connect to Gemini, please provide an API key. I am Amrikyy AI, ready to assist with your travel intelligence needs.";
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return "This is a simulated response. To connect to Gemini, please provide an API key. I am Maya, ready to assist with your travel intelligence needs.";
   }
 
   try {
-    // FIX: Switched from `ai.chats.create` to the recommended `ai.models.generateContent` API for handling chat.
     const contents: Content[] = [...history, { role: 'user', parts: [{ text: prompt }] }];
 
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+      model: 'gemini-flash-lite-latest',
       contents: contents,
       config: {
         systemInstruction: "You are Maya, a helpful AI assistant for the Amrikyy AI OS, specializing in travel intelligence. Be friendly, helpful, and concise.",

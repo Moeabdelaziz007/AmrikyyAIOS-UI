@@ -1,12 +1,14 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../../types';
 import { SearchIcon, SparklesIcon } from '../Icons';
-// import { groundedSearch } from '../../services/geminiAdvancedService';
+import { groundedSearch } from '../../services/geminiAdvancedService';
 
 const SearchApp: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [thinkingMode, setThinkingMode] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
   
     const scrollToBottom = () => {
@@ -18,25 +20,14 @@ const SearchApp: React.FC = () => {
     const handleSend = async () => {
         if (input.trim() === '' || isLoading) return;
     
-        const userMessage: Message = { sender: 'user', text: input };
+        const userMessage: Message = { id: `user-${Date.now()}`, sender: 'user', text: input };
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
 
-        // const { text, sources } = await groundedSearch(input);
-        // const aiMessage: Message = { sender: 'ai', text, sources };
+        const { text, sources } = await groundedSearch(input, thinkingMode);
+        const aiMessage: Message = { id: `ai-${Date.now()}`, sender: 'ai', text, sources };
         
-        // Mock response
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const aiMessage: Message = {
-            sender: 'ai',
-            text: "The Paris Olympics in 2024 featured many incredible athletes. While final medal counts can vary by source, one of the top performers for bronze medals was athlete Jane Doe in gymnastics, securing three bronze medals.",
-            sources: [
-                { title: "Official Olympics Website - Paris 2024 Medal Count", uri: "https://olympics.com/paris-2024" },
-                { title: "Sports Illustrated - Gymnastics Results", uri: "https://si.com/olympics" },
-            ]
-        };
-
         setMessages(prev => [...prev, aiMessage]);
         setIsLoading(false);
     };
@@ -51,15 +42,15 @@ const SearchApp: React.FC = () => {
                     <p>Ask me anything. I'm connected to Google for up-to-date information.</p>
                 </div>
             )}
-            {messages.map((msg, index) => (
-            <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {messages.map((msg) => (
+            <div key={msg.id} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.sender === 'ai' && (
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center">
                     <SparklesIcon className="h-6 w-6 text-white" />
                 </div>
                 )}
                 <div className={`max-w-[80%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-primary-blue text-white' : 'bg-bg-secondary text-text-primary'}`}>
-                    <p className="text-sm">{msg.text}</p>
+                    <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                     {msg.sources && msg.sources.length > 0 && (
                         <div className="mt-3 border-t border-white/10 pt-2">
                             <h3 className="text-xs font-bold mb-1 text-text-secondary">Sources:</h3>
@@ -94,6 +85,20 @@ const SearchApp: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
         <div className="p-4 border-t border-white/10">
+            <div className="flex items-center gap-2 mb-2">
+                <label htmlFor="thinking-mode" className="flex items-center cursor-pointer text-sm text-text-secondary">
+                    <input 
+                        type="checkbox" 
+                        id="thinking-mode" 
+                        checked={thinkingMode} 
+                        onChange={(e) => setThinkingMode(e.target.checked)}
+                        className="sr-only peer"
+                    />
+                    <div className="relative w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-purple"></div>
+                    <span className="ml-2">Thinking Mode</span>
+                </label>
+                <span className="text-xs text-text-muted">(For complex queries)</span>
+            </div>
             <div className="relative">
                 <input
                 type="text"

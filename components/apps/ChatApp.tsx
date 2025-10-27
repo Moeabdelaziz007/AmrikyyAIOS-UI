@@ -2,15 +2,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../../types';
 import { generateResponse } from '../../services/geminiService';
-import { SendIcon, SparklesIcon } from '../Icons';
+import { generateSpeech } from '../../services/geminiAdvancedService';
+import { playDecodedAudio, decode } from '../../utils/audioUtils';
+import { SendIcon, SparklesIcon, SpeakerIcon } from '../Icons';
+
+type AudioState = 'idle' | 'loading' | 'playing';
 
 const ChatApp: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { sender: 'ai', text: "Hello! I'm Maya, your AI travel assistant. How can I help you plan your next adventure today?" }
+    { id: 'initial-1', sender: 'ai', text: "Hello! I'm Maya, your AI travel assistant. How can I help you plan your next adventure today?" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [audioState, setAudioState] = useState<Record<string, AudioState>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+      // FIX: Use webkitAudioContext for Safari compatibility.
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      return () => {
+          audioContextRef.current?.close();
+      }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -21,7 +35,7 @@ const ChatApp: React.FC = () => {
   const handleSend = async () => {
     if (input.trim() === '' || isLoading) return;
 
-    const userMessage: Message = { sender: 'user', text: input };
+    const userMessage: Message = { id: `user-${Date.now()}`, sender: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -31,14 +45,29 @@ const ChatApp: React.FC = () => {
         parts: [{ text: msg.text }]
     }));
     
-    // FIX: Removed redundant addition of the current user message to the chat history.
-    // The `generateResponse` service is now responsible for appending the current prompt.
-
     const aiResponseText = await generateResponse(input, chatHistory);
-    const aiMessage: Message = { sender: 'ai', text: aiResponseText };
+    const aiMessage: Message = { id: `ai-${Date.now()}`, sender: 'ai', text: aiResponseText };
     
     setMessages(prev => [...prev, aiMessage]);
     setIsLoading(false);
+  };
+
+  const handlePlayAudio = async (message: Message) => {
+    if (!audioContextRef.current) return;
+    if (audioState[message.id] === 'loading' || audioState[message.id] === 'playing') return;
+
+    setAudioState(prev => ({ ...prev, [message.id]: 'loading' }));
+    try {
+        const base64Audio = await generateSpeech(message.text);
+        if (base64Audio) {
+            setAudioState(prev => ({ ...prev, [message.id]: 'playing' }));
+            await playDecodedAudio(decode(base64Audio), audioContextRef.current);
+        }
+    } catch (error) {
+        console.error("Failed to play audio", error);
+    } finally {
+        setAudioState(prev => ({ ...prev, [message.id]: 'idle' }));
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -55,15 +84,29 @@ const ChatApp: React.FC = () => {
         aria-busy={isLoading}
         className="flex-grow p-4 overflow-y-auto space-y-4"
       >
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.sender === 'ai' && (
               <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-primary-purple flex items-center justify-center">
                   <SparklesIcon className="h-6 w-6 text-white" />
               </div>
             )}
-            <div className={`max-w-[70%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-primary-blue to-primary-purple text-white rounded-br-none' : 'bg-bg-secondary text-text-primary rounded-bl-none'}`}>
+            <div className={`group relative max-w-[70%] p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-primary-blue to-primary-purple text-white rounded-br-none' : 'bg-bg-secondary text-text-primary rounded-bl-none'}`}>
               <p className="text-sm">{msg.text}</p>
+              {msg.sender === 'ai' && (
+                <button 
+                  onClick={() => handlePlayAudio(msg)}
+                  disabled={audioState[msg.id] === 'loading' || audioState[msg.id] === 'playing'}
+                  className="absolute -bottom-2 -right-2 h-6 w-6 bg-bg-tertiary rounded-full border border-border-color flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Read message aloud"
+                >
+                    {audioState[msg.id] === 'loading' ? (
+                        <div className="w-3 h-3 border-2 border-text-muted border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                        <SpeakerIcon className={`h-4 w-4 ${audioState[msg.id] === 'playing' ? 'text-accent' : 'text-text-muted'}`} />
+                    )}
+                </button>
+              )}
             </div>
           </div>
         ))}

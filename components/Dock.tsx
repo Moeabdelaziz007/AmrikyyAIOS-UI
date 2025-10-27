@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -25,8 +26,10 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   scout: ScoutIcon,
   maya: MayaIcon,
   workflow: WorkflowIcon,
-  // FIX: Add missing 'travelPlanViewer' icon to satisfy the Record<AppID, ...> type.
   travelPlanViewer: TripIcon,
+  transcriber: MicrophoneIcon,
+  videoAnalyzer: VideoAnalyzeIcon,
+  jules: JulesIcon,
 };
 
 const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
@@ -47,16 +50,14 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
   const apps: { id: AppID; name: string; }[] = [
       { id: 'chat', name: 'Chat' },
       { id: 'workflow', name: 'Workflow Studio'},
-      { id: 'luna', name: 'Luna' },
-      { id: 'karim', name: 'Karim' },
-      { id: 'scout', name: 'Scout' },
-      { id: 'maya', name: 'Maya' },
       { id: 'search', name: 'Search' },
       { id: 'maps', name: 'Maps' },
       { id: 'image', name: 'Image Gen' },
       { id: 'video', name: 'Video Gen' },
+      { id: 'transcriber', name: 'Transcriber' },
+      { id: 'videoAnalyzer', name: 'Video Analyzer' },
+      { id: 'jules', name: 'Jules' },
       { id: 'files', name: 'Files' },
-      { id: 'terminal', name: 'Terminal' },
       { id: 'settings', name: 'Settings' },
   ];
 

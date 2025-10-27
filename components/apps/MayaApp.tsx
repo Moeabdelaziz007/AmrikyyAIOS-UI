@@ -14,6 +14,7 @@ const mayaAgent: Agent = {
   subAgents: ['gemini-pro'],
 };
 
+// FIX: Added missing SubAgentID keys to satisfy the Record type.
 const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
     'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
     'gemini-flash-image': { name: 'Nano Banana', icon: subAgentIcons['gemini-flash-image'] },
@@ -22,6 +23,8 @@ const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{classNa
     'google-maps': { name: 'Google Maps', icon: subAgentIcons['google-maps'] },
     'google-flights': { name: 'Google Flights', icon: subAgentIcons['google-flights'] },
     'youtube': { name: 'YouTube', icon: subAgentIcons['youtube'] },
+    'gemini-flash-lite': { name: 'Gemini Flash Lite', icon: subAgentIcons['gemini-flash-lite'] },
+    'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
 };
 
 

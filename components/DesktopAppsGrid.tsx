@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AppID } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon } from './Icons';
 
 interface DesktopAppsGridProps {
     onOpen: (appId: AppID) => void;
@@ -12,12 +12,11 @@ const apps: { id: AppID; name: string; icon: React.FC<{ className: string }>; co
     { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon, color: 'from-purple-500 to-primary-purple', glowColor: '#8B5CF6' },
     { id: 'search', name: 'AI Search', icon: SearchIcon, color: 'from-sky-500 to-cyan-400', glowColor: '#06B6D4'},
     { id: 'maps', name: 'AI Maps', icon: MapIcon, color: 'from-teal-500 to-emerald-500', glowColor: '#10B981'},
-    { id: 'luna', name: 'Agent Luna', icon: LunaIcon, color: 'from-blue-500 to-cyan-400', glowColor: '#06B6D4' },
-    { id: 'karim', name: 'Agent Karim', icon: KarimIcon, color: 'from-yellow-500 to-orange-400', glowColor: '#FBBF24' },
-    { id: 'scout', name: 'Agent Scout', icon: ScoutIcon, color: 'from-purple-500 to-indigo-400', glowColor: '#8B5CF6' },
-    { id: 'maya', name: 'Agent Maya', icon: MayaIcon, color: 'from-pink-500 to-rose-400', glowColor: '#EC4899' },
+    { id: 'transcriber', name: 'Transcriber', icon: MicrophoneIcon, color: 'from-fuchsia-500 to-pink-500', glowColor: '#D946EF' },
+    { id: 'videoAnalyzer', name: 'Video Analyzer', icon: VideoAnalyzeIcon, color: 'from-indigo-500 to-violet-500', glowColor: '#6D28D9' },
     { id: 'image', name: 'Image Gen', icon: ImageIcon, color: 'from-pink-500 to-primary-pink', glowColor: '#EC4899'},
     { id: 'video', name: 'Video Gen', icon: VideoIcon, color: 'from-rose-500 to-red-500', glowColor: '#EF4444'},
+    { id: 'jules', name: 'Agent Jules', icon: JulesIcon, color: 'from-green-500 to-emerald-500', glowColor: '#10B981' },
     { id: 'files', name: 'Files', icon: FileIcon, color: 'from-yellow-500 to-amber-500', glowColor: '#F59E0B'},
     { id: 'settings', name: 'Settings', icon: SettingsIcon, color: 'from-gray-500 to-slate-500', glowColor: '#6B7280' },
     { id: 'terminal', name: 'Terminal', icon: TerminalIcon, color: 'from-gray-800 to-black', glowColor: '#374151'},

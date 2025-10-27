@@ -1,8 +1,7 @@
 
-// FIX: Import React to provide types for React.FC.
 import React from 'react';
 
-export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 'workflow' | 'travelPlanViewer';
+export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 'workflow' | 'travelPlanViewer' | 'transcriber' | 'videoAnalyzer' | 'jules';
 
 export interface TravelPlan {
   destination: string;
@@ -36,12 +35,13 @@ export interface WindowInstance {
 }
 
 export interface Message {
+  id: string;
   sender: 'user' | 'ai';
   text: string;
   sources?: {title: string, uri: string}[];
 }
 
-export type SubAgentID = 'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 'google-flights' | 'youtube';
+export type SubAgentID = 'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts';
 
 export interface SubAgent {
     id: SubAgentID;

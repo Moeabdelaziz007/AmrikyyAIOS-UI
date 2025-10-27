@@ -14,6 +14,7 @@ const scoutAgent: Agent = {
   subAgents: ['google-search'],
 };
 
+// FIX: Added missing SubAgentID keys to satisfy the Record type.
 const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
     'google-search': { name: 'Google Search', icon: subAgentIcons['google-search'] },
     'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
@@ -22,6 +23,8 @@ const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{classNa
     'google-maps': { name: 'Google Maps', icon: subAgentIcons['google-maps'] },
     'google-flights': { name: 'Google Flights', icon: subAgentIcons['google-flights'] },
     'youtube': { name: 'YouTube', icon: subAgentIcons['youtube'] },
+    'gemini-flash-lite': { name: 'Gemini Flash Lite', icon: subAgentIcons['gemini-flash-lite'] },
+    'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
 };
 
 const ScoutApp: React.FC = () => {

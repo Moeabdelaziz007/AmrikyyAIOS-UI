@@ -24,6 +24,9 @@ const ScoutApp = lazy(() => import('./components/apps/ScoutApp'));
 const MayaApp = lazy(() => import('./components/apps/MayaApp'));
 const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp'));
 const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
+const TranscriberApp = lazy(() => import('./components/apps/TranscriberApp'));
+const VideoAnalyzerApp = lazy(() => import('./components/apps/VideoAnalyzerApp'));
+const JulesApp = lazy(() => import('./components/apps/JulesApp'));
 
 const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   chat: ChatApp,
@@ -41,6 +44,9 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   maya: MayaApp,
   workflow: WorkflowStudioApp,
   travelPlanViewer: TravelPlanViewerApp,
+  transcriber: TranscriberApp,
+  videoAnalyzer: VideoAnalyzerApp,
+  jules: JulesApp,
 };
 
 const appTitles: Record<AppID, string> = {
@@ -59,6 +65,9 @@ const appTitles: Record<AppID, string> = {
   maya: 'Agent: Maya',
   workflow: 'Workflow Studio',
   travelPlanViewer: 'AI Travel Plan',
+  transcriber: 'Audio Transcriber',
+  videoAnalyzer: 'Video Analyzer',
+  jules: 'Agent: Jules',
 };
 
 const AppLoadingSpinner: React.FC = () => (

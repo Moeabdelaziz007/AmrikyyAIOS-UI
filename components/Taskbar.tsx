@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppID, WindowInstance } from '../types';
-// FIX: Import missing icons to satisfy the Record<AppID, ...> type.
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -11,7 +11,6 @@ interface TaskbarProps {
   activeWindowId: number | null;
 }
 
-// FIX: Add missing icons for 'image', 'video', 'search', 'maps', and 'workflow' to satisfy the Record<AppID, ...> type.
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
   trips: TripIcon,
@@ -27,8 +26,10 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   scout: ScoutIcon,
   maya: MayaIcon,
   workflow: WorkflowIcon,
-  // FIX: Add missing 'travelPlanViewer' icon to satisfy the Record<AppID, ...> type.
   travelPlanViewer: TripIcon,
+  transcriber: MicrophoneIcon,
+  videoAnalyzer: VideoAnalyzeIcon,
+  jules: JulesIcon,
 };
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
@@ -59,6 +60,7 @@ const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFoc
       { id: 'karim', name: 'Karim' },
       { id: 'scout', name: 'Scout' },
       { id: 'maya', name: 'Maya' },
+      { id: 'jules', name: 'Jules'},
       { id: 'trips', name: 'Trips' },
       { id: 'terminal', name: 'Terminal' },
   ];

@@ -4,17 +4,16 @@ import { Agent, SubAgentID } from '../../types';
 import HologramCard from '../HologramCard';
 import { subAgentIcons } from '../Icons';
 
-const karimAgent: Agent = {
-  name: 'Karim', 
-  role: 'Budget Optimizer', 
-  icon: '💰', 
-  tasks: 32, 
-  color: 'from-yellow-500 to-orange-400',
-  hologram: { color: 'text-yellow-400', glow: '#FBBF24', task: 'Optimizing Tokyo budget...' },
-  subAgents: ['gemini-pro', 'google-search'],
+const julesAgent: Agent = {
+  name: 'Jules', 
+  role: 'AI Coding Agent', 
+  icon: '💻', 
+  tasks: 18, 
+  color: 'from-green-500 to-emerald-400',
+  hologram: { color: 'text-green-400', glow: '#34D399', task: 'Refactoring React component...' },
+  subAgents: ['gemini-pro'],
 };
 
-// FIX: Added missing SubAgentID keys to satisfy the Record type.
 const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
     'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
     'google-search': { name: 'Google Search', icon: subAgentIcons['google-search'] },
@@ -27,23 +26,23 @@ const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{classNa
     'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
 };
 
-const KarimApp: React.FC = () => {
+const JulesApp: React.FC = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-bg-tertiary rounded-b-md text-white p-6 gap-6 overflow-y-auto">
         <div className="max-w-md w-full">
-            <HologramCard agent={karimAgent} />
+            <HologramCard agent={julesAgent} />
         </div>
         <div className="text-center max-w-md">
-            <h1 className="font-display text-3xl font-bold">{karimAgent.name}</h1>
-            <p className="text-yellow-400 font-semibold">{karimAgent.role}</p>
+            <h1 className="font-display text-3xl font-bold">{julesAgent.name}</h1>
+            <p className="text-green-400 font-semibold">{julesAgent.role}</p>
             <p className="text-text-secondary mt-2">
-                Karim is your financial expert. He analyzes expenses, optimizes your travel budget, and ensures you get the most value out of every dollar spent on your trip.
+                Jules is your expert coding assistant. He can write code, debug issues, explain complex algorithms, and help you build amazing software faster.
             </p>
         </div>
         <div className="max-w-md w-full mt-4">
             <h2 className="text-xl font-bold font-display text-center mb-3">Core Tools</h2>
             <div className="flex justify-center gap-4 p-4 bg-black/20 rounded-lg border border-white/10">
-                {karimAgent.subAgents.map(id => {
+                {julesAgent.subAgents.map(id => {
                     const subAgent = subAgentDetails[id];
                     const Icon = subAgent.icon;
                     return (
@@ -59,4 +58,4 @@ const KarimApp: React.FC = () => {
   );
 };
 
-export default KarimApp;
+export default JulesApp;

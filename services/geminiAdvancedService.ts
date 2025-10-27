@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, GenerateContentResponse, Content, Type } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse, Content, Type, Modality } from "@google/genai";
 
 const API_KEY = process.env.API_KEY;
 
@@ -9,48 +9,25 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-// Placeholder for Image Generation
-export const generateImage = async (prompt: string): Promise<string> => {
-    if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        return 'https://images.unsplash.com/photo-1682687220208-22d715869648?q=80&w=2070&auto=format&fit=crop';
-    }
-    // Real implementation would use:
-    // const response = await ai.models.generateImages({ model: 'imagen-4.0-generate-001', prompt });
-    // return `data:image/png;base64,${response.generatedImages[0].image.imageBytes}`;
-    console.log("Image generation called with prompt:", prompt);
-    return 'https://images.unsplash.com/photo-1682687220208-22d715869648?q=80&w=2070&auto=format&fit=crop';
-};
-
-// Placeholder for Video Generation
-export const generateVideo = async (prompt: string): Promise<string> => {
-    if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        return 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4';
-    }
-    // Real implementation would use Veo model and handle long-running operations
-    console.log("Video generation called with prompt:", prompt);
-    return 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4';
-};
-
-
 // Grounded Search with Google
-export const groundedSearch = async (prompt: string): Promise<{ text: string, sources: {title: string, uri: string}[] }> => {
+export const groundedSearch = async (prompt: string, thinkingMode: boolean): Promise<{ text: string, sources: {title: string, uri: string}[] }> => {
     if (!API_KEY) {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        return {
-            text: "This is a simulated search response. To connect to Gemini, please provide an API key.",
-            sources: []
-        };
+        return { text: "This is a simulated search response. To connect to Gemini, please provide an API key.", sources: [] };
+    }
+
+    const modelName = thinkingMode ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
+    const config: any = { tools: [{googleSearch: {}}] };
+
+    if (thinkingMode) {
+        config.thinkingConfig = { thinkingBudget: 32768 };
     }
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: modelName,
             contents: prompt,
-            config: {
-                tools: [{googleSearch: {}}],
-            },
+            config: config,
         });
         
         const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
@@ -65,6 +42,69 @@ export const groundedSearch = async (prompt: string): Promise<{ text: string, so
     }
 };
 
+// Text-to-Speech
+export const generateSpeech = async (text: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return ''; // Return empty string for mock
+    }
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash-preview-tts",
+            contents: [{ parts: [{ text: `Say with a friendly and clear tone: ${text}` }] }],
+            config: {
+                responseModalities: [Modality.AUDIO],
+                speechConfig: {
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
+                },
+            },
+        });
+        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        return base64Audio || '';
+    } catch (error) {
+        console.error("Error generating speech:", error);
+        return '';
+    }
+};
+
+// Audio Transcription
+export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return "This is a mock transcription of your audio.";
+    }
+    try {
+        const audioPart = { inlineData: { mimeType, data: audioBase64 } };
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: { parts: [audioPart, { text: "Transcribe this audio." }] },
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error transcribing audio:", error);
+        return "Failed to transcribe audio.";
+    }
+};
+
+// Video Analysis
+export const analyzeVideo = async (videoBase64: string, mimeType: string, prompt: string): Promise<string> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return "This is a mock analysis of the video content. The main subject appears to be a bunny in a forest.";
+    }
+    try {
+        const videoPart = { inlineData: { mimeType, data: videoBase64 } };
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-pro',
+            contents: { parts: [videoPart, { text: prompt }] },
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error analyzing video:", error);
+        return "Failed to analyze video.";
+    }
+};
+
 
 // Maps Search
 export const mapsSearch = async (prompt: string, location: {latitude: number, longitude: number}): Promise<{ text: string }> => {
@@ -72,7 +112,6 @@ export const mapsSearch = async (prompt: string, location: {latitude: number, lo
         await new Promise(resolve => setTimeout(resolve, 1500));
         return { text: "This is a simulated maps response. To connect to Gemini, please provide an API key." };
     }
-
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -98,7 +137,7 @@ export const mapsSearch = async (prompt: string, location: {latitude: number, lo
 
 export const generateTravelPlan = async (tripDetails: { destination: string, startDate: string, endDate: string, budget: string }): Promise<any> => {
     if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate a faster mock response
+        await new Promise(resolve => setTimeout(resolve, 1000));
         return {
             destination: tripDetails.destination,
             tripTitle: `An Amazing Mock Adventure in ${tripDetails.destination}`,
@@ -118,7 +157,6 @@ export const generateTravelPlan = async (tripDetails: { destination: string, sta
             ]
         };
     }
-
     try {
         const prompt = `Create a detailed travel plan for a trip to ${tripDetails.destination} from ${tripDetails.startDate} to ${tripDetails.endDate} with a budget of $${tripDetails.budget}. The plan should include a creative trip title, a day-by-day itinerary with specific activities, a detailed budget breakdown into categories, and a list of useful web links and potential deals.`;
         
@@ -128,49 +166,31 @@ export const generateTravelPlan = async (tripDetails: { destination: string, sta
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        destination: { type: Type.STRING },
-                        tripTitle: { type: Type.STRING },
+                    type: Type.OBJECT, properties: {
+                        destination: { type: Type.STRING }, tripTitle: { type: Type.STRING },
                         itinerary: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    day: { type: Type.INTEGER },
-                                    title: { type: Type.STRING },
-                                    activities: { type: Type.ARRAY, items: { type: Type.STRING } }
+                            type: Type.ARRAY, items: {
+                                type: Type.OBJECT, properties: {
+                                    day: { type: Type.INTEGER }, title: { type: Type.STRING }, activities: { type: Type.ARRAY, items: { type: Type.STRING } }
                                 }
                             }
                         },
                         budget: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    category: { type: Type.STRING },
-                                    cost: { type: Type.NUMBER }
-                                }
+                            type: Type.ARRAY, items: {
+                                type: Type.OBJECT, properties: { category: { type: Type.STRING }, cost: { type: Type.NUMBER } }
                             }
                         },
                         dealsAndLinks: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    title: { type: Type.STRING },
-                                    url: { type: Type.STRING }
-                                }
+                            type: Type.ARRAY, items: {
+                                type: Type.OBJECT, properties: { title: { type: Type.STRING }, url: { type: Type.STRING } }
                             }
                         }
                     }
                 },
             },
         });
-        
         const jsonText = response.text.trim();
         return JSON.parse(jsonText);
-
     } catch (error) {
         console.error("Error generating travel plan:", error);
         throw new Error("Failed to generate travel plan from AI.");
