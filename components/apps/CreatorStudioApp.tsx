@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-import { Project, Message } from '../../types';
-import { CreatorStudioIcon, AtlasIcon, SendIcon } from '../Icons';
+import { Project, Message, SharedContent } from '../../types';
+import { CreatorStudioIcon, SendIcon } from '../Icons';
 import { Content } from '@google/genai';
 import { generateResponse } from '../../services/geminiService';
+import { agents } from '../../data/agents';
 
 type Tab = 'dashboard' | 'ai_assistant' | 'new_project';
 
-const initialProjects: Project[] = [
-    { id: '1', name: 'AI Itinerary Service', description: 'Creating custom travel plans for clients.', status: 'Active', earnings: 1250 },
-    { id: '2', name: 'SEO Copywriting Gig', description: 'Writing SEO-optimized articles for tech blogs.', status: 'Active', earnings: 800 },
-    { id: '3', name: 'Social Media Management', description: 'Managing social accounts for small businesses.', status: 'Paused', earnings: 450 },
-];
+const atlasAgent = agents.find(a => a.id === 'atlas');
 
-const CreatorStudioApp: React.FC = () => {
+interface CreatorStudioAppProps {
+    projects: Project[];
+    onAddProject: (project: Project) => void;
+    onShare: (content: SharedContent) => void;
+}
+
+const CreatorStudioApp: React.FC<CreatorStudioAppProps> = ({ projects, onAddProject, onShare }) => {
     const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-    const [projects, setProjects] = useState<Project[]>(initialProjects);
 
     return (
         <div className="h-full w-full flex flex-col bg-bg-tertiary rounded-b-md text-white overflow-hidden">
@@ -30,9 +32,9 @@ const CreatorStudioApp: React.FC = () => {
                 </nav>
             </header>
             <main className="flex-grow overflow-y-auto p-4 sm:p-6">
-                {activeTab === 'dashboard' && <DashboardView projects={projects} />}
+                {activeTab === 'dashboard' && <DashboardView projects={projects} onShare={onShare} />}
                 {activeTab === 'ai_assistant' && <AIAssistantView />}
-                {activeTab === 'new_project' && <NewProjectView setProjects={setProjects} setActiveTab={setActiveTab} />}
+                {activeTab === 'new_project' && <NewProjectView onAddProject={onAddProject} setActiveTab={setActiveTab} />}
             </main>
         </div>
     );
@@ -47,7 +49,7 @@ const TabButton: React.FC<{id: Tab, activeTab: Tab, setActiveTab: (tab: Tab) => 
     </button>
 );
 
-const DashboardView: React.FC<{ projects: Project[] }> = ({ projects }) => {
+const DashboardView: React.FC<{ projects: Project[], onShare: (content: SharedContent) => void }> = ({ projects, onShare }) => {
     const totalEarnings = projects.reduce((sum, p) => sum + p.earnings, 0);
     const activeProjects = projects.filter(p => p.status === 'Active').length;
 
@@ -60,6 +62,15 @@ const DashboardView: React.FC<{ projects: Project[] }> = ({ projects }) => {
     // Mock data for the chart
     const earningsData = [150, 400, 300, 800, 750, 1250, 1500];
     const maxEarning = Math.max(...earningsData, 1);
+
+    const handleShare = (project: Project) => {
+        onShare({
+            type: 'project',
+            title: project.name,
+            subtitle: project.description,
+            cta: "Check Out My New Project"
+        });
+    };
 
     return (
         <div className="space-y-6">
@@ -102,6 +113,9 @@ const DashboardView: React.FC<{ projects: Project[] }> = ({ projects }) => {
                                 <span className={`px-2 py-0.5 text-xs font-semibold rounded-full flex items-center gap-1.5 ${statusColors[p.status]}`}>
                                     {p.status}
                                 </span>
+                                <button onClick={() => handleShare(p)} className="p-1.5 rounded-full bg-white/5 hover:bg-white/10" aria-label={`Share ${p.name}`}>
+                                    <span className="material-symbols-outlined text-base">share</span>
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -113,7 +127,7 @@ const DashboardView: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
 const AIAssistantView: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
-        { id: '1', sender: 'ai', text: 'Hello! I am Atlas, your business and monetization strategist. How can I help you grow your venture today?' }
+        { id: '1', sender: 'ai', text: `Hello! I am ${atlasAgent?.name}, your business and monetization strategist. How can I help you grow your venture today?` }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -138,7 +152,7 @@ const AIAssistantView: React.FC = () => {
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
                  {messages.map((msg) => (
                     <div key={msg.id} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.sender === 'ai' && <div className="flex-shrink-0 h-10 w-10 rounded-full bg-stone-600 flex items-center justify-center"><AtlasIcon className="h-6 w-6 text-white"/></div>}
+                        {msg.sender === 'ai' && <div className="flex-shrink-0 h-10 w-10 rounded-full bg-stone-600 flex items-center justify-center text-2xl">{atlasAgent?.icon}</div>}
                         <div className={`max-w-[80%] p-3 rounded-lg ${msg.sender === 'user' ? 'bg-accent text-white' : 'bg-bg-tertiary'}`}>
                             <p className="text-sm">{msg.text}</p>
                         </div>
@@ -156,7 +170,7 @@ const AIAssistantView: React.FC = () => {
     );
 };
 
-const NewProjectView: React.FC<{ setProjects: React.Dispatch<React.SetStateAction<Project[]>>, setActiveTab: (tab: Tab) => void }> = ({ setProjects, setActiveTab }) => {
+const NewProjectView: React.FC<{ onAddProject: (p: Project) => void, setActiveTab: (tab: Tab) => void }> = ({ onAddProject, setActiveTab }) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -171,7 +185,7 @@ const NewProjectView: React.FC<{ setProjects: React.Dispatch<React.SetStateActio
             status: 'Active',
             earnings: 0,
         };
-        setProjects(prev => [newProject, ...prev]);
+        onAddProject(newProject);
         setActiveTab('dashboard');
     };
 

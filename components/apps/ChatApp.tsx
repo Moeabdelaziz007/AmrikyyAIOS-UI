@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Message } from '../../types';
+import { Message, SystemVoice } from '../../types';
 import { generateResponse } from '../../services/geminiService';
 import { generateSpeech } from '../../services/geminiAdvancedService';
 import { playDecodedAudio, decode } from '../../utils/audioUtils';
@@ -8,7 +8,15 @@ import { Content } from '@google/genai';
 
 type AudioState = 'idle' | 'loading' | 'playing';
 
-const ChatApp: React.FC = () => {
+interface ChatAppProps {
+  speechSettings: {
+    voice: SystemVoice;
+    rate: number;
+    pitch: number;
+  };
+}
+
+const ChatApp: React.FC<ChatAppProps> = ({ speechSettings }) => {
   const [messages, setMessages] = useState<Message[]>([
     { id: 'initial-1', sender: 'ai', text: "Hello! I'm Maya, your AI travel assistant. How can I help you plan your next adventure today?" }
   ]);
@@ -17,12 +25,14 @@ const ChatApp: React.FC = () => {
   const [audioState, setAudioState] = useState<Record<string, AudioState>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-      // Create audio context on first user interaction if not already created
-      return () => {
-          audioContextRef.current?.close();
-      }
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+      audioContextRef.current?.close();
+    };
   }, []);
   
   const initAudioContext = () => {
@@ -69,15 +79,18 @@ const ChatApp: React.FC = () => {
 
     setAudioState(prev => ({ ...prev, [message.id]: 'loading' }));
     try {
-        const base64Audio = await generateSpeech(message.text);
-        if (base64Audio) {
+        const { voice, rate, pitch } = speechSettings;
+        const base64Audio = await generateSpeech(message.text, voice, rate, pitch);
+        if (base64Audio && isMounted.current && audioContextRef.current) {
             setAudioState(prev => ({ ...prev, [message.id]: 'playing' }));
             await playDecodedAudio(decode(base64Audio), audioContextRef.current);
         }
     } catch (error) {
         console.error("Failed to play audio", error);
     } finally {
-        setAudioState(prev => ({ ...prev, [message.id]: 'idle' }));
+        if (isMounted.current) {
+            setAudioState(prev => ({ ...prev, [message.id]: 'idle' }));
+        }
     }
   };
 

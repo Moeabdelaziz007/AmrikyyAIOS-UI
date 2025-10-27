@@ -15,16 +15,18 @@ export interface Skill {
   icon: React.FC<{className: string}>;
 }
 
-
-// Fix: Add all new application IDs to the AppID type to resolve compilation errors.
-// FIX: Added 'atlas', 'cortex', and 'orion' to AppID to allow them to be used as applications. This resolves an error in DesktopAppsGrid.tsx.
 export type AppID = 
   'chat' | 'terminal' | 'files' | 'settings' | 
-  'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'atlas' | 'cortex' | 'orion' |
+  'luna' | 'karim' | 'scout' | 'maya' | 'jules' |
   'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer' |
-  'search' | 'maps' | 'transcriber' | 'videoAnalyzer' | 'image' | 'video' |
-  'veo' | 'nanoBanana' | 'youtube' | 'gmail' | 'smartwatch' | 'workspace' | 'eventLog' |
-  'skillForge' | 'chronoVault' | 'creatorStudio' | 'cognitoBrowser' | 'analyticsHub';
+  'search' | 'maps' | 'transcriber' | 'videoAnalyzer' | 'image' | 'audio' | 'video' |
+  'smartwatch' | 'workspace' | 'eventLog' |
+  'skillForge' | 'chronoVault' | 'creatorStudio' | 'cognitoBrowser' | 'analyticsHub' |
+  'agentForge' | 'avatarStudio' | 'agentProfile' | 'store' | 'notificationCenter' | 'liveConversation' | 'imageAnalyzer' |
+  'devToolkit' | 'agora' | 'nexusChat' | 
+  'devConsole' | 'apiDocs' | 'growthHub' | 'resourceHub' |
+  // FIX: Add missing AppIDs for agents used in Taskbar.tsx
+  'atlas' | 'cortex' | 'orion' | 'helios' | 'leo' | 'zara' | 'rex' | 'clio';
 
 export interface TravelPlan {
   destination: string;
@@ -64,7 +66,10 @@ export interface Message {
   sources?: {title: string, uri: string}[];
 }
 
-export type AgentID = 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion' | 'cortex' | 'atlas';
+export type AgentID = 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 
+ 'leo' | 'zara' | 'rex' | 'clio' |
+ 'echo' | string;
+
 export interface Agent {
   id: AgentID;
   name: string;
@@ -78,19 +83,81 @@ export interface Agent {
     task: string;
     aberrationColors: [string, string];
   };
-  skillIDs: SkillID[]; // Agents are now defined by the skills they possess.
+  skillIDs: SkillID[]; 
 }
 
-// FIX: Added missing SubAgent interface to resolve compilation error in SubAgentNode.tsx.
+export interface CustomAgent {
+    id: AgentID;
+    name: string;
+    role: string;
+    icon: string; // emoji
+    avatarVisual?: string;
+    voice?: string;
+    skillIDs: SkillID[];
+}
+
+export interface CommunityAgent extends CustomAgent {
+    description: string;
+    author: string;
+    rating: number; // e.g., 4.5
+    category: 'Productivity' | 'Creative' | 'System' | 'Utility';
+    price?: number;
+}
+
+export interface Notification {
+    id: number;
+    message: string;
+    type: 'success' | 'info' | 'error' | 'system';
+    category: 'System' | 'Agent' | 'App';
+    cta?: { label: string; };
+    onClick?: () => void;
+}
+
+
+export interface ExecutionLogEntry {
+    step: number;
+    thought: string;
+    action: string;
+    result: string;
+}
+
+export interface Engram {
+    id: string;
+    label: string;
+    type: 'travel_plan' | 'conversation' | 'seo_strategy' | 'user_preference' | 'synthesized_insight' | 'project_creation' | 'campaign_launch';
+    content: string; // A summary of the memory
+    timestamp: number;
+    color: string;
+    potentiality?: number; // 0 = superposition, 1 = collapsed/stable
+    authorAgentId?: AgentID;
+}
+
+export interface EngramConnection {
+    from: string; // engram id
+    to: string; // engram id
+}
+
+export interface ReasoningPath {
+    from: string; // engram id
+    to: string; // engram id
+}
+
 export interface SubAgent {
   name: string;
   icon: React.FC<{className: string}>;
 }
 
-export type Theme = 'dark' | 'light' | 'neon-noir' | 'synthwave-sunset';
-export type WallpaperID = '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
+export type Theme = 'neon-noir' | 'synthwave-sunset' | 'deep-space' | 'zen' | 'playful' | 'professional';
+export type WallpaperID = '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg' | 'cityscape-night.jpg' | 'quantum-cascade.jpg' | 'topological-grid.jpg';
 export type TaskbarTheme = 'glass' | 'solid' | 'transparent';
 export type WindowStyle = 'gemini' | 'macos' | 'futuristic' | 'cyberpunk';
+export type SystemVoice = string;
+export type DashboardLayout = 'default' | 'work' | 'developer';
+export type VoiceCommandAction = 'open' | 'close';
+export interface VoiceCommand {
+  action: VoiceCommandAction;
+  target: AppID | 'all';
+}
 
 
 export interface Settings {
@@ -99,11 +166,22 @@ export interface Settings {
   accentColor: string;
   taskbarTheme: TaskbarTheme;
   windowStyle: WindowStyle;
+  voice: SystemVoice;
+  speechRate: number;
+  speechPitch: number;
+  dashboardLayout: DashboardLayout;
+  language: 'en' | 'ar';
 }
 
 export interface SettingsAppProps {
   settings: Settings;
   onSettingsChange: (newSettings: Partial<Settings>) => void;
+  resetSettings: () => void;
+  userAccount: UserAccount;
+  onUserAccountChange: (newAccount: Partial<UserAccount>) => void;
+  paymentMethods: PaymentMethod[];
+  onAddPaymentMethod: (method: PaymentMethod) => void;
+  onUpgrade: () => void;
 }
 
 export interface TrendingItem {
@@ -155,9 +233,10 @@ export interface User {
 export interface Workspace {
   id: string;
   title: string;
-  contentType: 'youtube' | 'notes';
-  contentUrl?: string;
+  activeTab: 'notes' | 'music' | 'youtube' | 'whiteboard';
   notes?: string;
+  youtubeUrl?: string;
+  musicPlaylist?: { title: string; artist: string; }[];
   members: User[];
 }
 
@@ -167,6 +246,13 @@ export interface Project {
     description: string;
     status: 'Active' | 'Paused' | 'Completed';
     earnings: number;
+}
+
+export interface Task {
+    id: string;
+    text: string;
+    completed: boolean;
+    projectId?: string;
 }
 
 export interface SystemEntity {
@@ -179,4 +265,137 @@ export interface SystemEntity {
     icon: string;
     label: string;
   }[];
+}
+
+export interface CryptoData {
+    id: string;
+    name: string;
+    ticker: string;
+    icon: string;
+    price: number;
+    change: number;
+    history: number[];
+}
+
+export interface UserAccount {
+    name: string;
+    avatar: string;
+    tier: 'Free' | 'Pro';
+    aiCredits: number;
+    referralCode?: string;
+    referralsCount?: number;
+    creditsEarnedFromReferrals?: number;
+    creatorScore?: number;
+}
+
+export interface UserAction {
+    appId: AppID;
+    timestamp: number;
+    details?: Record<string, any>;
+}
+
+export interface VisualizationData {
+    type: 'bar' | 'pie' | 'summary';
+    title: string;
+    data: any;
+}
+
+export interface ChartData {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+        backgroundColor: string[];
+    }[];
+}
+
+export interface VoiceOption {
+    id: string;
+    name: string;
+    language: string;
+    accent: string;
+    gender: 'Male' | 'Female';
+}
+
+export interface CalendarEvent {
+  id: string;
+  summary: string;
+  start: string; // ISO string for datetime
+  end: string;   // ISO string for datetime
+}
+
+export interface DriveFile {
+  id: string;
+  name: string;
+  link: string;
+}
+
+export interface GmailMessage {
+  id: string;
+  snippet: string;
+}
+
+export interface SharedContent {
+    type: 'project' | 'travel_plan' | 'image' | 'video';
+    title: string;
+    subtitle: string;
+    cta: string;
+    imageUrl?: string;
+}
+
+export interface SocialPost {
+    caption: string;
+    hashtags: string[];
+}
+
+export interface AgoraListing {
+    id: string;
+    type: 'agent' | 'workflow';
+    asset: CustomAgent | Workflow;
+    author: string;
+    price: number;
+    description: string;
+}
+
+export interface LiveChatMessage {
+    id: string;
+    user: { id: string; name: string; avatar: string; };
+    text: string;
+    timestamp: number;
+}
+
+export interface PaymentMethod {
+    id: string;
+    type: 'paypal' | 'stripe' | 'googlepay';
+    identifier: string; // e.g., email for paypal, last 4 digits for card
+}
+
+export interface CreatorBounty {
+    id: string;
+    title: string;
+    description: string;
+    creditReward: number;
+    action: {
+        type: 'open_app' | 'create_agent' | 'share_content';
+        appId?: AppID;
+        contentType?: SharedContent['type'];
+    };
+}
+
+export interface ViralPost {
+    id: string;
+    author: string;
+    content: SharedContent;
+    socialPost: SocialPost;
+    likes: number;
+    views: number;
+}
+
+export interface ResourceItem {
+    id: string;
+    title: string;
+    description: string;
+    url: string;
+    category: 'AI/ML' | 'Frontend' | 'Developer Tools' | 'Design';
+    tags: string[];
 }

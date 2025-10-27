@@ -2,10 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { VideoIcon, SparklesIcon, UploadIcon } from '../Icons';
 import { generateVideoFromImage } from '../../services/geminiAdvancedService';
 import { fileToBase64 } from '../../utils/fileUtils';
+import { UserAccount, AppID } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 type Status = 'idle' | 'processing' | 'completed' | 'error';
 
-const VideoGeneratorApp: React.FC = () => {
+interface VideoGeneratorAppProps {
+    userAccount: UserAccount;
+    setUserAccount: React.Dispatch<React.SetStateAction<UserAccount>>;
+    onOpenApp: (appId: AppID) => void;
+}
+
+const VIDEO_GENERATION_COST = 250; // AI Credits
+
+const VideoGeneratorApp: React.FC<VideoGeneratorAppProps> = ({ userAccount, setUserAccount, onOpenApp }) => {
+    const { t } = useLanguage();
     const [prompt, setPrompt] = useState('');
     const [status, setStatus] = useState<Status>('idle');
     const [message, setMessage] = useState('Your generated video will appear here.');
@@ -39,10 +50,17 @@ const VideoGeneratorApp: React.FC = () => {
     const handleGenerate = async () => {
         if (!prompt || !sourceImage || status === 'processing') return;
 
+        if (userAccount.aiCredits < VIDEO_GENERATION_COST) {
+            alert(t('video.insufficient_credits_text', { cost: VIDEO_GENERATION_COST }));
+            onOpenApp('pricing');
+            return;
+        }
+
         setStatus('processing');
         setProgress(10);
         setMessage('Initializing video generation...');
         setGeneratedVideoUrl(null);
+        setUserAccount(prev => ({ ...prev, aiCredits: prev.aiCredits - VIDEO_GENERATION_COST }));
 
         try {
             const generator = generateVideoFromImage(prompt, sourceImage.base64.split(',')[1], sourceImage.file.type, aspectRatio);
@@ -57,6 +75,7 @@ const VideoGeneratorApp: React.FC = () => {
                 } else if (result.status === 'error') {
                     setStatus('error');
                     setMessage(result.message);
+                     setUserAccount(prev => ({ ...prev, aiCredits: prev.aiCredits + VIDEO_GENERATION_COST })); // Refund credits on error
                     if (result.message.includes('API key is invalid')) {
                         setIsKeySelected(false); // Reset key state on invalid key error
                     }
@@ -65,6 +84,7 @@ const VideoGeneratorApp: React.FC = () => {
         } catch (e: any) {
             setStatus('error');
             setMessage(e.message || 'An unknown error occurred.');
+            setUserAccount(prev => ({ ...prev, aiCredits: prev.aiCredits + VIDEO_GENERATION_COST })); // Refund credits on error
         }
     };
 
@@ -127,11 +147,16 @@ const VideoGeneratorApp: React.FC = () => {
                     />
                  </div>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                         <span className="text-sm font-semibold">Aspect Ratio:</span>
-                         <div className="bg-black/20 p-1 rounded-lg flex gap-1">
-                            <button onClick={() => setAspectRatio('16:9')} className={`px-3 py-1 rounded-md text-xs font-semibold ${aspectRatio === '16:9' ? 'bg-rose-500' : 'hover:bg-white/10'}`}>16:9</button>
-                            <button onClick={() => setAspectRatio('9:16')} className={`px-3 py-1 rounded-md text-xs font-semibold ${aspectRatio === '9:16' ? 'bg-rose-500' : 'hover:bg-white/10'}`}>9:16</button>
+                    <div className="flex items-center gap-4">
+                         <div className="flex items-center gap-2">
+                             <span className="text-sm font-semibold">Aspect Ratio:</span>
+                             <div className="bg-black/20 p-1 rounded-lg flex gap-1">
+                                <button onClick={() => setAspectRatio('16:9')} className={`px-3 py-1 rounded-md text-xs font-semibold ${aspectRatio === '16:9' ? 'bg-rose-500' : 'hover:bg-white/10'}`}>16:9</button>
+                                <button onClick={() => setAspectRatio('9:16')} className={`px-3 py-1 rounded-md text-xs font-semibold ${aspectRatio === '9:16' ? 'bg-rose-500' : 'hover:bg-white/10'}`}>9:16</button>
+                             </div>
+                         </div>
+                         <div className="text-sm font-mono text-amber-400 bg-amber-500/10 px-2 py-1 rounded">
+                            {t('video.credit_cost', { cost: VIDEO_GENERATION_COST })}
                          </div>
                     </div>
                     <button 

@@ -1,51 +1,26 @@
 import React, { useState, useMemo } from 'react';
 import { AppID } from '../types';
-import { ChatIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, TerminalIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon } from './Icons';
+import { SparklesIcon } from './Icons';
+
+interface AppDef {
+    id: AppID;
+    name: string;
+    icon: React.FC<{ className: string }>;
+}
 
 interface AppLauncherProps {
     onOpen: (appId: AppID) => void;
     onClose: () => void;
+    allApps: AppDef[];
 }
 
-const TravelAgentIcon: React.FC<{className: string}> = ({className}) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-    </svg>
-);
-
-const MarketingIcon: React.FC<{className: string}> = ({className}) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-    </svg>
-);
-
-const allApps: { id: AppID; name: string; icon: React.FC<{ className: string }>; }[] = [
-    { id: 'creatorStudio', name: 'Creator Studio', icon: CreatorStudioIcon },
-    { id: 'cognitoBrowser', name: 'Cognito Browser', icon: BrowserIcon },
-    { id: 'chat', name: 'AI Chat', icon: ChatIcon },
-    { id: 'voice', name: 'Voice AI', icon: VoiceAssistantIcon },
-    { id: 'travelAgent', name: 'Travel Agent', icon: TravelAgentIcon },
-    { id: 'workspace', name: 'Workspace', icon: WorkspaceIcon },
-    { id: 'smartwatch', name: 'Smart Watch', icon: SmartWatchIcon },
-    { id: 'marketing', name: 'Marketing', icon: MarketingIcon },
-    { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon },
-    { id: 'skillForge', name: 'Skill Forge', icon: SkillForgeIcon },
-    { id: 'chronoVault', name: 'Chrono Vault', icon: ChronoVaultIcon },
-    { id: 'eventLog', name: 'Event Log', icon: EventLogIcon },
-    { id: 'jules', name: 'Jules Agent', icon: JulesIcon },
-    { id: 'files', name: 'Files', icon: FileIcon },
-    { id: 'settings', name: 'Settings', icon: SettingsIcon },
-    { id: 'terminal', name: 'Terminal', icon: TerminalIcon },
-];
-
-const AppLauncher: React.FC<AppLauncherProps> = ({ onOpen, onClose }) => {
+const AppLauncher: React.FC<AppLauncherProps> = ({ onOpen, onClose, allApps }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredApps = useMemo(() => {
         if (!searchTerm) return allApps;
         return allApps.filter(app => app.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    }, [searchTerm]);
+    }, [searchTerm, allApps]);
 
     return (
         <div 

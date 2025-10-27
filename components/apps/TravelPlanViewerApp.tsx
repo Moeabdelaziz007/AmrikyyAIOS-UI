@@ -1,13 +1,13 @@
-
 import React from 'react';
-import { TravelPlan } from '../../types';
+import { TravelPlan, SharedContent } from '../../types';
 import { TripIcon } from '../Icons';
 
 interface TravelPlanViewerAppProps {
   plan: TravelPlan;
+  onShare: (content: SharedContent) => void;
 }
 
-const TravelPlanViewerApp: React.FC<TravelPlanViewerAppProps> = ({ plan }) => {
+const TravelPlanViewerApp: React.FC<TravelPlanViewerAppProps> = ({ plan, onShare }) => {
   if (!plan) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-bg-tertiary rounded-b-md text-text-secondary">
@@ -18,12 +18,28 @@ const TravelPlanViewerApp: React.FC<TravelPlanViewerAppProps> = ({ plan }) => {
 
   const totalBudget = plan.budget.reduce((sum, item) => sum + item.cost, 0);
 
+  const handleShare = () => {
+    onShare({
+        type: 'travel_plan',
+        title: plan.tripTitle,
+        subtitle: `An AI-planned adventure to ${plan.destination}.`,
+        cta: "Explore My AI-Generated Trip"
+    });
+  };
+
   return (
     <div className="h-full w-full bg-bg-tertiary rounded-b-md text-white p-6 overflow-y-auto">
       <header className="text-center mb-8 animate-fade-in">
-        <TripIcon className="w-16 h-16 mx-auto mb-4 text-primary-cyan" />
-        <h1 className="font-display text-4xl font-bold">{plan.tripTitle}</h1>
-        <p className="text-lg text-text-secondary">Your personalized AI-generated travel plan to {plan.destination}</p>
+        <div className="flex items-center justify-center gap-4">
+            <TripIcon className="w-16 h-16 text-primary-cyan" />
+            <div>
+                <h1 className="font-display text-4xl font-bold">{plan.tripTitle}</h1>
+                <p className="text-lg text-text-secondary">Your personalized AI-generated travel plan to {plan.destination}</p>
+            </div>
+            <button onClick={handleShare} className="ml-auto p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Share this plan">
+                <span className="material-symbols-outlined">share</span>
+            </button>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

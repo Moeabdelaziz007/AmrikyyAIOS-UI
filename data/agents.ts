@@ -120,5 +120,20 @@ export const agents: Agent[] = [
         aberrationColors: ['#3B82F6', '#EC4899']
     },
     skillIDs: ['gemini-pro-text', 'image-generation', 'video-generation', 'web-search', 'maps-search', 'flight-search', 'youtube-search', 'fast-text', 'text-to-speech', 'music-generation'],
+  },
+  {
+    id: 'echo',
+    name: 'Echo',
+    role: 'Personalization & Intelligence Engine',
+    icon: '🧠',
+    tasks: 100, // Always active
+    color: 'from-slate-400 to-gray-500',
+     hologram: {
+        color: 'text-gray-300',
+        glow: '#9CA3AF',
+        task: 'Observing user patterns...',
+        aberrationColors: ['#9CA3AF', '#60A5FA']
+    },
+    skillIDs: ['gemini-pro-text'],
   }
 ];

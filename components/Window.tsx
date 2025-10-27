@@ -101,13 +101,12 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
 
   const styleConfig = {
       cyberpunk: {
-          container: `glass-effect rounded-xl transition-shadow,border duration-300 ${isActive ? 'shadow-2xl shadow-neon-cyan/20 border-neon-cyan/50' : ''}`,
+          container: `glass-effect rounded-xl transition-all duration-300 ${isActive ? 'shadow-2xl ring-2 ring-inset ring-[var(--accent-color)]' : ''}`,
           titlebar: 'h-10 justify-between px-4',
           title: 'font-medium text-sm',
           body: '',
           background: 'transparent',
       },
-      // Keep old styles for compatibility, though cyberpunk is now default
       macos: {
           container: `shadow-2xl shadow-black/50 border ${isActive ? 'ring-2 ring-accent border-accent/50' : 'border-border-color'}`,
           titlebar: 'h-10 bg-black/20 justify-between px-3',

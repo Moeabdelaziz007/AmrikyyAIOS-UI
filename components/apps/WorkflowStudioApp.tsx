@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Agent, AgentID, Workflow, TravelPlan, WorkflowNode } from '../../types';
+import { Agent, AgentID, Workflow, TravelPlan, WorkflowNode, ExecutionLogEntry } from '../../types';
 import { agents } from '../../data/agents';
-import { generateTravelPlan } from '../../services/geminiAdvancedService';
+import { generateTravelPlan, executeDynamicWorkflow } from '../../services/geminiAdvancedService';
 import { SparklesIcon, SendIcon } from '../Icons';
 
 interface WorkflowStudioAppProps {
@@ -96,14 +96,13 @@ const NodeComponent: React.FC<{ node: Node; onDrag: (id: string, x: number, y: n
 };
 
 const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow: initialWorkflow, isExecuting, onComplete, executingDetails }) => {
-    // Viewer Mode State
-    const [currentStep, setCurrentStep] = useState(isExecuting ? 0 : -1);
-
-    // Builder Mode State
     const [nodes, setNodes] = useState<Node[]>([]);
     const [connections, setConnections] = useState<Connection[]>([]);
     const [connecting, setConnecting] = useState<{ from: string; fromOutput: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number } | null>(null);
     const canvasRef = useRef<HTMLDivElement>(null);
+    const [isExecutingWorkflow, setIsExecutingWorkflow] = useState(false);
+    const [executionLog, setExecutionLog] = useState<ExecutionLogEntry[] | null>(null);
+
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -158,7 +157,22 @@ const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow: initial
         const x = node.x + 96; // center of node
         const y = end === 'start' ? node.y + 136 : node.y; // bottom or top connector
         return { x, y };
-    }
+    };
+
+    const handleRunWorkflow = async () => {
+        setIsExecutingWorkflow(true);
+        setExecutionLog(null);
+        try {
+            const workflowNodes = nodes.map(({ x, y, ...node }) => node);
+            const log = await executeDynamicWorkflow(workflowNodes, connections);
+            setExecutionLog(log);
+        } catch (e: any) {
+            console.error(e);
+            setExecutionLog([{step: 0, thought: 'An error occurred during orchestration.', action: 'Execution Failed', result: e.message || 'Unknown error.'}]);
+        } finally {
+            setIsExecutingWorkflow(false);
+        }
+    };
 
     if (initialWorkflow) {
         // --- VIEWER MODE ---
@@ -174,29 +188,48 @@ const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow: initial
                     {agents.map(agent => <DraggableAgent key={agent.id} agent={agent} />)}
                 </div>
             </aside>
-            <main className="flex-grow flex flex-col gap-4">
+            <main className="flex-grow flex flex-col gap-4 overflow-hidden">
                  <header className="flex-shrink-0 flex justify-between items-center p-2 bg-black/20 rounded-lg border border-border-color">
                     <h1 className="font-display text-2xl font-bold">Workflow Builder</h1>
-                    <button className="flex items-center gap-2 px-4 py-2 font-bold rounded-lg bg-gradient-to-r from-primary-blue to-primary-purple hover:brightness-110 active:scale-95 transition-all">
-                        <SendIcon className="w-5 h-5" />
-                        Run Workflow
+                    <button onClick={handleRunWorkflow} disabled={isExecutingWorkflow || nodes.length === 0} className="flex items-center gap-2 px-4 py-2 font-bold rounded-lg bg-gradient-to-r from-primary-blue to-primary-purple hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        {isExecutingWorkflow ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <SendIcon className="w-5 h-5" />}
+                        {isExecutingWorkflow ? 'Executing...' : 'Smart Execute'}
                     </button>
                  </header>
-                 <div ref={canvasRef} onDragOver={handleDragOver} onDrop={handleDrop} onMouseMove={handleCanvasMouseMove} onMouseUp={() => setConnecting(null)} className="relative flex-grow bg-black/20 rounded-lg border-2 border-dashed border-border-color overflow-hidden">
-                    {nodes.length === 0 && <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-text-muted">Drop agents here to start building</p>}
-                    
-                    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                        {connections.map((c, i) => {
-                            const startPos = getNodePos(c.from, 'start');
-                            const endPos = getNodePos(c.to, 'end');
-                            return <path key={i} d={`M ${startPos.x} ${startPos.y} C ${startPos.x} ${startPos.y + 50}, ${endPos.x} ${endPos.y - 50}, ${endPos.x} ${endPos.y}`} stroke="#8B5CF6" strokeWidth="3" fill="none" />
-                        })}
-                        {connecting && <path d={`M ${getNodePos(connecting.from, 'start').x} ${getNodePos(connecting.from, 'start').y} L ${connecting.x} ${connecting.y}`} stroke="#3B82F6" strokeWidth="3" fill="none" strokeDasharray="5,5" />}
-                    </svg>
+                 <div className="flex-grow flex gap-4 overflow-hidden">
+                    <div ref={canvasRef} onDragOver={handleDragOver} onDrop={handleDrop} onMouseMove={handleCanvasMouseMove} onMouseUp={() => setConnecting(null)} className="relative flex-grow bg-black/20 rounded-lg border-2 border-dashed border-border-color overflow-hidden">
+                        {nodes.length === 0 && <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-text-muted">Drop agents here to start building</p>}
+                        
+                        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                            {connections.map((c, i) => {
+                                const startPos = getNodePos(c.from, 'start');
+                                const endPos = getNodePos(c.to, 'end');
+                                return <path key={i} d={`M ${startPos.x} ${startPos.y} C ${startPos.x} ${startPos.y + 50}, ${endPos.x} ${endPos.y - 50}, ${endPos.x} ${endPos.y}`} stroke="#8B5CF6" strokeWidth="3" fill="none" />
+                            })}
+                            {connecting && <path d={`M ${getNodePos(connecting.from, 'start').x} ${getNodePos(connecting.from, 'start').y} L ${connecting.x} ${connecting.y}`} stroke="#3B82F6" strokeWidth="3" fill="none" strokeDasharray="5,5" />}
+                        </svg>
 
-                    {nodes.map(node => (
-                        <NodeComponent key={node.id} node={node} onDrag={updateNodePosition} onStartConnect={handleStartConnect} onEndConnect={handleEndConnect} />
-                    ))}
+                        {nodes.map(node => (
+                            <NodeComponent key={node.id} node={node} onDrag={updateNodePosition} onStartConnect={handleStartConnect} onEndConnect={handleEndConnect} />
+                        ))}
+                    </div>
+                    {executionLog && (
+                        <div className="w-96 flex-shrink-0 bg-black/20 rounded-lg border border-border-color p-3 flex flex-col animate-slide-in-right">
+                            <h2 className="font-display font-bold text-lg mb-2 flex-shrink-0">Orchestration Log</h2>
+                            <div className="flex-grow overflow-y-auto space-y-4 text-xs font-mono pr-2">
+                                {executionLog.map(entry => (
+                                    <div key={entry.step} className="border-b border-white/10 pb-2 last:border-b-0">
+                                        <p className="text-primary-cyan font-bold">[Step {entry.step}] Thought:</p>
+                                        <p className="text-white/80 pl-2 leading-relaxed">{entry.thought}</p>
+                                        <p className="text-primary-purple font-bold mt-1">[Action]:</p>
+                                        <p className="text-white/80 pl-2 leading-relaxed">{entry.action}</p>
+                                        <p className="text-green-400 font-bold mt-1">[Result]:</p>
+                                        <p className="text-white/80 pl-2 leading-relaxed">{entry.result}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                  </div>
             </main>
         </div>

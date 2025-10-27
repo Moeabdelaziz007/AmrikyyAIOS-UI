@@ -30,6 +30,13 @@ async function decodeAudioData(
 }
 
 export async function playDecodedAudio(decodedData: Uint8Array, audioContext: AudioContext): Promise<void> {
+    // FIX: Add a check to prevent errors if the audio context was closed before playback.
+    // This resolves a race condition where unmounting the component could cause silent failures.
+    if (audioContext.state === 'closed') {
+        console.warn("Audio context was closed before playback could start.");
+        return;
+    }
+
     const audioBuffer = await decodeAudioData(
         decodedData,
         audioContext,
@@ -38,6 +45,12 @@ export async function playDecodedAudio(decodedData: Uint8Array, audioContext: Au
     );
     
     return new Promise((resolve) => {
+        // Re-check state in case the context was closed during the async decoding.
+        if (audioContext.state === 'closed') {
+             console.warn("Audio context was closed before buffer source could be created.");
+             resolve();
+             return;
+        }
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(audioContext.destination);

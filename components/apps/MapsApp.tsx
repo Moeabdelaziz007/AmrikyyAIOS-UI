@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapIcon, SparklesIcon } from '../Icons';
+import { mapsSearch } from '../../services/geminiAdvancedService';
 
 const MapsApp: React.FC = () => {
     const [input, setInput] = useState('');
@@ -29,12 +30,12 @@ const MapsApp: React.FC = () => {
         setIsLoading(true);
         setResponse(null);
 
-        // const result = await mapsSearch(input, location);
-        // setResponse(result.text);
-
-        // Mock response
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setResponse("Certainly! There are several highly-rated Italian restaurants near you. A popular choice is 'La Trattoria', known for its authentic pasta. Another great option is 'Bella Napoli' which has excellent reviews for its pizza.");
+        try {
+            const result = await mapsSearch(input, location);
+            setResponse(result.text);
+        } catch (e) {
+            setError("Failed to get a response from the Maps AI.");
+        }
 
         setIsLoading(false);
     };
@@ -50,7 +51,7 @@ const MapsApp: React.FC = () => {
                 {location && <p className="text-sm text-green-400 mt-2">Location acquired.</p>}
             </div>
 
-            <div className="w-full max-w-lg p-4 bg-black/20 border border-white/10 rounded-xl">
+            <div className="w-full max-w-lg p-4 bg-black/20 border border-white/10 rounded-xl min-h-[100px] flex items-center justify-center">
                 {isLoading ? (
                     <div className="flex items-center gap-3 justify-center text-emerald-400">
                         <SparklesIcon className="w-6 h-6 animate-pulse" />

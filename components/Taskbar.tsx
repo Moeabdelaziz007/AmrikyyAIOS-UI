@@ -1,7 +1,11 @@
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
 // Fix: Import missing icon components.
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, OrionIcon, AnalyticsHubIcon } from './Icons';
+// Fix: Import missing StoreIcon component.
+// Fix: Import missing LiveConversationIcon and ImageAnalyzerIcon components.
+// FIX: Import MarketingIcon.
+// FIX: Import missing icons to resolve compilation errors.
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, OrionIcon, AnalyticsHubIcon, AgentForgeIcon, StoreIcon, PricingIcon, LiveConversationIcon, ImageAnalyzerIcon, NotificationCenterIcon, AudioStudioIcon, AvatarStudioIcon, MarketingIcon, DevToolkitIcon, AgoraIcon, NexusChatIcon, HeliosIcon, DevConsoleIcon, ApiIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -11,7 +15,11 @@ interface TaskbarProps {
   activeWindowId: number | null;
 }
 
-// Fix: Add missing properties 'atlas', 'cortex', 'orion', and 'analyticsHub' to satisfy the Record<AppID, ...> type.
+// FIX: Declare VideoGeneratorApp before it is used.
+// Dummy component for type safety, as VideoGeneratorApp is lazy-loaded elsewhere.
+const VideoGeneratorApp: React.FC<{className: string}> = ({className}) => <VideoIcon className={className}/>;
+
+// Fix: Add missing properties to satisfy the Record<AppID, ...> type. This resolves all compilation errors in this file.
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
   travelAgent: TripIcon,
@@ -19,7 +27,7 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   files: FileIcon,
   settings: SettingsIcon,
   image: ImageIcon,
-  video: VideoIcon,
+  video: VideoGeneratorApp, // Corrected to a valid component
   search: SearchIcon,
   maps: MapIcon,
   luna: LunaIcon,
@@ -32,11 +40,7 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   videoAnalyzer: VideoAnalyzeIcon,
   jules: JulesIcon,
   voice: VoiceAssistantIcon,
-  veo: VeoIcon,
-  nanoBanana: NanoBananaIcon,
-  youtube: YouTubeIcon,
-  gmail: GmailIcon,
-  marketing: ChatIcon,
+  marketing: MarketingIcon,
   smartwatch: SmartWatchIcon,
   workspace: WorkspaceIcon,
   eventLog: EventLogIcon,
@@ -48,7 +52,26 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   cortex: CortexIcon,
   orion: OrionIcon,
   analyticsHub: AnalyticsHubIcon,
+  agentForge: AgentForgeIcon,
+  agentProfile: LunaIcon,
+  store: StoreIcon,
+  notificationCenter: NotificationCenterIcon,
+  liveConversation: LiveConversationIcon,
+  imageAnalyzer: ImageAnalyzerIcon,
+  audio: AudioStudioIcon,
+  avatarStudio: AvatarStudioIcon,
+  devToolkit: DevToolkitIcon,
+  agora: AgoraIcon,
+  nexusChat: NexusChatIcon,
+  helios: HeliosIcon,
+  devConsole: DevConsoleIcon,
+  apiDocs: ApiIcon,
+  leo: MarketingIcon,
+  zara: MarketingIcon,
+  rex: MarketingIcon,
+  clio: MarketingIcon,
 };
+
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
   return null; // This is a legacy component, replaced by Dock. Kept for type safety.

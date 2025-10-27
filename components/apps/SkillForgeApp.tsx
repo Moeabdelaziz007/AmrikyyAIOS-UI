@@ -15,7 +15,7 @@ const SkillForgeApp: React.FC = () => {
         <div className="h-full w-full flex flex-col bg-bg-tertiary rounded-b-md text-white overflow-hidden">
             <header className="flex-shrink-0 p-4 border-b border-border-color flex items-center gap-3">
                 <SettingsIcon className="w-8 h-8 text-primary-cyan"/>
-                <h1 className="font-display text-2xl font-bold">Skill Forge & System Health</h1>
+                <h1 className="font-display text-2xl font-bold">System Skills & Health</h1>
             </header>
             <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
                 <main className="flex-grow p-4 md:p-6 overflow-y-auto">
