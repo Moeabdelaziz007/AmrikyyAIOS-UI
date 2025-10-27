@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { SubAgent, Agent, Workflow, TravelPlan } from '../../types';
-import { agents, subAgentDetails } from '../../data/agents';
-import SubAgentNode from '../SubAgentNode';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Agent, AgentID, Workflow, TravelPlan, WorkflowNode } from '../../types';
+import { agents } from '../../data/agents';
 import { generateTravelPlan } from '../../services/geminiAdvancedService';
+import { SparklesIcon, SendIcon } from '../Icons';
 
 interface WorkflowStudioAppProps {
     workflow?: Workflow;
@@ -16,38 +16,211 @@ const agentMap: Record<string, Agent> = agents.reduce((acc, agent) => {
     return acc;
 }, {} as Record<string, Agent>);
 
-const agentToSubAgent = (agent: Agent): SubAgent => {
-    const Icon = subAgentDetails[agent.subAgents[0]]?.icon || (() => <span>?</span>);
-    return {
-        id: agent.subAgents[0],
-        name: agent.name,
-        description: agent.role,
-        icon: Icon
-    }
+interface Node extends WorkflowNode {
+    x: number;
+    y: number;
+}
+interface Connection { from: string; to: string; }
+
+const DraggableAgent: React.FC<{ agent: Agent }> = ({ agent }) => {
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.dataTransfer.setData('application/json', JSON.stringify(agent));
+    };
+    return (
+        <div
+            draggable
+            onDragStart={handleDragStart}
+            className="flex items-center gap-3 p-2 rounded-lg bg-bg-primary hover:bg-accent hover:text-white cursor-grab transition-colors"
+        >
+            <span className="text-2xl">{agent.icon}</span>
+            <div>
+                <p className="font-bold text-sm">{agent.name}</p>
+                <p className="text-xs text-text-muted">{agent.role}</p>
+            </div>
+        </div>
+    );
 };
 
-const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow, isExecuting, onComplete, executingDetails }) => {
+const NodeComponent: React.FC<{ node: Node; onDrag: (id: string, x: number, y: number) => void; onStartConnect: (nodeId: string, output: 'top' | 'bottom' | 'left' | 'right') => void; onEndConnect: (nodeId: string) => void; }> = ({ node, onDrag, onStartConnect, onEndConnect }) => {
+    const agent = agentMap[node.agentId];
+    const [isDragging, setIsDragging] = useState(false);
+    const dragOffset = useRef({ x: 0, y: 0 });
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if((e.target as HTMLElement).closest('.connector')) return;
+        setIsDragging(true);
+        dragOffset.current = { x: e.clientX - node.x, y: e.clientY - node.y };
+        e.preventDefault();
+    };
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (isDragging) {
+            onDrag(node.id, e.clientX - dragOffset.current.x, e.clientY - dragOffset.current.y);
+        }
+    }, [isDragging, onDrag, node.id]);
+
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    return (
+        <div
+            className="absolute p-4 w-48 bg-bg-secondary border-2 border-border-color rounded-xl shadow-lg select-none"
+            style={{ left: node.x, top: node.y, cursor: isDragging ? 'grabbing' : 'grab' }}
+            onMouseDown={handleMouseDown}
+        >
+            <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl">{agent.icon}</span>
+                <p className="font-bold">{agent.name}</p>
+            </div>
+            <textarea
+                defaultValue={node.description}
+                placeholder="Task description..."
+                className="w-full h-16 bg-black/20 text-xs p-1 rounded resize-none focus:outline-none focus:ring-1 focus:ring-accent"
+            />
+            <div className="connector absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-accent rounded-full cursor-pointer" onMouseDown={() => onStartConnect(node.id, 'top')} onMouseUp={() => onEndConnect(node.id)} />
+            <div className="connector absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-accent rounded-full cursor-pointer" onMouseDown={() => onStartConnect(node.id, 'bottom')} onMouseUp={() => onEndConnect(node.id)} />
+        </div>
+    );
+};
+
+const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow: initialWorkflow, isExecuting, onComplete, executingDetails }) => {
+    // Viewer Mode State
+    const [currentStep, setCurrentStep] = useState(isExecuting ? 0 : -1);
+
+    // Builder Mode State
+    const [nodes, setNodes] = useState<Node[]>([]);
+    const [connections, setConnections] = useState<Connection[]>([]);
+    const [connecting, setConnecting] = useState<{ from: string; fromOutput: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number } | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const agent = JSON.parse(e.dataTransfer.getData('application/json')) as Agent;
+        const canvasRect = canvasRef.current?.getBoundingClientRect();
+        if (!canvasRect) return;
+
+        const newNode: Node = {
+            id: `node-${Date.now()}`,
+            agentId: agent.id,
+            description: `Execute ${agent.role}`,
+            x: e.clientX - canvasRect.left,
+            y: e.clientY - canvasRect.top,
+        };
+        setNodes(prev => [...prev, newNode]);
+    };
+
+    const updateNodePosition = (id: string, x: number, y: number) => {
+        setNodes(prev => prev.map(n => n.id === id ? { ...n, x, y } : n));
+    };
+
+    const handleStartConnect = (nodeId: string, output: 'top' | 'bottom' | 'left' | 'right') => {
+        const node = nodes.find(n => n.id === nodeId);
+        if(!node) return;
+        const x = node.x + 96;
+        const y = output === 'top' ? node.y : node.y + 136;
+        setConnecting({ from: nodeId, fromOutput: output, x , y });
+    };
+
+    const handleEndConnect = (nodeId: string) => {
+        if (connecting && connecting.from !== nodeId) {
+            setConnections(prev => [...prev, { from: connecting.from, to: nodeId }]);
+        }
+        setConnecting(null);
+    };
+    
+    const handleCanvasMouseMove = (e: React.MouseEvent) => {
+        if(connecting) {
+            const canvasRect = canvasRef.current?.getBoundingClientRect();
+            if (!canvasRect) return;
+            setConnecting(prev => prev ? {...prev, x: e.clientX - canvasRect.left, y: e.clientY - canvasRect.top} : null);
+        }
+    };
+    
+    const getNodePos = (nodeId: string, end: 'start' | 'end') => {
+        const node = nodes.find(n => n.id === nodeId);
+        if(!node) return {x: 0, y: 0};
+        const x = node.x + 96; // center of node
+        const y = end === 'start' ? node.y + 136 : node.y; // bottom or top connector
+        return { x, y };
+    }
+
+    if (initialWorkflow) {
+        // --- VIEWER MODE ---
+        return <WorkflowViewer workflow={initialWorkflow} isExecuting={isExecuting} onComplete={onComplete} executingDetails={executingDetails} />
+    }
+    
+    // --- BUILDER MODE ---
+    return (
+        <div className="h-full w-full flex flex-col lg:flex-row bg-bg-tertiary rounded-b-md text-white p-4 gap-4 overflow-hidden">
+            <aside className="w-full lg:w-64 flex-shrink-0 bg-black/20 rounded-lg border border-border-color p-3 space-y-3 overflow-y-auto h-48 lg:h-auto">
+                <h2 className="font-display font-bold text-lg">Agents</h2>
+                <div className="flex flex-row lg:flex-col gap-2">
+                    {agents.map(agent => <DraggableAgent key={agent.id} agent={agent} />)}
+                </div>
+            </aside>
+            <main className="flex-grow flex flex-col gap-4">
+                 <header className="flex-shrink-0 flex justify-between items-center p-2 bg-black/20 rounded-lg border border-border-color">
+                    <h1 className="font-display text-2xl font-bold">Workflow Builder</h1>
+                    <button className="flex items-center gap-2 px-4 py-2 font-bold rounded-lg bg-gradient-to-r from-primary-blue to-primary-purple hover:brightness-110 active:scale-95 transition-all">
+                        <SendIcon className="w-5 h-5" />
+                        Run Workflow
+                    </button>
+                 </header>
+                 <div ref={canvasRef} onDragOver={handleDragOver} onDrop={handleDrop} onMouseMove={handleCanvasMouseMove} onMouseUp={() => setConnecting(null)} className="relative flex-grow bg-black/20 rounded-lg border-2 border-dashed border-border-color overflow-hidden">
+                    {nodes.length === 0 && <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-text-muted">Drop agents here to start building</p>}
+                    
+                    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                        {connections.map((c, i) => {
+                            const startPos = getNodePos(c.from, 'start');
+                            const endPos = getNodePos(c.to, 'end');
+                            return <path key={i} d={`M ${startPos.x} ${startPos.y} C ${startPos.x} ${startPos.y + 50}, ${endPos.x} ${endPos.y - 50}, ${endPos.x} ${endPos.y}`} stroke="#8B5CF6" strokeWidth="3" fill="none" />
+                        })}
+                        {connecting && <path d={`M ${getNodePos(connecting.from, 'start').x} ${getNodePos(connecting.from, 'start').y} L ${connecting.x} ${connecting.y}`} stroke="#3B82F6" strokeWidth="3" fill="none" strokeDasharray="5,5" />}
+                    </svg>
+
+                    {nodes.map(node => (
+                        <NodeComponent key={node.id} node={node} onDrag={updateNodePosition} onStartConnect={handleStartConnect} onEndConnect={handleEndConnect} />
+                    ))}
+                 </div>
+            </main>
+        </div>
+    );
+};
+
+const WorkflowViewer: React.FC<WorkflowStudioAppProps> = ({ workflow, isExecuting, onComplete, executingDetails }) => {
     const [currentStep, setCurrentStep] = useState(isExecuting ? 0 : -1);
     const [finalPlan, setFinalPlan] = useState<TravelPlan | null>(null);
 
     useEffect(() => {
         if (!isExecuting || !workflow) return;
-
         const runWorkflow = async () => {
             for (let i = 0; i < workflow.nodes.length; i++) {
                 setCurrentStep(i);
                 await new Promise(resolve => setTimeout(resolve, 1500));
             }
-
-            // Simulate the final step generating the plan
             if (workflow.title.includes("Travel Plan")) {
                 const plan = await generateTravelPlan(executingDetails);
                 setFinalPlan(plan);
                 if(onComplete) onComplete(plan);
             }
-            setCurrentStep(workflow.nodes.length); // Mark as complete
+            setCurrentStep(workflow.nodes.length);
         };
-
         runWorkflow();
     }, [isExecuting, workflow, onComplete, executingDetails]);
 
@@ -59,64 +232,37 @@ const WorkflowStudioApp: React.FC<WorkflowStudioAppProps> = ({ workflow, isExecu
         return 'Pending';
     };
 
-    if (!workflow) {
-        return (
-             <div className="h-full w-full flex flex-col items-center justify-center bg-bg-tertiary rounded-b-md text-white p-4 gap-4 overflow-hidden">
-                <h1 className="font-display text-2xl font-bold mb-6 text-center">Workflow Studio</h1>
-                <p className="text-text-secondary">Drag and drop agents to build custom AI pipelines.</p>
-                <p className="text-xs text-text-muted">(Interactive builder coming soon)</p>
-             </div>
-        )
-    }
-
-    return (
-        <div className="h-full w-full flex bg-bg-tertiary rounded-b-md text-white p-4 gap-4 overflow-hidden">
-            <div className="flex-grow bg-black/20 rounded-lg border border-border-color p-4 flex flex-col items-center justify-center">
-                 <h1 className="font-display text-2xl font-bold mb-6 text-center">{workflow.title}</h1>
-                 <div className="relative flex items-center justify-center gap-12">
-                     <svg className="absolute top-0 left-0 w-full h-full" style={{ zIndex: 0 }}>
-                        <defs>
-                            <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#3B82F6" />
-                                <stop offset="100%" stopColor="#8B5CF6" />
-                            </linearGradient>
-                        </defs>
-                         {workflow.connections.map((connection, index) => (
-                            <path 
-                                key={index}
-                                d={`M ${100 + index * 192} 96 H ${220 + index * 192}`} 
-                                stroke="url(#line-grad)" 
-                                strokeWidth="3" 
-                                fill="none"
-                                strokeDasharray="1000"
-                                className={getStatus(index) === 'Completed' ? 'animate-line-draw' : ''}
-                                style={{ strokeDashoffset: getStatus(index) === 'Completed' ? 0 : 1000, transition: 'stroke-dashoffset 1s ease-in-out' }}
-                            />
-                         ))}
-                     </svg>
-
-                     {workflow.nodes.map((node, index) => (
-                         <SubAgentNode 
-                            key={node.id}
-                            subAgent={agentToSubAgent(agentMap[node.agentId])}
-                            description={node.description}
-                            status={getStatus(index)}
-                            style={{ animationDelay: `${index * 0.2}s` }}
-                        />
-                     ))}
-                 </div>
-                 <div className="h-20 mt-8">
-                    {finalPlan ? (
-                        <div className="mt-8 flex items-center gap-2 py-2 px-5 text-green-400 animate-fade-in">
-                           ✅ Workflow Completed
-                        </div>
-                    ) : (
-                        <div className="mt-8 flex items-center gap-2 py-2 px-5 text-text-secondary animate-fade-in">
-                            <div className={`w-5 h-5 border-2 border-current border-t-transparent rounded-full ${isExecuting ? 'animate-spin' : ''}`}></div>
-                            <span>{isExecuting ? 'AI Agents are working...' : 'Waiting for workflow to start...'}</span>
-                        </div>
-                    )}
-                 </div>
+     return (
+        <div className="h-full w-full flex flex-col items-center justify-center bg-bg-tertiary rounded-b-md text-white p-4 gap-4 overflow-y-auto">
+            <h1 className="font-display text-2xl font-bold mb-6 text-center">{workflow!.title}</h1>
+            <div className="relative flex flex-col md:flex-row items-center justify-center gap-12 md:gap-4 lg:gap-12">
+                 <svg className="absolute top-0 left-0 w-full h-full -z-0 hidden md:block">
+                    {workflow!.connections.map((connection, index) => {
+                        const fromNodeIndex = workflow!.nodes.findIndex(n => n.id === connection.from);
+                        return <path key={index} d={`M ${112 + fromNodeIndex * 208} 96 H ${208 + fromNodeIndex * 208}`} stroke="#8B5CF6" strokeWidth="3" fill="none" />
+                    })}
+                 </svg>
+                 {workflow!.nodes.map((node, index) => {
+                     const agent = agentMap[node.agentId];
+                     const Icon = SparklesIcon; // Placeholder, real icon would need more logic
+                     return (
+                         <div key={node.id} className={`z-10 relative w-48 h-48 p-4 flex flex-col items-center justify-center gap-2 rounded-xl border-2 bg-bg-secondary shadow-lg ${getStatus(index) === 'Active' ? 'border-accent' : 'border-border-color'}`}>
+                             <div className="p-3 rounded-full bg-accent/20"><Icon className="w-10 h-10 text-accent" /></div>
+                             <h3 className="font-bold text-center text-text-primary">{agent.name}</h3>
+                             <p className="text-xs text-center text-text-secondary">{node.description}</p>
+                         </div>
+                     );
+                 })}
+            </div>
+            <div className="h-20 mt-8">
+               {finalPlan ? (
+                   <div className="mt-8 flex items-center gap-2 py-2 px-5 text-green-400 animate-fade-in">✅ Workflow Completed</div>
+               ) : (
+                   <div className="mt-8 flex items-center gap-2 py-2 px-5 text-text-secondary animate-fade-in">
+                       <div className={`w-5 h-5 border-2 border-current border-t-transparent rounded-full ${isExecuting ? 'animate-spin' : ''}`}></div>
+                       <span>{isExecuting ? 'AI Agents are working...' : 'Waiting for workflow...'}</span>
+                   </div>
+               )}
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppID, WindowInstance, TaskbarTheme } from '../types';
-import { ChatIcon, GridIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon } from './Icons';
+import { ChatIcon, GridIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -26,7 +26,7 @@ const MarketingIcon: React.FC<{className: string}> = ({className}) => (
 );
 
 
-const appIcons: Record<AppID, React.FC<{className: string}>> = {
+const appIcons: Record<string, React.FC<{className: string}>> = {
   chat: ChatIcon,
   voice: VoiceAssistantIcon,
   workflow: WorkflowIcon,
@@ -35,13 +35,15 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   files: FileIcon,
   settings: SettingsIcon,
   jules: JulesIcon,
-  // These are not in the dock but need to be here for other components
+  smartwatch: SmartWatchIcon,
+  workspace: WorkspaceIcon,
   terminal: JulesIcon,
   luna: SparklesIcon,
   karim: SparklesIcon,
   scout: SparklesIcon,
   maya: SparklesIcon,
   travelPlanViewer: TravelAgentIcon,
+  eventLog: EventLogIcon,
 };
 
 const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId, onToggleLauncher, taskbarTheme }) => {
@@ -63,9 +65,10 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
       { id: 'chat', name: 'AI Chat' },
       { id: 'voice', name: 'Voice Assistant' },
       { id: 'travelAgent', name: 'Travel Agent' },
-      { id: 'marketing', name: 'Marketing Copilot' },
+      { id: 'workspace', name: 'Workspace' },
       { id: 'workflow', name: 'Workflow Studio'},
-      { id: 'files', name: 'Files' },
+      { id: 'eventLog', name: 'Event Log'},
+      { id: 'smartwatch', name: 'Smart Watch' },
       { id: 'settings', name: 'Settings' },
   ];
 
@@ -79,16 +82,16 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
     <div
       role="navigation"
       aria-label="Application Dock"
-      className="fixed bottom-4 left-1/2 -translate-x-1/2"
+      className="fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2"
     >
-      <div className={`flex items-end justify-center space-x-2 h-20 p-2 rounded-2xl border shadow-2xl transition-colors duration-300 ${themeClasses[taskbarTheme]}`}>
+      <div className={`flex items-end justify-center space-x-1 sm:space-x-2 h-16 sm:h-20 p-1 sm:p-2 rounded-xl sm:rounded-2xl border shadow-2xl transition-colors duration-300 ${themeClasses[taskbarTheme]}`}>
         <button
           onClick={onToggleLauncher}
-          className="group relative h-14 w-14 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
+          className="group relative h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center rounded-lg sm:rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
           aria-label="App Launcher"
           title="App Launcher"
         >
-          <GridIcon className="h-7 w-7 text-text-secondary group-hover:text-text-primary" />
+          <GridIcon className="h-6 w-6 sm:h-7 sm:w-7 text-text-secondary group-hover:text-text-primary" />
         </button>
 
         <div className="h-full w-px bg-border-color/50 mx-1"></div>
@@ -103,14 +106,14 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
               <div key={app.id} className="relative flex flex-col items-center justify-end h-full">
                 <button
                   onClick={() => handleAppClick(app.id)}
-                  className="group relative h-14 w-14 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
+                  className="group relative h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center rounded-lg sm:rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
                   aria-label={app.name}
                   title={app.name}
                 >
-                  <Icon className="h-7 w-7 text-text-secondary group-hover:text-text-primary" />
+                  <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-text-secondary group-hover:text-text-primary" />
                    {isActive && <span className="sr-only">(Active Window)</span>}
                 </button>
-                 {isOpen && <div className={`mt-1.5 h-1.5 w-1.5 rounded-full ${isActive ? 'bg-accent' : 'bg-text-muted'}`} />}
+                 {isOpen && <div className={`mt-1 sm:mt-1.5 h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full ${isActive ? 'bg-accent' : 'bg-text-muted'}`} />}
               </div>
             )
         })}

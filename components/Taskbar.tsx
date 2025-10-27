@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -12,7 +12,6 @@ interface TaskbarProps {
 
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
-  // Fix: Replace invalid 'trips' AppID with 'travelAgent'.
   travelAgent: TripIcon,
   terminal: TerminalIcon,
   files: FileIcon,
@@ -35,7 +34,10 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   nanoBanana: NanoBananaIcon,
   youtube: YouTubeIcon,
   gmail: GmailIcon,
-  marketing: ChatIcon, // Added missing marketing icon to satisfy Record type
+  marketing: ChatIcon,
+  smartwatch: SmartWatchIcon,
+  workspace: WorkspaceIcon,
+  eventLog: EventLogIcon,
 };
 
 const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {

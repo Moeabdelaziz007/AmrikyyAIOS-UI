@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { groundedSearch, mapsSearch } from '../../services/geminiAdvancedService';
+import { TravelPlan } from '../../types';
 import { SparklesIcon, SearchIcon, MapIcon, TripIcon } from '../Icons';
 
 type Tab = 'plan' | 'explore' | 'deals' | 'my-plans';
@@ -93,13 +93,29 @@ const FindDealsView = () => (
         <p className="text-text-muted">This feature is under construction. Get ready to find the best travel deals with the help of AI search.</p>
     </div>
 );
-const MyPlansView = () => (
-    <div className="h-full w-full p-6 text-center flex flex-col items-center justify-center">
-        <TripIcon className="w-20 h-20 mb-4 text-primary-purple" />
-        <h2 className="text-2xl font-bold font-display">My Plans</h2>
-        <p className="text-text-muted">All your generated travel plans will be saved here for easy access.</p>
-    </div>
-);
+const MyPlansView = () => {
+    const mockPlans: Partial<TravelPlan>[] = [
+        { tripTitle: 'Cyberpunk Adventure in Tokyo', destination: 'Tokyo, Japan', itinerary: [{day: 1, title: 'Shibuya Crossing & Neon Nights', activities:[]}] },
+        { tripTitle: 'Ancient Wonders of Rome', destination: 'Rome, Italy', itinerary: [{day: 1, title: 'Colosseum & Roman Forum', activities:[]}] },
+        { tripTitle: 'Relaxing Beach Getaway in Bali', destination: 'Bali, Indonesia', itinerary: [{day: 1, title: 'Uluwatu Temple Sunset', activities:[]}] },
+    ];
+    return (
+        <div className="h-full w-full p-6">
+            <h2 className="text-2xl font-bold font-display mb-4">My Saved Plans</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {mockPlans.map(plan => (
+                    <div key={plan.tripTitle} className="bg-black/20 border border-border-color rounded-lg p-4 hover:border-accent transition-colors cursor-pointer">
+                        <h3 className="font-bold text-lg">{plan.tripTitle}</h3>
+                        <p className="text-sm text-text-secondary">{plan.destination}</p>
+                    </div>
+                ))}
+                <div className="bg-black/10 border-2 border-dashed border-border-color rounded-lg p-4 flex items-center justify-center text-text-muted">
+                    <p>Your future plans will appear here.</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 
 export default TravelAgentApp;

@@ -107,6 +107,14 @@ export const JulesIcon: React.FC<{ className: string }> = ({ className }) => (
     </svg>
 );
 
+export const CortexIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.375a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0z" />
+    </svg>
+);
+
+
 export const WorkflowIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
@@ -151,7 +159,6 @@ export const UploadIcon: React.FC<{ className: string }> = ({ className }) => (
     </svg>
 );
 
-// FIX: Add missing VoiceAssistantIcon
 export const VoiceAssistantIcon: React.FC<{ className: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 016 0v8.25a3 3 0 01-3 3z" />
@@ -177,6 +184,25 @@ export const GmailIcon: React.FC<{ className: string }> = ({ className }) => (
     </svg>
 );
 
+export const SmartWatchIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+export const WorkspaceIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.28a3 3 0 00-4.682-2.72 8.986 8.986 0 003.741.479m7.5-2.28v-4.5a3 3 0 00-6 0v4.5m7.5-2.28l-3.75 3.75a3 3 0 01-4.242 0l-3.75-3.75M3 14.25a3 3 0 013-3h12a3 3 0 013 3v4.5a3 3 0 01-3 3H6a3 3 0 01-3-3v-4.5z" />
+    </svg>
+);
+
+export const EventLogIcon: React.FC<{ className: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+    </svg>
+);
+
+
 export const subAgentIcons: Record<SubAgentID, React.FC<{className: string}>> = {
     'gemini-pro': ChatIcon,
     'gemini-flash-image': ImageIcon,
@@ -187,6 +213,5 @@ export const subAgentIcons: Record<SubAgentID, React.FC<{className: string}>> = 
     'youtube': YouTubeIcon,
     'gemini-flash-lite': SparklesIcon,
     'gemini-tts': SpeakerIcon,
-    // Fix: Add missing 'gemini-music' icon to satisfy the Record type.
     'gemini-music': SpeakerIcon,
 };

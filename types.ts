@@ -6,7 +6,7 @@ export type AppID =
   'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 
   'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer' |
   'search' | 'maps' | 'transcriber' | 'videoAnalyzer' | 'image' | 'video' |
-  'veo' | 'nanoBanana' | 'youtube' | 'gmail';
+  'veo' | 'nanoBanana' | 'youtube' | 'gmail' | 'smartwatch' | 'workspace' | 'eventLog';
 
 export interface TravelPlan {
   destination: string;
@@ -41,7 +41,7 @@ export interface WindowInstance {
 
 export interface Message {
   id: string;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai' | 'system';
   text: string;
   sources?: {title: string, uri: string}[];
 }
@@ -57,8 +57,9 @@ export interface SubAgent {
     icon: React.FC<{className: string}>;
 }
 
+export type AgentID = 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion' | 'cortex';
 export interface Agent {
-  id: 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion';
+  id: AgentID;
   name: string;
   role: string;
   icon: string;
@@ -101,7 +102,7 @@ export interface TrendingItem {
 
 export interface WorkflowNode {
     id: string;
-    agentId: Agent['id'];
+    agentId: AgentID;
     description: string;
 }
 
@@ -114,4 +115,35 @@ export interface Workflow {
     title: string;
     nodes: WorkflowNode[];
     connections: WorkflowConnection[];
+}
+
+export interface Alarm {
+  id: string;
+  time: string;
+  label: string;
+  enabled: boolean;
+}
+
+export interface Automation {
+  id: string;
+  trigger: string;
+  action: {
+    appId: AppID;
+    task: string;
+  };
+}
+
+export interface User {
+  id: string;
+  name: string;
+  avatarUrl: string;
+}
+
+export interface Workspace {
+  id: string;
+  title: string;
+  contentType: 'youtube' | 'notes';
+  contentUrl?: string;
+  notes?: string;
+  members: User[];
 }

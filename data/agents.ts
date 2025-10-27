@@ -1,5 +1,5 @@
-import { Agent, SubAgent, SubAgentID } from '../types';
-import { subAgentIcons } from '../components/Icons';
+import { Agent, SubAgent, SubAgentID, AgentID } from '../types';
+import { subAgentIcons, CortexIcon } from '../components/Icons';
 
 export const agents: Agent[] = [
   { 
@@ -78,6 +78,21 @@ export const agents: Agent[] = [
     subAgents: ['gemini-pro'],
   },
   {
+    id: 'cortex',
+    name: 'Cortex',
+    role: 'Collaborative Ideation Agent',
+    icon: '💡',
+    tasks: 12,
+    color: 'from-orange-500 to-amber-400',
+    hologram: {
+        color: 'text-orange-400',
+        glow: '#FB923C',
+        task: 'Synthesizing team ideas...',
+        aberrationColors: ['#FB923C', '#06B6D4']
+    },
+    subAgents: ['gemini-pro', 'youtube'],
+  },
+  {
     id: 'orion',
     name: 'Orion',
     role: 'Master Control Agent',
@@ -87,7 +102,7 @@ export const agents: Agent[] = [
     hologram: {
         color: 'text-white',
         glow: '#FFFFFF',
-        task: 'Orchestrating all agents...',
+        task: 'Orchestrating A2A Communication Bus...',
         aberrationColors: ['#3B82F6', '#EC4899']
     },
     subAgents: ['gemini-pro', 'gemini-flash-image', 'veo', 'google-search', 'google-maps', 'google-flights', 'youtube', 'gemini-flash-lite', 'gemini-tts', 'gemini-music'],

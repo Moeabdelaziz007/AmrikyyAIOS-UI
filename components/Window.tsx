@@ -18,6 +18,21 @@ interface WindowProps {
   onFocus: () => void;
 }
 
+const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState(false);
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
+        const listener = () => setMatches(media.matches);
+        window.addEventListener('resize', listener);
+        return () => window.removeEventListener('resize', listener);
+    }, [matches, query]);
+    return matches;
+};
+
+
 const WindowControls: React.FC<{ onClose: () => void; onMinimize: () => void; style: WindowStyle; title: string; }> = ({ onClose, onMinimize, style, title }) => {
     if (style === 'gemini') {
         return (
@@ -39,6 +54,7 @@ const WindowControls: React.FC<{ onClose: () => void; onMinimize: () => void; st
 };
 
 const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY, initialWidth, initialHeight, zIndex, isMinimized, isActive, windowStyle, onClose, onMinimize, onFocus }) => {
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
   const [isDragging, setIsDragging] = useState(false);
@@ -52,7 +68,7 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
   }, [isActive]);
   
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('.window-control')) return;
+    if ((e.target as HTMLElement).closest('.window-control') || isMobile) return;
     onFocus();
     setIsDragging(true);
     const rect = windowRef.current?.getBoundingClientRect();
@@ -63,16 +79,16 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       };
     }
     e.preventDefault();
-  }, [onFocus]);
+  }, [onFocus, isMobile]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isDragging) {
+    if (isDragging && !isMobile) {
       setPosition({
         x: e.clientX - dragOffset.current.x,
         y: e.clientY - dragOffset.current.y,
       });
     }
-  }, [isDragging]);
+  }, [isDragging, isMobile]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -117,6 +133,30 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       },
   }
   const currentStyle = styleConfig[windowStyle];
+  
+  const mobileStyles: React.CSSProperties = {
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      zIndex,
+      resize: 'none',
+      background: currentStyle.background,
+      backdropFilter: windowStyle !== 'futuristic' ? 'blur(20px)' : 'none',
+  };
+
+  const desktopStyles: React.CSSProperties = {
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+      width: `${size.width}px`,
+      height: `${size.height}px`,
+      zIndex,
+      minWidth: '300px',
+      minHeight: '200px',
+      resize: 'both',
+      background: currentStyle.background,
+      backdropFilter: windowStyle !== 'futuristic' ? 'blur(20px)' : 'none',
+  };
 
   return (
     <div
@@ -126,23 +166,12 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       aria-modal="true"
       aria-labelledby={`window-title-${id}`}
       tabIndex={-1}
-      className={`absolute flex flex-col rounded-lg overflow-hidden animate-slide-up focus:outline-none transition-shadow,border duration-300 ${currentStyle.container}`}
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: `${size.width}px`,
-        height: `${size.height}px`,
-        zIndex,
-        minWidth: '300px',
-        minHeight: '200px',
-        resize: 'both',
-        background: currentStyle.background,
-        backdropFilter: windowStyle !== 'futuristic' ? 'blur(20px)' : 'none',
-      }}
+      className={`absolute flex flex-col overflow-hidden animate-slide-up focus:outline-none transition-shadow,border duration-300 ${isMobile ? 'rounded-none' : 'rounded-lg'} ${currentStyle.container}`}
+      style={isMobile ? mobileStyles : desktopStyles}
       onMouseDown={onFocus}
     >
       <div
-        className={`relative flex items-center flex-shrink-0 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${currentStyle.titlebar}`}
+        className={`relative flex items-center flex-shrink-0 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isMobile ? '!cursor-default' : ''} ${currentStyle.titlebar}`}
         onMouseDown={handleMouseDown}
       >
           {windowStyle === 'gemini' && isActive && <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-blue via-primary-purple to-primary-pink opacity-30 animate-gradient-pan [background-size:200%_auto]" style={{ filter: 'blur(20px)'}} />}

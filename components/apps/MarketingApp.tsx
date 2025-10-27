@@ -18,15 +18,15 @@ const MarketingApp: React.FC = () => {
 
     return (
         <div className="h-full w-full flex flex-col bg-bg-tertiary rounded-b-md text-white">
-            <header className="flex-shrink-0 p-4 border-b border-border-color flex items-center justify-between">
+            <header className="flex-shrink-0 p-4 border-b border-border-color flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <SparklesIcon className="w-8 h-8 text-primary-pink"/>
                     <h1 className="font-display text-2xl font-bold">Marketing Copilot</h1>
                 </div>
-                <nav className="flex gap-2 bg-black/20 p-1 rounded-lg">
-                    <TabButton id="seo" activeTab={activeTab} setActiveTab={setActiveTab} label="SEO Content Planner" />
-                    <TabButton id="ads" activeTab={activeTab} setActiveTab={setActiveTab} label="Ad Campaign Generator" />
-                    <TabButton id="social" activeTab={activeTab} setActiveTab={setActiveTab} label="Social Media Assistant" />
+                <nav className="flex gap-2 bg-black/20 p-1 rounded-lg w-full sm:w-auto">
+                    <TabButton id="seo" activeTab={activeTab} setActiveTab={setActiveTab} label="SEO" />
+                    <TabButton id="ads" activeTab={activeTab} setActiveTab={setActiveTab} label="Ads" />
+                    <TabButton id="social" activeTab={activeTab} setActiveTab={setActiveTab} label="Social" />
                 </nav>
             </header>
             <main className="flex-grow overflow-y-auto">
@@ -41,7 +41,7 @@ const MarketingApp: React.FC = () => {
 const TabButton: React.FC<{id: Tab, activeTab: Tab, setActiveTab: (tab: Tab) => void, label: string}> = ({ id, activeTab, setActiveTab, label }) => (
     <button
         onClick={() => setActiveTab(id)}
-        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${activeTab === id ? 'bg-accent text-white' : 'hover:bg-white/10'}`}
+        className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${activeTab === id ? 'bg-accent text-white' : 'hover:bg-white/10'}`}
     >
         {label}
     </button>
@@ -74,7 +74,7 @@ const SEOPlannerView: React.FC = () => {
     };
     
     return (
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+        <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
             <div className="lg:col-span-1 flex flex-col gap-4">
                 <h2 className="font-display text-xl font-bold">Content Input</h2>
                 <div className="space-y-4 p-4 bg-black/20 rounded-lg border border-border-color">

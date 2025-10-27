@@ -41,16 +41,16 @@ const SettingsApp: React.FC<SettingsAppProps> = ({ settings, onSettingsChange })
     };
 
     return (
-        <div className="h-full w-full flex bg-bg-secondary rounded-b-md text-text-primary">
-            <aside className="w-56 flex-shrink-0 bg-bg-tertiary p-4 border-r border-border-color">
-                <h1 className="font-display text-2xl font-bold mb-6">Settings</h1>
-                <nav className="space-y-2">
+        <div className="h-full w-full flex flex-col md:flex-row bg-bg-secondary rounded-b-md text-text-primary">
+            <aside className="w-full md:w-56 flex-shrink-0 bg-bg-tertiary p-4 border-b md:border-b-0 md:border-r border-border-color">
+                <h1 className="font-display text-2xl font-bold mb-4 md:mb-6">Settings</h1>
+                <nav className="flex flex-row md:flex-col gap-1 md:space-y-2 overflow-x-auto">
                     <NavItem id="personalization" label="Personalization" activeSection={activeSection} setActiveSection={setActiveSection} />
                     <NavItem id="display" label="Display" activeSection={activeSection} setActiveSection={setActiveSection} />
                     <NavItem id="sound" label="Sound" activeSection={activeSection} setActiveSection={setActiveSection} />
                 </nav>
             </aside>
-            <main className="flex-grow p-6 overflow-y-auto">
+            <main className="flex-grow p-4 md:p-6 overflow-y-auto">
                 {renderSection()}
             </main>
         </div>
@@ -67,7 +67,7 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ id, label, activeSection, setActiveSection }) => (
     <button
         onClick={() => setActiveSection(id)}
-        className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors flex-shrink-0 ${
             activeSection === id ? 'bg-accent text-white' : 'hover:bg-bg-primary'
         }`}
     >

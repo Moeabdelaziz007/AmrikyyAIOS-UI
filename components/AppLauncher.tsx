@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AppID } from '../types';
-import { ChatIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, TerminalIcon } from './Icons';
+import { ChatIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon, TerminalIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon } from './Icons';
 
 interface AppLauncherProps {
     onOpen: (appId: AppID) => void;
@@ -24,8 +24,11 @@ const allApps: { id: AppID; name: string; icon: React.FC<{ className: string }>;
     { id: 'chat', name: 'AI Chat', icon: ChatIcon },
     { id: 'voice', name: 'Voice AI', icon: VoiceAssistantIcon },
     { id: 'travelAgent', name: 'Travel Agent', icon: TravelAgentIcon },
+    { id: 'workspace', name: 'Workspace', icon: WorkspaceIcon },
+    { id: 'smartwatch', name: 'Smart Watch', icon: SmartWatchIcon },
     { id: 'marketing', name: 'Marketing', icon: MarketingIcon },
     { id: 'workflow', name: 'Workflow Studio', icon: WorkflowIcon },
+    { id: 'eventLog', name: 'Event Log', icon: EventLogIcon },
     { id: 'jules', name: 'Jules Agent', icon: JulesIcon },
     { id: 'files', name: 'Files', icon: FileIcon },
     { id: 'settings', name: 'Settings', icon: SettingsIcon },
@@ -46,7 +49,7 @@ const AppLauncher: React.FC<AppLauncherProps> = ({ onOpen, onClose }) => {
             onClick={onClose}
         >
             <div 
-                className="w-full max-w-2xl h-[70vh] bg-bg-primary/80 rounded-2xl border border-border-color shadow-2xl flex flex-col p-6 animate-slide-up"
+                className="w-full h-full sm:w-full sm:max-w-2xl sm:h-[70vh] bg-bg-primary/80 rounded-none sm:rounded-2xl border-border-color shadow-2xl flex flex-col p-6 animate-slide-up"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="relative mb-6">

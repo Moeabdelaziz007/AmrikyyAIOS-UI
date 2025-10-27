@@ -1,10 +1,11 @@
 import React, { useState, useCallback, Suspense, lazy, useEffect } from 'react';
-import { WindowInstance, AppID, Settings, TravelPlan, Workflow } from './types';
+import { WindowInstance, AppID, Settings, TravelPlan, Workflow, Alarm, Automation } from './types';
 import Dock from './components/Dock';
 import HologramWallpaper from './components/HologramWallpaper';
 import AppLauncher from './components/AppLauncher';
 import PoweredByGemini from './components/PoweredByGemini';
 import TrendingWidget from './components/TrendingWidget';
+import WorkflowDashboardWidget from './components/WorkflowDashboardWidget';
 import { generateTravelPlan, generateWorkflowFromPrompt } from './services/geminiAdvancedService';
 
 // Lazy load all application components for code-splitting and performance
@@ -22,7 +23,6 @@ const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp
 const TravelAgentApp = lazy(() => import('./components/apps/TravelAgentApp'));
 const MarketingApp = lazy(() => import('./components/apps/MarketingApp'));
 const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
-// Fix: Import newly added app components
 const SearchApp = lazy(() => import('./components/apps/SearchApp'));
 const MapsApp = lazy(() => import('./components/apps/MapsApp'));
 const TranscriberApp = lazy(() => import('./components/apps/TranscriberApp'));
@@ -33,6 +33,9 @@ const VeoApp = lazy(() => import('./components/apps/VeoApp'));
 const NanoBananaApp = lazy(() => import('./components/apps/NanoBananaApp'));
 const YouTubeApp = lazy(() => import('./components/apps/YouTubeApp'));
 const GmailApp = lazy(() => import('./components/apps/GmailApp'));
+const SmartWatchApp = lazy(() => import('./components/apps/SmartWatchApp'));
+const WorkspaceApp = lazy(() => import('./components/apps/WorkspaceApp'));
+const EventLogApp = lazy(() => import('./components/apps/EventLogApp'));
 
 
 const Window = lazy(() => import('./components/Window'));
@@ -52,7 +55,6 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   travelAgent: TravelAgentApp,
   marketing: MarketingApp,
   travelPlanViewer: TravelPlanViewerApp,
-  // Fix: Register new app components
   search: SearchApp,
   maps: MapsApp,
   transcriber: TranscriberApp,
@@ -63,6 +65,9 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   nanoBanana: NanoBananaApp,
   youtube: YouTubeApp,
   gmail: GmailApp,
+  smartwatch: SmartWatchApp,
+  workspace: WorkspaceApp,
+  eventLog: EventLogApp,
 };
 
 const appTitles: Record<AppID, string> = {
@@ -80,7 +85,6 @@ const appTitles: Record<AppID, string> = {
   travelAgent: 'Travel Agent Pro',
   marketing: 'Marketing Copilot',
   travelPlanViewer: 'AI Travel Plan',
-  // Fix: Add titles for new apps
   search: 'AI Search',
   maps: 'AI Maps',
   transcriber: 'Audio Transcriber',
@@ -91,6 +95,9 @@ const appTitles: Record<AppID, string> = {
   nanoBanana: 'Nano Banana Image Hub',
   youtube: 'YouTube',
   gmail: 'Gmail',
+  smartwatch: 'Smart Watch',
+  workspace: 'Collaborative Workspace',
+  eventLog: 'System Event Log',
 };
 
 const AppLoadingSpinner: React.FC = () => (
@@ -113,9 +120,13 @@ const App: React.FC = () => {
     windowStyle: 'gemini',
   });
 
-  const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
-  const [workflowStep, setWorkflowStep] = useState(0);
-  const [finalPlan, setFinalPlan] = useState<TravelPlan | null>(null);
+  const [alarms, setAlarms] = useState<Alarm[]>([
+    { id: '1', time: '07:00', label: 'Good Morning!', enabled: true },
+    { id: '2', time: '09:00', label: 'Team Standup', enabled: false },
+  ]);
+  const [automations, setAutomations] = useState<Automation[]>([
+     { id: '1', trigger: 'Time is 08:00', action: { appId: 'chat', task: 'Open and say good morning' } }
+  ]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -163,14 +174,10 @@ const App: React.FC = () => {
   }, [nextId, nextZIndex]);
 
   const executeWorkflow = useCallback((workflow: Workflow) => {
-    openWindow('workflow', { workflow });
+    openWindow('workflow', { workflow, isExecuting: true });
   }, [openWindow]);
 
   const startTravelWorkflow = useCallback(async (details: { destination: string, startDate: string, endDate: string, budget: string }) => {
-      setFinalPlan(null);
-      setIsWorkflowRunning(true);
-      setWorkflowStep(0);
-      
       const workflow: Workflow = {
           title: "Automated Travel Plan Generation",
           nodes: [
@@ -186,7 +193,6 @@ const App: React.FC = () => {
           workflow,
           isExecuting: true,
           onComplete: (plan: TravelPlan) => {
-              setFinalPlan(plan);
               openWindow('travelPlanViewer', { plan });
           },
           executingDetails: details
@@ -221,7 +227,10 @@ const App: React.FC = () => {
     >
       <HologramWallpaper />
       <PoweredByGemini />
-      <TrendingWidget />
+      <div className="hidden md:block">
+        <TrendingWidget />
+        <WorkflowDashboardWidget onOpenApp={openWindow} />
+      </div>
       
       <div className="relative w-full h-full">
         {isAppLauncherOpen && <AppLauncher onOpen={openWindow} onClose={() => setIsAppLauncherOpen(false)} />}
@@ -233,8 +242,8 @@ const App: React.FC = () => {
                   id={window.id}
                   initialX={window.x}
                   initialY={window.y}
-                  initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' ? 1024 : window.width}
-                  initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' ? 768 : window.height}
+                  initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' || window.appId === 'workspace' ? 1024 : window.appId === 'smartwatch' ? 360 : window.width}
+                  initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' || window.appId === 'workspace' ? 768 : window.appId === 'smartwatch' ? 600 : window.height}
                   title={window.title}
                   zIndex={window.zIndex}
                   isMinimized={window.isMinimized}
@@ -257,6 +266,11 @@ const App: React.FC = () => {
                               props.startTravelWorkflow = startTravelWorkflow;
                           } else if (window.appId === 'voice') {
                               props.onExecuteWorkflow = executeWorkflow;
+                          } else if (window.appId === 'smartwatch') {
+                              props.alarms = alarms;
+                              props.setAlarms = setAlarms;
+                              props.automations = automations;
+                              props.setAutomations = setAutomations;
                           }
                           
                           return <AppComponent {...props} />;
