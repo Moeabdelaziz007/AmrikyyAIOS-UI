@@ -117,6 +117,15 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   devToolkit: DevToolkitApp,
   growthHub: GrowthHubApp,
   resourceHub: ResourceHubApp,
+  // FIX: Add missing agents to satisfy the Record type, mapping them to the generic AgentProfileApp.
+  atlas: AgentProfileApp,
+  cortex: AgentProfileApp,
+  orion: AgentProfileApp,
+  helios: AgentProfileApp,
+  leo: AgentProfileApp,
+  zara: AgentProfileApp,
+  rex: AgentProfileApp,
+  clio: AgentProfileApp,
 };
 
 const DEFAULT_SETTINGS: Settings = {

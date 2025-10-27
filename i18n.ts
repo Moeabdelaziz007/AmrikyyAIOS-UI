@@ -191,7 +191,7 @@ export const translations = {
     'growth_hub.bounties_desc': 'Complete tasks to earn credits and boost your score.',
     'growth_hub.claim_reward': 'Claim Reward',
     'growth_hub.completed': 'Completed',
-
+    
     'viral_feed.title': 'Creator Spotlight',
     
     'resource_hub.title': 'Open Source Resource Hub',

@@ -1,8 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
-import { getTranslator, Language, TranslationKey } from '../i18n';
-
-// A define type for translation placeholders.
-type TranslationPlaceholder = { [key: string]: string | number };
+import { getTranslator, Language, TranslationKey, TranslationPlaceholder } from '../i18n';
 
 interface LanguageContextType {
   language: Language;

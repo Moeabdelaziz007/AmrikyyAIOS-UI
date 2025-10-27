@@ -22,8 +22,9 @@ export const UserBehaviorProvider: React.FC<{ children: React.ReactNode }> = ({ 
     
     setAppFrequency(prev => ({
         ...prev,
-        // FIX: Replaced the nullish coalescing operator with the logical OR operator for wider compatibility. This ensures that if an app has no previous count, it defaults to 0 before incrementing, preventing an arithmetic error on an undefined value.
-        [appId]: (prev[appId] || 0) + 1,
+        // FIX: Using a ternary operator for a more explicit type check to ensure
+        // the count is correctly incremented, resolving a potential type inference issue.
+        [appId]: prev[appId] ? prev[appId] + 1 : 1,
     }));
   }, []);
   
