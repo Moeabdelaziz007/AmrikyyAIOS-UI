@@ -34,6 +34,7 @@ export const DevToolkitIcon: React.FC<{className?: string}> = ({className}) => (
 export const ReferralIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>group</MaterialIcon>);
 export const GrowthHubIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>rocket_launch</MaterialIcon>);
 export const ResourceHubIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>source_environment</MaterialIcon>);
+export const NewsIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>newspaper</MaterialIcon>);
 
 // Agent Icons
 export const LunaIcon: React.FC<{className?: string}> = ({className}) => (<MaterialIcon className={className}>smart_toy</MaterialIcon>);

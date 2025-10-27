@@ -3,12 +3,11 @@ import { WindowInstance, AppID, Settings, TravelPlan, Workflow, Alarm, Automatio
 import Dock from './components/Dock';
 import AppLauncher from './components/AppLauncher';
 import PoweredByGemini from './components/PoweredByGemini';
-import TrendingWidget from './components/TrendingWidget';
 import WorkflowDashboardWidget from './components/WorkflowDashboardWidget';
 import { getCalendarEvents, getDriveFiles, getGmailMessages } from './services/googleWorkspaceService';
 import { createCalendarEventFromPlan } from './services/geminiAdvancedService';
 import DesktopAppsGrid from './components/DesktopAppsGrid';
-import { CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkflowIcon, SkillForgeIcon, ChronoVaultIcon, WorkspaceIcon, SmartWatchIcon, EventLogIcon, ImageIcon, LunaIcon, FileIcon, SettingsIcon, TerminalIcon, VoiceAssistantIcon, MarketingIcon, AgentForgeIcon, JulesIcon, StoreIcon, LiveConversationIcon, ImageAnalyzerIcon, NotificationCenterIcon, AgoraIcon, NexusChatIcon, DevConsoleIcon, ApiIcon, DevToolkitIcon, GrowthHubIcon, ResourceHubIcon } from './components/Icons';
+import { CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkflowIcon, SkillForgeIcon, ChronoVaultIcon, WorkspaceIcon, SmartWatchIcon, EventLogIcon, ImageIcon, LunaIcon, FileIcon, SettingsIcon, TerminalIcon, VoiceAssistantIcon, MarketingIcon, AgentForgeIcon, JulesIcon, StoreIcon, LiveConversationIcon, ImageAnalyzerIcon, NotificationCenterIcon, AgoraIcon, NexusChatIcon, DevConsoleIcon, ApiIcon, DevToolkitIcon, GrowthHubIcon, ResourceHubIcon, NewsIcon } from './components/Icons';
 import { useLanguage } from './contexts/LanguageContext';
 import AnimatedBackground from './components/AnimatedBackground';
 import SystemOverviewWidget from './components/SystemOverviewWidget';
@@ -67,11 +66,13 @@ const ApiDocsApp = lazy(() => import('./components/apps/ApiDocsApp'));
 const DevToolkitApp = lazy(() => import('./components/apps/DevToolkitApp'));
 const GrowthHubApp = lazy(() => import('./components/apps/GrowthHubApp'));
 const ResourceHubApp = lazy(() => import('./components/apps/ResourceHubApp'));
+const GeminiAiNewsApp = lazy(() => import('./components/apps/GeminiAiNewsApp'));
 const Window = lazy(() => import('./components/Window'));
 const ProactiveSuggestionsWidget = lazy(() => import('./components/widgets/ProactiveSuggestionsWidget'));
 const WorkspaceHubWidget = lazy(() => import('./components/widgets/WorkspaceHubWidget'));
 const ViralFeedWidget = lazy(() => import('./components/widgets/ViralFeedWidget'));
 const QuickActionsWidget = lazy(() => import('./components/widgets/QuickActionsWidget'));
+const GeminiAiNewsWidget = lazy(() => import('./components/widgets/GeminiAiNewsWidget'));
 // FIX: Add pricing app component lazy load, pointing to settings as a fallback.
 const PricingApp = lazy(() => import('./components/apps/SettingsApp'));
 
@@ -121,6 +122,7 @@ const appComponents: Record<AppID, React.LazyExoticComponent<React.ComponentType
   devToolkit: DevToolkitApp,
   growthHub: GrowthHubApp,
   resourceHub: ResourceHubApp,
+  geminiAiNews: GeminiAiNewsApp,
   // FIX: Add missing agents to satisfy the Record type, mapping them to the generic AgentProfileApp.
   atlas: AgentProfileApp,
   cortex: AgentProfileApp,
@@ -366,6 +368,7 @@ const App: React.FC = () => {
     devToolkit: t('app_titles.devToolkit'),
     growthHub: t('app_titles.growthHub'),
     resourceHub: t('app_titles.resourceHub'),
+    geminiAiNews: t('app_titles.geminiAiNews'),
     // FIX: Add pricing title
     pricing: 'Pricing & Plans',
   }), [t]);
@@ -513,6 +516,7 @@ const App: React.FC = () => {
     { id: 'workflow', name: t('desktop_apps.workflow'), icon: WorkflowIcon },
     { id: 'agentForge', name: t('desktop_apps.agentForge'), icon: AgentForgeIcon },
     { id: 'chronoVault', name: t('desktop_apps.chronoVault'), icon: ChronoVaultIcon },
+    { id: 'geminiAiNews', name: t('app_titles.geminiAiNews'), icon: NewsIcon },
     // FIX: Update custom agent icon function to accept className prop.
     ...customAgents.map(agent => ({
         id: agent.id as AppID,
@@ -545,6 +549,7 @@ const App: React.FC = () => {
     { id: 'devToolkit', name: t('app_launcher.devToolkit'), icon: DevToolkitIcon },
     { id: 'growthHub', name: t('app_launcher.growthHub'), icon: GrowthHubIcon },
     { id: 'resourceHub', name: t('app_launcher.resourceHub'), icon: ResourceHubIcon },
+    { id: 'geminiAiNews', name: t('app_launcher.geminiAiNews'), icon: NewsIcon },
     // FIX: Update custom agent icon function to accept className prop.
     ...customAgents.map(agent => ({
         id: agent.id as AppID,
@@ -579,7 +584,7 @@ const App: React.FC = () => {
             <Suspense fallback={null}><QuickActionsWidget onOpenApp={openWindow} /></Suspense>
             <Suspense fallback={null}><ViralFeedWidget posts={viralPosts} /></Suspense>
             <WorkflowDashboardWidget onOpenApp={openWindow} />
-            <TrendingWidget />
+            <Suspense fallback={null}><GeminiAiNewsWidget onOpenApp={openWindow} /></Suspense>
             <CryptoDashboardWidget />
           </>
         );
@@ -621,8 +626,8 @@ const App: React.FC = () => {
                   id={window.id}
                   initialX={window.x}
                   initialY={window.y}
-                  initialWidth={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub', 'settings', 'agentForge', 'store', 'agora', 'nexusChat', 'devConsole', 'apiDocs', 'devToolkit', 'growthHub', 'resourceHub'].includes(window.appId) ? 1024 : window.appId === 'smartwatch' ? 360 : window.width}
-                  initialHeight={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub', 'settings', 'agentForge', 'store', 'agora', 'nexusChat', 'devConsole', 'apiDocs', 'devToolkit', 'growthHub', 'resourceHub'].includes(window.appId) ? 768 : window.appId === 'smartwatch' ? 600 : window.height}
+                  initialWidth={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub', 'settings', 'agentForge', 'store', 'agora', 'nexusChat', 'devConsole', 'apiDocs', 'devToolkit', 'growthHub', 'resourceHub', 'geminiAiNews'].includes(window.appId) ? 1024 : window.appId === 'smartwatch' ? 360 : window.width}
+                  initialHeight={['workflow', 'travelPlanViewer', 'marketing', 'workspace', 'skillForge', 'chronoVault', 'creatorStudio', 'cognitoBrowser', 'analyticsHub', 'settings', 'agentForge', 'store', 'agora', 'nexusChat', 'devConsole', 'apiDocs', 'devToolkit', 'growthHub', 'resourceHub', 'geminiAiNews'].includes(window.appId) ? 768 : window.appId === 'smartwatch' ? 600 : window.height}
                   title={window.title}
                   zIndex={window.zIndex}
                   isMinimized={window.isMinimized}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppID, WindowInstance, TaskbarTheme } from '../types';
-import { AnalyticsHubIcon, CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkspaceIcon, WorkflowIcon, SkillForgeIcon, SettingsIcon, AgentForgeIcon, StoreIcon, NotificationCenterIcon, AvatarStudioIcon, AudioStudioIcon, DevToolkitIcon, AgoraIcon, NexusChatIcon, DevConsoleIcon, ApiIcon, MarketingIcon, GrowthHubIcon, ResourceHubIcon } from './Icons';
+import { AnalyticsHubIcon, CreatorStudioIcon, BrowserIcon, ChatIcon, TripIcon, WorkspaceIcon, WorkflowIcon, SkillForgeIcon, SettingsIcon, AgentForgeIcon, StoreIcon, NotificationCenterIcon, AvatarStudioIcon, AudioStudioIcon, DevToolkitIcon, AgoraIcon, NexusChatIcon, DevConsoleIcon, ApiIcon, MarketingIcon, GrowthHubIcon, ResourceHubIcon, NewsIcon } from './Icons';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface DockProps {
@@ -37,6 +37,7 @@ const appIcons: Record<string, React.FC<{className?: string}>> = {
   devToolkit: DevToolkitIcon,
   growthHub: GrowthHubIcon,
   resourceHub: ResourceHubIcon,
+  geminiAiNews: NewsIcon,
 };
 
 
@@ -60,6 +61,7 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
       { id: 'creatorStudio', name: t('dock.creatorStudio') },
       { id: 'store', name: t('dock.store') },
       { id: 'cognitoBrowser', name: t('dock.cognitoBrowser') },
+      { id: 'geminiAiNews', name: t('dock.geminiAiNews') },
       { id: 'travelAgent', name: t('dock.travelAgent') },
       { id: 'workflow', name: t('dock.workflow')},
       { id: 'agentForge', name: t('dock.agentForge') },

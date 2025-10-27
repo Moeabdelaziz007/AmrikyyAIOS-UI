@@ -43,6 +43,7 @@ export const translations = {
     'app_titles.devToolkit': 'Developer Toolkit',
     'app_titles.growthHub': 'Growth Hub',
     'app_titles.resourceHub': 'Resource Hub',
+    'app_titles.geminiAiNews': 'Gemini AI News',
     'app_titles.pricing': 'Pricing & Plans',
 
     'agent_prefix.agent': 'Agent',
@@ -67,6 +68,7 @@ export const translations = {
     'dock.devToolkit': 'Dev Toolkit',
     'dock.growthHub': 'Growth Hub',
     'dock.resourceHub': 'Resource Hub',
+    'dock.geminiAiNews': 'AI News',
     'dock.suggested': 'Suggested: {appName}',
 
     'settings.profile': 'Profile',
@@ -144,6 +146,7 @@ export const translations = {
     'app_launcher.devToolkit': 'Developer Toolkit',
     'app_launcher.growthHub': 'Growth Hub',
     'app_launcher.resourceHub': 'Resource Hub',
+    'app_launcher.geminiAiNews': 'AI News',
 
     'notifications.agent_installed': 'Agent "{agentName}" installed successfully!',
     'notifications.upgraded_to_pro': 'Successfully upgraded to the Pro Plan!',
@@ -197,6 +200,15 @@ export const translations = {
     
     'resource_hub.title': 'Open Source Resource Hub',
     'resource_hub.desc': 'A curated list of tools and libraries for developers and creators.',
+
+    'ai_news.title': 'Gemini AI News',
+    'ai_news.all': 'All',
+    'ai_news.top_stories': 'Top Stories',
+    'ai_news.market_watch': 'Market Watch',
+    'ai_news.tool_spotlight': 'Tool Spotlight',
+    'ai_news.model_updates': 'Model Updates',
+    'ai_news.search_placeholder': 'Search news...',
+    'ai_news.view_more': 'View More',
   },
   ar: {
     'app_titles.chat': 'محادثة Amrikyy AI',
@@ -242,6 +254,7 @@ export const translations = {
     'app_titles.devToolkit': 'مجموعة أدوات المطور',
     'app_titles.growthHub': 'مركز النمو',
     'app_titles.resourceHub': 'مركز الموارد',
+    'app_titles.geminiAiNews': 'أخبار Gemini AI',
     'app_titles.pricing': 'الأسعار والخطط',
 
     'agent_prefix.agent': 'عميل',
@@ -266,6 +279,7 @@ export const translations = {
     'dock.devToolkit': 'أدوات المطور',
     'dock.growthHub': 'مركز النمو',
     'dock.resourceHub': 'مركز الموارد',
+    'dock.geminiAiNews': 'أخبار AI',
     'dock.suggested': 'مقترح: {appName}',
     
     'settings.profile': 'الملف الشخصي',
@@ -343,6 +357,7 @@ export const translations = {
     'app_launcher.devToolkit': 'مجموعة أدوات المطور',
     'app_launcher.growthHub': 'مركز النمو',
     'app_launcher.resourceHub': 'مركز الموارد',
+    'app_launcher.geminiAiNews': 'أخبار AI',
 
     'notifications.agent_installed': 'تم تثبيت العميل "{agentName}" بنجاح!',
     'notifications.upgraded_to_pro': 'تمت الترقية إلى الخطة الاحترافية بنجاح!',
@@ -396,6 +411,15 @@ export const translations = {
 
     'resource_hub.title': 'مركز الموارد مفتوحة المصدر',
     'resource_hub.desc': 'قائمة منسقة من الأدوات والمكتبات للمطورين والمبدعين.',
+
+    'ai_news.title': 'أخبار Gemini AI',
+    'ai_news.all': 'الكل',
+    'ai_news.top_stories': 'أهم الأخبار',
+    'ai_news.market_watch': 'مراقبة السوق',
+    'ai_news.tool_spotlight': 'أداة مميزة',
+    'ai_news.model_updates': 'تحديثات النماذج',
+    'ai_news.search_placeholder': 'ابحث في الأخبار...',
+    'ai_news.view_more': 'عرض المزيد',
   },
 };
 

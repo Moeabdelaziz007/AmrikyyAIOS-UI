@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppID, WindowInstance } from '../types';
 // FIX: Import all missing icon components to resolve compilation errors.
-import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, OrionIcon, AnalyticsHubIcon, AgentForgeIcon, StoreIcon, PricingIcon, LiveConversationIcon, ImageAnalyzerIcon, NotificationCenterIcon, AudioStudioIcon, AvatarStudioIcon, MarketingIcon, DevToolkitIcon, AgoraIcon, NexusChatIcon, HeliosIcon, DevConsoleIcon, ApiIcon, GrowthHubIcon, ResourceHubIcon } from './Icons';
+import { ChatIcon, TripIcon, TerminalIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, SmartWatchIcon, WorkspaceIcon, EventLogIcon, CreatorStudioIcon, SkillForgeIcon, ChronoVaultIcon, BrowserIcon, AtlasIcon, CortexIcon, OrionIcon, AnalyticsHubIcon, AgentForgeIcon, StoreIcon, PricingIcon, LiveConversationIcon, ImageAnalyzerIcon, NotificationCenterIcon, AudioStudioIcon, AvatarStudioIcon, MarketingIcon, DevToolkitIcon, AgoraIcon, NexusChatIcon, HeliosIcon, DevConsoleIcon, ApiIcon, GrowthHubIcon, ResourceHubIcon, NewsIcon } from './Icons';
 
 interface TaskbarProps {
   openWindows: WindowInstance[];
@@ -67,6 +67,7 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   clio: MarketingIcon,
   growthHub: GrowthHubIcon,
   resourceHub: ResourceHubIcon,
+  geminiAiNews: NewsIcon,
   // FIX: Add missing pricing icon to satisfy record type.
   pricing: PricingIcon,
 };

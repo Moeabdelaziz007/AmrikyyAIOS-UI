@@ -13,7 +13,9 @@ const UserBehaviorContext = createContext<UserBehaviorContextType | undefined>(u
 
 export const UserBehaviorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [actions, setActions] = useState<UserAction[]>([]);
-  // FIX: Explicitly type the initial state to match the state's type definition.
+  // FIX: Explicitly typed the `appFrequency` state. The initial empty object `{}` caused
+  // TypeScript to infer its values as `unknown`, leading to an arithmetic error
+  // when sorting in `getFrequentApps`.
   const [appFrequency, setAppFrequency] = useState<Record<AppID, number>>({});
 
   const logAction = useCallback((appId: AppID, details?: Record<string, any>) => {

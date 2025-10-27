@@ -25,6 +25,7 @@ export type AppID =
   'agentForge' | 'avatarStudio' | 'agentProfile' | 'store' | 'notificationCenter' | 'liveConversation' | 'imageAnalyzer' |
   'devToolkit' | 'agora' | 'nexusChat' | 
   'devConsole' | 'apiDocs' | 'growthHub' | 'resourceHub' |
+  'geminiAiNews' |
   // FIX: Add missing AppIDs for agents used in Taskbar.tsx
   'atlas' | 'cortex' | 'orion' | 'helios' | 'leo' | 'zara' | 'rex' | 'clio' |
   // FIX: Add missing 'pricing' AppID used in Store and VideoGenerator apps.
