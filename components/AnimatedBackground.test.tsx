@@ -4,6 +4,7 @@ import AnimatedBackground from './AnimatedBackground';
 
 describe('AnimatedBackground', () => {
   // Mock the canvas getContext method as it's not implemented in JSDOM
+  // This is essential for any component that interacts with a canvas.
   beforeEach(() => {
     HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
       clearRect: vi.fn(),
@@ -18,8 +19,10 @@ describe('AnimatedBackground', () => {
   
   it('renders a canvas element without crashing', () => {
     render(<AnimatedBackground />);
-    // JSDOM doesn't render visually, so we can't test the animation.
-    // The most we can do is a "smoke test" to ensure it renders the canvas element.
+    
+    // In JSDOM, we cannot test the visual output or animations of the canvas.
+    // This "smoke test" ensures that the component mounts and renders its
+    // primary canvas element without throwing any errors.
     const canvasElement = document.querySelector('canvas');
     expect(canvasElement).toBeInTheDocument();
   });
