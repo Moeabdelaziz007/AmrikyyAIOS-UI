@@ -7,7 +7,6 @@ import PoweredByGemini from './components/PoweredByGemini';
 import TrendingWidget from './components/TrendingWidget';
 import WorkflowDashboardWidget from './components/WorkflowDashboardWidget';
 import { generateTravelPlan, generateWorkflowFromPrompt } from './services/geminiAdvancedService';
-import DailyBriefingWidget from './components/DailyBriefingWidget';
 // Fix: Import DesktopAppsGrid component to resolve 'Cannot find name' error.
 import DesktopAppsGrid from './components/DesktopAppsGrid';
 
@@ -255,7 +254,6 @@ const App: React.FC = () => {
       {/* Desktop Widget Dashboard */}
       <div className="absolute top-4 right-4 z-20 hidden md:flex flex-col gap-4 animate-slide-in-right w-full max-w-sm">
         <div className="glass-effect rounded-xl p-4 flex flex-col gap-4">
-          <DailyBriefingWidget />
           <WorkflowDashboardWidget onOpenApp={openWindow} />
           <TrendingWidget />
         </div>
