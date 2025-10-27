@@ -1,27 +1,29 @@
 
-import React, { useState, useCallback } from 'react';
-import { WindowInstance, AppID } from './types';
+import React, { useState, useCallback, Suspense, lazy, useEffect } from 'react';
+import { WindowInstance, AppID, Settings } from './types';
 import Window from './components/Window';
 import Dock from './components/Dock';
-import ChatApp from './components/apps/ChatApp';
-import TripPlannerApp from './components/apps/TripPlannerApp';
-import TerminalApp from './components/apps/TerminalApp';
-import FilesApp from './components/apps/FilesApp';
-import SettingsApp from './components/apps/SettingsApp';
-import ImageGeneratorApp from './components/apps/ImageGeneratorApp';
-import VideoGeneratorApp from './components/apps/VideoGeneratorApp';
-import SearchApp from './components/apps/SearchApp';
-import MapsApp from './components/apps/MapsApp';
 import AIOrb from './components/AIOrb';
 import AnimatedBackground from './components/AnimatedBackground';
 import DesktopAppsGrid from './components/DesktopAppsGrid';
-import LunaApp from './components/apps/LunaApp';
-import KarimApp from './components/apps/KarimApp';
-import ScoutApp from './components/apps/ScoutApp';
-import MayaApp from './components/apps/MayaApp';
-import WorkflowStudioApp from './components/apps/WorkflowStudioApp';
 
-const appComponents: Record<AppID, React.FC> = {
+// Lazy load all application components for code-splitting and performance
+const ChatApp = lazy(() => import('./components/apps/ChatApp'));
+const TripPlannerApp = lazy(() => import('./components/apps/TripPlannerApp'));
+const TerminalApp = lazy(() => import('./components/apps/TerminalApp'));
+const FilesApp = lazy(() => import('./components/apps/FilesApp'));
+const SettingsApp = lazy(() => import('./components/apps/SettingsApp'));
+const ImageGeneratorApp = lazy(() => import('./components/apps/ImageGeneratorApp'));
+const VideoGeneratorApp = lazy(() => import('./components/apps/VideoGeneratorApp'));
+const SearchApp = lazy(() => import('./components/apps/SearchApp'));
+const MapsApp = lazy(() => import('./components/apps/MapsApp'));
+const LunaApp = lazy(() => import('./components/apps/LunaApp'));
+const KarimApp = lazy(() => import('./components/apps/KarimApp'));
+const ScoutApp = lazy(() => import('./components/apps/ScoutApp'));
+const MayaApp = lazy(() => import('./components/apps/MayaApp'));
+const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp'));
+
+const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   chat: ChatApp,
   trips: TripPlannerApp,
   terminal: TerminalApp,
@@ -55,10 +57,32 @@ const appTitles: Record<AppID, string> = {
   workflow: 'Workflow Studio',
 };
 
+const AppLoadingSpinner: React.FC = () => (
+    <div className="w-full h-full flex items-center justify-center bg-transparent">
+        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+    </div>
+);
+
 const App: React.FC = () => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
   const [nextZIndex, setNextZIndex] = useState(10);
   const [nextId, setNextId] = useState(1);
+  const [settings, setSettings] = useState<Settings>({
+    theme: 'dark',
+    wallpaper: '/wallpaper.svg',
+    accentColor: '#3B82F6',
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('dark', 'light');
+    root.classList.add(settings.theme);
+    root.style.setProperty('--accent-color', settings.accentColor);
+  }, [settings]);
+
+  const handleSettingsChange = useCallback((newSettings: Partial<Settings>) => {
+    setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
 
   const openWindow = useCallback((appId: AppID) => {
     setWindows(prevWindows => {
@@ -108,8 +132,13 @@ const App: React.FC = () => {
   const activeWindowId = windows.length > 0 ? windows.reduce((prev, current) => (prev.zIndex > current.zIndex) ? prev : current).id : null;
   
   return (
-    <main className="w-screen h-screen bg-transparent overflow-hidden">
-      <AnimatedBackground />
+    <main 
+      className="w-screen h-screen bg-bg-primary bg-cover bg-center overflow-hidden transition-colors duration-500"
+      style={{
+        backgroundImage: settings.wallpaper.startsWith('/') ? `url(${settings.wallpaper})` : 'none',
+      }}
+    >
+      {settings.wallpaper === 'live' && <AnimatedBackground />}
       <div className="relative w-full h-full">
         <DesktopAppsGrid onOpen={openWindow} />
         <AIOrb onClick={() => openWindow('chat')} />
@@ -130,7 +159,12 @@ const App: React.FC = () => {
               onMinimize={() => minimizeWindow(window.id)}
               onFocus={() => focusWindow(window.id)}
             >
-              {React.createElement(appComponents[window.appId])}
+              <Suspense fallback={<AppLoadingSpinner />}>
+                {window.appId === 'settings' 
+                    ? <SettingsApp settings={settings} onSettingsChange={handleSettingsChange} />
+                    : React.createElement(appComponents[window.appId])
+                }
+              </Suspense>
             </Window>
         ))}
 

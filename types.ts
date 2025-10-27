@@ -42,3 +42,17 @@ export interface Agent {
   };
   subAgents: SubAgentID[];
 }
+
+export type Theme = 'dark' | 'light';
+export type WallpaperID = 'live' | '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
+
+export interface Settings {
+  theme: Theme;
+  wallpaper: WallpaperID | string;
+  accentColor: string;
+}
+
+export interface SettingsAppProps {
+  settings: Settings;
+  onSettingsChange: (newSettings: Partial<Settings>) => void;
+}

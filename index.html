@@ -9,12 +9,38 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono&display=swap');
       
+      :root {
+        --bg-primary: #0A0E1A;
+        --bg-secondary: #111827;
+        --bg-tertiary: #1F2937;
+        --text-primary: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        --text-muted: #6B7280;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --glass-bg: rgba(17, 24, 39, 0.8);
+
+        --primary-blue: #3B82F6;
+        --primary-purple: #8B5CF6;
+        --primary-cyan: #06B6D4;
+        --primary-pink: #EC4899;
+        
+        --accent-color: var(--primary-blue);
+      }
+
+      .light {
+        --bg-primary: #f9fafb;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f3f4f6;
+        --text-primary: #111827;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+      }
+
       body {
-        /* background-image is now handled by the animated canvas */
-        background-color: #0A0E1A;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
       }
 
       .sr-only {
@@ -34,16 +60,17 @@
         theme: {
           extend: {
             colors: {
-              'primary-blue': '#3B82F6',
-              'primary-purple': '#8B5CF6',
-              'primary-cyan': '#06B6D4',
-              'primary-pink': '#EC4899',
-              'bg-primary': '#0A0E1A',
-              'bg-secondary': '#111827',
-              'bg-tertiary': '#1F2937',
-              'text-primary': '#F9FAFB',
-              'text-secondary': '#9CA3AF',
-              'text-muted': '#6B7280',
+              'primary-blue': 'var(--primary-blue)',
+              'primary-purple': 'var(--primary-purple)',
+              'primary-cyan': 'var(--primary-cyan)',
+              'primary-pink': 'var(--primary-pink)',
+              'accent': 'var(--accent-color)',
+              'bg-primary': 'var(--bg-primary)',
+              'bg-secondary': 'var(--bg-secondary)',
+              'bg-tertiary': 'var(--bg-tertiary)',
+              'text-primary': 'var(--text-primary)',
+              'text-secondary': 'var(--text-secondary)',
+              'text-muted': 'var(--text-muted)',
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
@@ -55,6 +82,9 @@
               'md': '12px',
               'lg': '16px',
               'xl': '24px',
+            },
+            borderColor: {
+              DEFAULT: 'var(--border-color)'
             },
             keyframes: {
               'fade-in': {
@@ -128,12 +158,18 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0"
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
+    "@testing-library/jest-dom": "https://aistudiocdn.com/@testing-library/jest-dom@^6.9.1",
+    "@testing-library/react": "https://aistudiocdn.com/@testing-library/react@^16.3.0",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
+    "vite": "https://aistudiocdn.com/vite@^7.1.12",
+    "vitest": "https://aistudiocdn.com/vitest@^4.0.3",
+    "vitest/": "https://aistudiocdn.com/vitest@^4.0.3/"
   }
 }
 </script>
 </head>
-  <body class="bg-bg-primary text-text-primary font-sans">
+  <body class="font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

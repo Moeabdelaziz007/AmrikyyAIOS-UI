@@ -34,4 +34,4 @@ const AIOrb: React.FC<AIOrbProps> = ({ onClick }) => {
   );
 };
 
-export default AIOrb;
+export default React.memo(AIOrb);

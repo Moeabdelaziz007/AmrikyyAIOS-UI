@@ -79,7 +79,7 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
       aria-modal="true"
       aria-labelledby={`window-title-${id}`}
       tabIndex={-1}
-      className={`absolute flex flex-col rounded-lg shadow-2xl shadow-black/50 overflow-hidden border animate-slide-up focus:outline-none transition-shadow duration-300 ${isActive ? 'ring-2 ring-primary-blue border-primary-blue/50' : 'border-white/10'}`}
+      className={`absolute flex flex-col rounded-lg shadow-2xl shadow-black/50 overflow-hidden border animate-slide-up focus:outline-none transition-shadow duration-300 ${isActive ? 'ring-2 ring-accent border-accent/50' : 'border-border-color'}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -89,7 +89,7 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
         minWidth: '300px',
         minHeight: '200px',
         resize: 'both',
-        background: 'rgba(17, 24, 39, 0.8)', // bg-secondary with opacity
+        background: 'var(--glass-bg)',
         backdropFilter: 'blur(20px)',
       }}
       onMouseDown={onFocus}
@@ -106,11 +106,11 @@ const Window: React.FC<WindowProps> = ({ children, title, id, initialX, initialY
          <span id={`window-title-${id}`} className="font-bold text-sm text-text-primary absolute left-1/2 -translate-x-1/2">{title}</span>
          <div />
       </div>
-      <div className="flex-grow p-1 overflow-auto">
+      <div className="flex-grow p-1 overflow-auto bg-bg-tertiary">
         {children}
       </div>
     </div>
   );
 };
 
-export default Window;
+export default React.memo(Window);

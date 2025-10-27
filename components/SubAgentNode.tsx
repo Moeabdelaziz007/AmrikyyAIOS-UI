@@ -52,4 +52,4 @@ const SubAgentNode: React.FC<SubAgentNodeProps> = ({ subAgent, description, stat
     );
 };
 
-export default SubAgentNode;
+export default React.memo(SubAgentNode);

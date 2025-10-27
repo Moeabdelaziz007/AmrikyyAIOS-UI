@@ -49,4 +49,4 @@ const DesktopAppsGrid: React.FC<DesktopAppsGridProps> = ({ onOpen }) => {
     );
 };
 
-export default DesktopAppsGrid;
+export default React.memo(DesktopAppsGrid);

@@ -65,7 +65,7 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
       aria-label="Application Dock"
       className="fixed bottom-4 left-1/2 -translate-x-1/2"
     >
-      <div className="flex items-end justify-center space-x-2 h-20 p-2 bg-black/20 backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl">
+      <div className="flex items-end justify-center space-x-2 h-20 p-2 bg-black/20 backdrop-blur-lg rounded-2xl border border-border-color shadow-2xl">
         <button
           className="group relative h-14 w-14 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
           aria-label="App Launcher"
@@ -74,7 +74,7 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
           <GridIcon className="h-7 w-7 text-text-secondary group-hover:text-text-primary" />
         </button>
 
-        <div className="h-full w-px bg-white/10 mx-1"></div>
+        <div className="h-full w-px bg-border-color mx-1"></div>
 
         {apps.map(app => {
             const Icon = appIcons[app.id];
@@ -93,7 +93,7 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
                   <Icon className="h-7 w-7 text-text-secondary group-hover:text-text-primary" />
                    {isActive && <span className="sr-only">(Active Window)</span>}
                 </button>
-                 {isOpen && <div className={`mt-1.5 h-1.5 w-1.5 rounded-full ${isActive ? 'bg-primary-blue' : 'bg-text-muted'}`} />}
+                 {isOpen && <div className={`mt-1.5 h-1.5 w-1.5 rounded-full ${isActive ? 'bg-accent' : 'bg-text-muted'}`} />}
               </div>
             )
         })}
@@ -102,4 +102,4 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
   );
 };
 
-export default Dock;
+export default React.memo(Dock);

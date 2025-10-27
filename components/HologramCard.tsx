@@ -72,4 +72,4 @@ const HologramCard: React.FC<HologramCardProps> = ({ agent }) => {
     );
 };
 
-export default HologramCard;
+export default React.memo(HologramCard);
