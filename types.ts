@@ -1,10 +1,9 @@
 import React from 'react';
 
 export type AppID = 
-  'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 
-  'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 
-  'workflow' | 'travelPlanViewer' | 'transcriber' | 'videoAnalyzer' | 'jules' | 
-  'voice' | 'veo' | 'nanoBanana' | 'youtube' | 'gmail';
+  'chat' | 'terminal' | 'files' | 'settings' | 
+  'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 
+  'voice' | 'workflow' | 'travelAgent' | 'marketing' | 'travelPlanViewer';
 
 export interface TravelPlan {
   destination: string;
@@ -46,7 +45,7 @@ export interface Message {
 
 export type SubAgentID = 
   'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 
-  'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts';
+  'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts' | 'gemini-music';
 
 export interface SubAgent {
     id: SubAgentID;
@@ -56,7 +55,7 @@ export interface SubAgent {
 }
 
 export interface Agent {
-  id: 'luna' | 'karim' | 'scout' | 'maya' | 'jules';
+  id: 'luna' | 'karim' | 'scout' | 'maya' | 'jules' | 'orion';
   name: string;
   role: string;
   icon: string;
@@ -71,18 +70,45 @@ export interface Agent {
   subAgents: SubAgentID[];
 }
 
-export type Theme = 'dark' | 'light';
+export type Theme = 'dark' | 'light' | 'neon-noir' | 'synthwave-sunset';
 export type WallpaperID = '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
 export type TaskbarTheme = 'glass' | 'solid' | 'transparent';
+export type WindowStyle = 'gemini' | 'macos' | 'futuristic';
+
 
 export interface Settings {
   theme: Theme;
   wallpaper: WallpaperID | string;
   accentColor: string;
   taskbarTheme: TaskbarTheme;
+  windowStyle: WindowStyle;
 }
 
 export interface SettingsAppProps {
   settings: Settings;
   onSettingsChange: (newSettings: Partial<Settings>) => void;
+}
+
+export interface TrendingItem {
+  rank: number;
+  name: string;
+  category: 'Tool' | 'Model' | 'News';
+  change: number;
+}
+
+export interface WorkflowNode {
+    id: string;
+    agentId: Agent['id'];
+    description: string;
+}
+
+export interface WorkflowConnection {
+    from: string;
+    to: string;
+}
+
+export interface Workflow {
+    title: string;
+    nodes: WorkflowNode[];
+    connections: WorkflowConnection[];
 }

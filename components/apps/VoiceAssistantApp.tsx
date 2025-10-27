@@ -1,144 +1,117 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { connectToLiveStream, streamAudio, encode } from '../../services/liveService';
-import { LiveSession, LiveServerMessage } from '@google/genai';
-import { decode, playDecodedAudio } from '../../utils/audioUtils';
+import React, { useState, useRef, useCallback } from 'react';
+import { transcribeAudio, generateWorkflowFromPrompt } from '../../services/geminiAdvancedService';
+import { Workflow } from '../../types';
+import { fileToBase64 } from '../../utils/fileUtils';
 import VoiceHologram from '../VoiceHologram';
+import { SparklesIcon } from '../Icons';
 
-type VoiceState = 'idle' | 'listening' | 'speaking';
-type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
+type VoiceState = 'idle' | 'listening' | 'processing' | 'done';
+interface VoiceAssistantAppProps {
+    onExecuteWorkflow: (workflow: Workflow) => void;
+}
 
-const VoiceAssistantApp: React.FC = () => {
+const VoiceAssistantApp: React.FC<VoiceAssistantAppProps> = ({ onExecuteWorkflow }) => {
     const [voiceState, setVoiceState] = useState<VoiceState>('idle');
-    const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
+    const [transcription, setTranscription] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
 
-    const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const outputAudioContextRef = useRef<AudioContext | null>(null);
-    const streamRef = useRef<MediaStream | null>(null);
-    const audioStreamerRef = useRef<{ stop: () => void } | null>(null);
-    const audioQueue = useRef<string[]>([]);
-    const isPlaying = useRef(false);
-
-    const playNextInQueue = useCallback(async () => {
-        if (isPlaying.current || audioQueue.current.length === 0) return;
-        if (!outputAudioContextRef.current) return;
-        
-        isPlaying.current = true;
-        setVoiceState('speaking');
-
-        const base64Audio = audioQueue.current.shift();
-        if (base64Audio) {
-            try {
-                await playDecodedAudio(decode(base64Audio), outputAudioContextRef.current);
-            } catch (e) {
-                console.error("Error playing audio chunk:", e);
-            }
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                audioChunksRef.current.push(event.data);
+            };
+            mediaRecorderRef.current.onstop = processAudio;
+            audioChunksRef.current = [];
+            mediaRecorderRef.current.start();
+            setVoiceState('listening');
+            setTranscription('');
+            setError(null);
+        } catch (err) {
+            setError('Microphone access denied. Please allow microphone permissions.');
+            console.error(err);
         }
+    };
 
-        isPlaying.current = false;
-        if(audioQueue.current.length > 0) {
-            playNextInQueue();
-        } else {
-            setVoiceState('listening'); // Or idle if conversation ends
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && voiceState === 'listening') {
+            mediaRecorderRef.current.stop();
+             mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            setVoiceState('processing');
         }
-    }, []);
+    };
 
-    const handleMessage = useCallback((message: LiveServerMessage) => {
-        const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData.data;
-        if (base64Audio) {
-            audioQueue.current.push(base64Audio);
-            playNextInQueue();
-        }
-         if (message.serverContent?.interrupted) {
-            // Future improvement: Handle interruption by clearing queue
-        }
-    }, [playNextInQueue]);
+    const processAudio = async () => {
+        if (audioChunksRef.current.length === 0) {
+            setVoiceState('idle');
+            return;
+        };
 
-    const connect = useCallback(async () => {
-        if (connectionState === 'connecting' || connectionState === 'connected') return;
-        setConnectionState('connecting');
-        setError(null);
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], "recording.webm", { type: audioBlob.type });
         
         try {
-            audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-            outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+            // 1. Transcribe audio
+            const base64Audio = await fileToBase64(audioFile);
+            const transcript = await transcribeAudio(base64Audio.split(',')[1], audioFile.type);
+            setTranscription(transcript);
+
+            // 2. Generate workflow from transcription
+            const workflow = await generateWorkflowFromPrompt(transcript);
             
-            streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            sessionPromiseRef.current = connectToLiveStream({
-                onOpen: () => {
-                    setConnectionState('connected');
-                    setVoiceState('listening');
-                },
-                onMessage: handleMessage,
-                onError: (e) => {
-                    console.error("Live session error:", e);
-                    setError("Connection error. Please try again.");
-                    setConnectionState('error');
-                },
-                onClose: () => {
-                    setConnectionState('disconnected');
-                    setVoiceState('idle');
-                }
-            });
-            
-            audioStreamerRef.current = await streamAudio(sessionPromiseRef.current, streamRef.current, audioContextRef.current);
-
-        } catch (err) {
-            console.error(err);
-            setError("Could not start session. Please ensure microphone access is enabled.");
-            setConnectionState('error');
+            // 3. Execute workflow
+            onExecuteWorkflow(workflow);
+            setVoiceState('done');
+        } catch(e) {
+            setError("Failed to process command.");
+            setVoiceState('idle');
+            console.error(e);
         }
-    }, [connectionState, handleMessage]);
+    };
 
-    const disconnect = useCallback(() => {
-        sessionPromiseRef.current?.then(session => session.close());
-        streamRef.current?.getTracks().forEach(track => track.stop());
-        audioStreamerRef.current?.stop();
-        audioContextRef.current?.close();
-        outputAudioContextRef.current?.close();
-        
-        sessionPromiseRef.current = null;
-        streamRef.current = null;
-        audioStreamerRef.current = null;
-        audioContextRef.current = null;
-        outputAudioContextRef.current = null;
-        audioQueue.current = [];
-        isPlaying.current = false;
-
-        setConnectionState('disconnected');
-        setVoiceState('idle');
-
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            disconnect();
+    const handleButtonClick = () => {
+        if (voiceState === 'listening') {
+            stopRecording();
+        } else {
+            startRecording();
         }
-    }, [disconnect]);
+    }
+
+    const getButtonText = () => {
+        switch (voiceState) {
+            case 'idle':
+            case 'done':
+                return 'Start Listening';
+            case 'listening':
+                return 'Stop Listening';
+            case 'processing':
+                return 'Processing...';
+        }
+    }
 
     return (
         <div className="h-full w-full flex flex-col items-center justify-center bg-bg-tertiary rounded-b-md text-white p-6 gap-6">
-            <VoiceHologram state={voiceState} />
-             <div className="h-10 text-center">
+            <VoiceHologram state={voiceState === 'listening' ? 'listening' : 'idle'} />
+             <div className="h-16 text-center">
                  {error && <p className="text-red-400">{error}</p>}
+                 {transcription && (
+                     <div className="flex items-center gap-2">
+                         <SparklesIcon className="w-5 h-5 text-primary-purple"/>
+                         <p className="font-mono text-lg">{transcription}</p>
+                     </div>
+                 )}
+                 {voiceState === 'done' && <p className="text-green-400">Workflow generated and sent to studio!</p>}
              </div>
-             {connectionState !== 'connected' && connectionState !== 'connecting' ? (
-                <button
-                    onClick={connect}
-                    className="px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-primary-cyan to-sky-500 hover:brightness-110 active:scale-95 transition-all duration-200"
-                >
-                    Start Conversation
-                </button>
-             ) : (
-                <button
-                    onClick={disconnect}
-                    className="px-6 py-3 font-bold rounded-lg bg-gradient-to-r from-red-500 to-rose-500 hover:brightness-110 active:scale-95 transition-all duration-200"
-                >
-                    End Conversation
-                </button>
-             )}
+             <button
+                onClick={handleButtonClick}
+                disabled={voiceState === 'processing'}
+                className="px-8 py-4 font-bold rounded-lg bg-gradient-to-r from-primary-cyan to-sky-500 hover:brightness-110 active:scale-95 transition-all duration-200 disabled:opacity-50"
+            >
+                {getButtonText()}
+            </button>
         </div>
     );
 };

@@ -1,87 +1,62 @@
 import React, { useState, useCallback, Suspense, lazy, useEffect } from 'react';
-import { WindowInstance, AppID, Settings, TravelPlan, TaskbarTheme } from './types';
+import { WindowInstance, AppID, Settings, TravelPlan, Workflow } from './types';
 import Dock from './components/Dock';
 import HologramWallpaper from './components/HologramWallpaper';
 import AppLauncher from './components/AppLauncher';
 import PoweredByGemini from './components/PoweredByGemini';
-import { generateTravelPlan } from './services/geminiAdvancedService';
+import TrendingWidget from './components/TrendingWidget';
+import { generateTravelPlan, generateWorkflowFromPrompt } from './services/geminiAdvancedService';
 
 // Lazy load all application components for code-splitting and performance
 const ChatApp = lazy(() => import('./components/apps/ChatApp'));
-const TripPlannerApp = lazy(() => import('./components/apps/TripPlannerApp'));
 const TerminalApp = lazy(() => import('./components/apps/TerminalApp'));
 const FilesApp = lazy(() => import('./components/apps/FilesApp'));
 const SettingsApp = lazy(() => import('./components/apps/SettingsApp'));
-const ImageGeneratorApp = lazy(() => import('./components/apps/ImageGeneratorApp'));
-const VideoGeneratorApp = lazy(() => import('./components/apps/VideoGeneratorApp'));
-const SearchApp = lazy(() => import('./components/apps/SearchApp'));
-const MapsApp = lazy(() => import('./components/apps/MapsApp'));
 const LunaApp = lazy(() => import('./components/apps/LunaApp'));
 const KarimApp = lazy(() => import('./components/apps/KarimApp'));
 const ScoutApp = lazy(() => import('./components/apps/ScoutApp'));
 const MayaApp = lazy(() => import('./components/apps/MayaApp'));
-const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp'));
-const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
-const TranscriberApp = lazy(() => import('./components/apps/TranscriberApp'));
-const VideoAnalyzerApp = lazy(() => import('./components/apps/VideoAnalyzerApp'));
 const JulesApp = lazy(() => import('./components/apps/JulesApp'));
 const VoiceAssistantApp = lazy(() => import('./components/apps/VoiceAssistantApp'));
-const VeoApp = lazy(() => import('./components/apps/VeoApp'));
-const NanoBananaApp = lazy(() => import('./components/apps/NanoBananaApp'));
-const YouTubeApp = lazy(() => import('./components/apps/YouTubeApp'));
-const GmailApp = lazy(() => import('./components/apps/GmailApp'));
+const WorkflowStudioApp = lazy(() => import('./components/apps/WorkflowStudioApp'));
+const TravelAgentApp = lazy(() => import('./components/apps/TravelAgentApp'));
+const MarketingApp = lazy(() => import('./components/apps/MarketingApp'));
+const TravelPlanViewerApp = lazy(() => import('./components/apps/TravelPlanViewerApp'));
+
 const Window = lazy(() => import('./components/Window'));
 
 const appComponents: Record<AppID, React.LazyExoticComponent<React.FC<any>>> = {
   chat: ChatApp,
-  trips: TripPlannerApp,
   terminal: TerminalApp,
   files: FilesApp,
   settings: SettingsApp,
-  image: ImageGeneratorApp,
-  video: VideoGeneratorApp,
-  search: SearchApp,
-  maps: MapsApp,
   luna: LunaApp,
   karim: KarimApp,
   scout: ScoutApp,
   maya: MayaApp,
-  workflow: WorkflowStudioApp,
-  travelPlanViewer: TravelPlanViewerApp,
-  transcriber: TranscriberApp,
-  videoAnalyzer: VideoAnalyzerApp,
   jules: JulesApp,
   voice: VoiceAssistantApp,
-  veo: VeoApp,
-  nanoBanana: NanoBananaApp,
-  youtube: YouTubeApp,
-  gmail: GmailApp,
+  workflow: WorkflowStudioApp,
+  travelAgent: TravelAgentApp,
+  marketing: MarketingApp,
+  travelPlanViewer: TravelPlanViewerApp,
 };
 
 const appTitles: Record<AppID, string> = {
   chat: 'Amrikyy AI Chat',
-  trips: 'Trip Planner',
   terminal: 'Terminal',
   files: 'File Explorer',
   settings: 'System Settings',
-  image: 'AI Image Generator',
-  video: 'AI Video Generator',
-  search: 'AI Search',
-  maps: 'AI Maps',
   luna: 'Agent: Luna',
   karim: 'Agent: Karim',
   scout: 'Agent: Scout',
   maya: 'Agent: Maya',
-  workflow: 'Workflow Studio',
-  travelPlanViewer: 'AI Travel Plan',
-  transcriber: 'Audio Transcriber',
-  videoAnalyzer: 'Video Analyzer',
   jules: 'Agent: Jules',
   voice: 'AI Voice Assistant',
-  veo: 'Veo Video',
-  nanoBanana: 'Nano Banana',
-  youtube: 'YouTube',
-  gmail: 'Gmail',
+  workflow: 'Workflow Studio',
+  travelAgent: 'Travel Agent Pro',
+  marketing: 'Marketing Copilot',
+  travelPlanViewer: 'AI Travel Plan',
 };
 
 const AppLoadingSpinner: React.FC = () => (
@@ -101,6 +76,7 @@ const App: React.FC = () => {
     wallpaper: '/wallpaper.svg',
     accentColor: '#3B82F6',
     taskbarTheme: 'glass',
+    windowStyle: 'gemini',
   });
 
   const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
@@ -109,7 +85,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('dark', 'light');
+    root.className = ''; // Clear all previous theme classes
     root.classList.add(settings.theme);
     root.style.setProperty('--accent-color', settings.accentColor);
   }, [settings]);
@@ -152,40 +128,38 @@ const App: React.FC = () => {
     setNextZIndex(prev => prev + 1);
   }, [nextId, nextZIndex]);
 
+  const executeWorkflow = useCallback((workflow: Workflow) => {
+    openWindow('workflow', { workflow });
+  }, [openWindow]);
+
   const startTravelWorkflow = useCallback(async (details: { destination: string, startDate: string, endDate: string, budget: string }) => {
       setFinalPlan(null);
       setIsWorkflowRunning(true);
       setWorkflowStep(0);
-      openWindow('workflow');
       
-      const stepRunner = (step: number) => {
-          setWorkflowStep(step);
-          return new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
-      }
+      const workflow: Workflow = {
+          title: "Automated Travel Plan Generation",
+          nodes: [
+              { id: 'luna', agentId: 'luna', description: 'Generating Itinerary...' },
+              { id: 'scout', agentId: 'scout', description: 'Finding Deals & Links...' },
+              { id: 'karim', agentId: 'karim', description: 'Creating Budget...' },
+              { id: 'maya', agentId: 'maya', description: 'Compiling Final Plan...' },
+          ],
+          connections: [ { from: 'luna', to: 'scout' }, { from: 'scout', to: 'karim' }, { from: 'karim', to: 'maya' } ]
+      };
 
-      try {
-          await stepRunner(0); // Luna
-          await stepRunner(1); // Scout
-          await stepRunner(2); // Karim
-          
-          const plan = await generateTravelPlan(details);
-          
-          await stepRunner(3); // Maya
-          setFinalPlan(plan);
-
-      } catch (error) {
-          console.error("Workflow failed:", error);
-      } finally {
-          setIsWorkflowRunning(false);
-      }
+      openWindow('workflow', { 
+          workflow,
+          isExecuting: true,
+          onComplete: (plan: TravelPlan) => {
+              setFinalPlan(plan);
+              openWindow('travelPlanViewer', { plan });
+          },
+          executingDetails: details
+      });
 
   }, [openWindow]);
-
-  const openPlanViewer = useCallback(() => {
-      if (!finalPlan) return;
-      openWindow('travelPlanViewer', { plan: finalPlan });
-  }, [finalPlan, openWindow]);
-
+  
   const closeWindow = (id: number) => {
     setWindows(windows.filter(w => w.id !== id));
   };
@@ -213,6 +187,7 @@ const App: React.FC = () => {
     >
       <HologramWallpaper />
       <PoweredByGemini />
+      <TrendingWidget />
       
       <div className="relative w-full h-full">
         {isAppLauncherOpen && <AppLauncher onOpen={openWindow} onClose={() => setIsAppLauncherOpen(false)} />}
@@ -224,12 +199,13 @@ const App: React.FC = () => {
                   id={window.id}
                   initialX={window.x}
                   initialY={window.y}
-                  initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' ? 1024 : window.width}
-                  initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' ? 768 : window.height}
+                  initialWidth={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' ? 1024 : window.width}
+                  initialHeight={window.appId === 'workflow' || window.appId === 'travelPlanViewer' || window.appId === 'marketing' ? 768 : window.height}
                   title={window.title}
                   zIndex={window.zIndex}
                   isMinimized={window.isMinimized}
                   isActive={window.id === activeWindowId}
+                  windowStyle={settings.windowStyle}
                   onClose={() => closeWindow(window.id)}
                   onMinimize={() => minimizeWindow(window.id)}
                   onFocus={() => focusWindow(window.id)}
@@ -243,13 +219,10 @@ const App: React.FC = () => {
                           if (window.appId === 'settings') {
                               props.settings = settings;
                               props.onSettingsChange = handleSettingsChange;
-                          } else if (window.appId === 'trips') {
+                          } else if (window.appId === 'travelAgent') {
                               props.startTravelWorkflow = startTravelWorkflow;
-                          } else if (window.appId === 'workflow') {
-                              props.isWorkflowRunning = isWorkflowRunning;
-                              props.currentStep = workflowStep;
-                              props.finalPlan = finalPlan;
-                              props.onViewPlan = openPlanViewer;
+                          } else if (window.appId === 'voice') {
+                              props.onExecuteWorkflow = executeWorkflow;
                           }
                           
                           return <AppComponent {...props} />;

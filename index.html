@@ -44,6 +44,38 @@
         --neumorphic-shadow-dark: rgba(0, 0, 0, 0.1);
       }
 
+      .theme-neon-noir {
+        --bg-primary: #0d0221;
+        --bg-secondary: #261750;
+        --bg-tertiary: #14082e;
+        --text-primary: #f0f2f5;
+        --text-secondary: #a8a2d1;
+        --text-muted: #736d99;
+        --border-color: rgba(168, 162, 209, 0.2);
+        --glass-bg: rgba(20, 8, 46, 0.8);
+        --dock-bg: rgba(20, 8, 46, 0.5);
+        --primary-blue: #2de2e6;
+        --primary-purple: #8B5CF6;
+        --primary-cyan: #06B6D4;
+        --primary-pink: #f72585;
+      }
+
+      .theme-synthwave-sunset {
+        --bg-primary: #2c003e;
+        --bg-secondary: #4f0070;
+        --bg-tertiary: #3a0053;
+        --text-primary: #ffcc00;
+        --text-secondary: #f974b5;
+        --text-muted: #b54f8e;
+        --border-color: rgba(249, 116, 181, 0.3);
+        --glass-bg: rgba(58, 0, 83, 0.8);
+        --dock-bg: rgba(58, 0, 83, 0.5);
+        --primary-blue: #00f5d4;
+        --primary-purple: #f9c80e;
+        --primary-cyan: #00f5d4;
+        --primary-pink: #f94144;
+      }
+
       body {
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -106,6 +138,8 @@
               'line-draw': { 'from': { 'stroke-dashoffset': '1000' }, 'to': { 'stroke-dashoffset': '0' } },
               'neumorphic-press': { '0%, 100%': { boxShadow: '5px 5px 10px var(--neumorphic-shadow-dark), -5px -5px 10px var(--neumorphic-shadow-light)' }, '50%': { boxShadow: 'inset 5px 5px 10px var(--neumorphic-shadow-dark), inset -5px -5px 10px var(--neumorphic-shadow-light)' } },
               'voice-pulse': { '0%, 100%': { transform: 'scale(1)', opacity: 0.7 }, '50%': { transform: 'scale(1.05)', opacity: 1 } },
+              'gradient-pan': { '0%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' }, '100%': { backgroundPosition: '0% 50%' } },
+              'slide-in-right': { '0%': { transform: 'translateX(100%)', opacity: 0 }, '100%': { transform: 'translateX(0)', opacity: 1 } },
             },
             animation: {
               'fade-in': 'fade-in 0.5s ease-out forwards',
@@ -116,6 +150,8 @@
               'node-fade-in': 'node-fade-in 0.5s ease-out forwards',
               'line-draw': 'line-draw 2s ease-out forwards',
               'voice-pulse': 'voice-pulse 2s infinite ease-in-out',
+              'gradient-pan': 'gradient-pan 15s ease infinite',
+              'slide-in-right': 'slide-in-right 0.5s ease-out forwards',
             }
           },
         },

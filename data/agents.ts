@@ -65,17 +65,32 @@ export const agents: Agent[] = [
   {
     id: 'jules',
     name: 'Jules', 
-    role: 'AI Coding Agent', 
-    icon: '💻', 
+    role: 'System Debug & Self-Healing Agent', 
+    icon: '⚙️', 
     tasks: 18, 
     color: 'from-green-500 to-emerald-400',
     hologram: { 
         color: 'text-green-400', 
         glow: '#34D399', 
-        task: 'Refactoring React component...',
+        task: 'Running system diagnostics...',
         aberrationColors: ['#34D399', '#06B6D4']
     },
     subAgents: ['gemini-pro'],
+  },
+  {
+    id: 'orion',
+    name: 'Orion',
+    role: 'Master Control Agent',
+    icon: '🌐',
+    tasks: 99,
+    color: 'from-gray-200 to-slate-400',
+    hologram: {
+        color: 'text-white',
+        glow: '#FFFFFF',
+        task: 'Orchestrating all agents...',
+        aberrationColors: ['#3B82F6', '#EC4899']
+    },
+    subAgents: ['gemini-pro', 'gemini-flash-image', 'veo', 'google-search', 'google-maps', 'google-flights', 'youtube', 'gemini-flash-lite', 'gemini-tts', 'gemini-music'],
   }
 ];
 
@@ -89,4 +104,5 @@ export const subAgentDetails: Record<SubAgentID, SubAgent> = {
     'youtube': { id: 'youtube', name: 'YouTube', description: 'Video platform integration.', icon: subAgentIcons['youtube'] },
     'gemini-flash-lite': { id: 'gemini-flash-lite', name: 'Gemini Flash Lite', description: 'Low-latency text generation.', icon: subAgentIcons['gemini-flash-lite'] },
     'gemini-tts': { id: 'gemini-tts', name: 'Gemini TTS', description: 'Text-to-speech conversion.', icon: subAgentIcons['gemini-tts'] },
+    'gemini-music': { id: 'gemini-music', name: 'Gemini Music', description: 'AI music generation.', icon: subAgentIcons['gemini-tts'] },
 };

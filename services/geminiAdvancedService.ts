@@ -1,5 +1,5 @@
 import { GoogleGenAI, GenerateContentResponse, Content, Type, Modality } from "@google/genai";
-import { TravelPlan } from "../types";
+import { TravelPlan, Workflow } from "../types";
 
 const API_KEY = process.env.API_KEY;
 
@@ -38,36 +38,6 @@ export const groundedSearch = async (prompt: string, thinkingMode: boolean): Pro
     } catch (error) {
         console.error("Error calling Gemini Search API:", error);
         return { text: "An error occurred while searching.", sources: [] };
-    }
-};
-
-// Maps Search
-export const mapsSearch = async (prompt: string, location: {latitude: number, longitude: number}): Promise<{ text: string }> => {
-    if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return { text: "This is a simulated maps response. To connect to Gemini, please provide an API key." };
-    }
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-    try {
-        const response: GenerateContentResponse = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-              tools: [{googleMaps: {}}],
-              toolConfig: {
-                retrievalConfig: {
-                  latLng: {
-                    latitude: location.latitude,
-                    longitude: location.longitude
-                  }
-                }
-              }
-            },
-        });
-        return { text: response.text };
-    } catch (error) {
-        console.error("Error calling Gemini Maps API:", error);
-        return { text: "An error occurred while searching for places." };
     }
 };
 
@@ -138,7 +108,7 @@ export const generateSpeech = async (text: string): Promise<string> => {
 export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
     if (!API_KEY) {
         await new Promise(resolve => setTimeout(resolve, 2000));
-        return "This is a mock transcription of your audio.";
+        return "This is a mock transcription of your audio: Plan a trip to Tokyo for next week.";
     }
     const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
@@ -154,125 +124,105 @@ export const transcribeAudio = async (audioBase64: string, mimeType: string): Pr
     }
 };
 
-// Video Analysis
-export const analyzeVideo = async (videoBase64: string, mimeType: string, prompt: string): Promise<string> => {
-    if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        return "This is a mock analysis of the video content. The main subject appears to be a bunny in a forest.";
-    }
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-    try {
-        const videoPart = { inlineData: { mimeType, data: videoBase64 } };
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
-            contents: { parts: [videoPart, { text: prompt }] },
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error analyzing video:", error);
-        return "Failed to analyze video.";
-    }
-};
-
-// Image Generation
-export const generateImage = async (prompt: string): Promise<string> => {
-    if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        // Using a placeholder image for mock response
-        return "https://storage.googleapis.com/gweb-aip-images/project-sparkle/meta-dog-2.jpg";
-    }
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-image',
-            contents: { parts: [{ text: prompt }] },
-            config: { responseModalities: [Modality.IMAGE] },
-        });
-        for (const part of response.candidates[0].content.parts) {
-            if (part.inlineData) {
-                return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-            }
-        }
-        throw new Error("No image data found in response.");
-    } catch (error) {
-        console.error("Error generating image:", error);
-        throw new Error("Failed to generate image.");
-    }
-};
-
-// Image Editing
-export const editImage = async (prompt: string, imageBase64: string, mimeType: string): Promise<string> => {
+// Dynamic Workflow Generation
+export const generateWorkflowFromPrompt = async (prompt: string): Promise<Workflow> => {
      if (!API_KEY) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        return imageBase64; // Return original image for mock
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Return a mock travel workflow
+        return {
+            title: `Workflow for: "${prompt}"`,
+            nodes: [
+                { id: '1', agentId: 'luna', description: 'Plan itinerary for Tokyo' },
+                { id: '2', agentId: 'scout', description: 'Find flights and hotels' },
+                { id: '3', agentId: 'karim', description: 'Create budget' },
+            ],
+            connections: [{ from: '1', to: '2' }, { from: '2', to: '3' }]
+        };
     }
     const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const systemInstruction = `You are an expert workflow designer. Based on the user's prompt, create a logical sequence of steps to accomplish the task. Use the available agent IDs: 'luna' (travel planning), 'scout' (deal finding), 'karim' (budgeting), 'maya' (customer support), 'jules' (coding/debugging), 'orion' (master agent for complex tasks). The output must be a valid JSON object representing the workflow.`;
+
     try {
-        const imagePart = { inlineData: { data: imageBase64, mimeType } };
-        const textPart = { text: prompt };
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-image',
-            contents: { parts: [imagePart, textPart] },
-            config: { responseModalities: [Modality.IMAGE] },
-        });
-        for (const part of response.candidates[0].content.parts) {
-            if (part.inlineData) {
-                return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-            }
-        }
-        throw new Error("No edited image data found in response.");
-    } catch (error) {
-        console.error("Error editing image:", error);
-        throw new Error("Failed to edit image.");
-    }
-}
-
-// Video Generation (Veo)
-export const generateVideoFromImage = async function* (prompt: string, imageBase64: string, mimeType: string, aspectRatio: '16:9' | '9:16') {
-    if (!await window.aistudio.hasSelectedApiKey()) {
-        throw new Error("User has not selected an API key for Veo.");
-    }
-    // Need to re-create the client right before the call to get the selected key
-    const aiWithUserKey = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-    try {
-        let operation = await aiWithUserKey.models.generateVideos({
-            model: 'veo-3.1-fast-generate-preview',
-            prompt: prompt,
-            image: { imageBytes: imageBase64, mimeType },
+            model: "gemini-2.5-pro",
+            contents: `Prompt: "${prompt}"`,
             config: {
-                numberOfVideos: 1,
-                resolution: '720p',
-                aspectRatio: aspectRatio
+                systemInstruction,
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        title: { type: Type.STRING },
+                        nodes: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    id: { type: Type.STRING },
+                                    agentId: { type: Type.STRING },
+                                    description: { type: Type.STRING }
+                                }
+                            }
+                        },
+                        connections: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    from: { type: Type.STRING },
+                                    to: { type: Type.STRING }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
-
-        yield { status: 'processing', progress: 25, message: 'Warming up the flux capacitor...' };
-
-        while (!operation.done) {
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            yield { status: 'processing', progress: 50, message: 'Reticulating splines...' };
-            operation = await aiWithUserKey.operations.getVideosOperation({ operation: operation });
-             yield { status: 'processing', progress: 75, message: 'Generating final frames...' };
-        }
-        
-        const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
-        if (!downloadLink) throw new Error("No download link found in operation response.");
-        
-        const videoResponse = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
-        if (!videoResponse.ok) throw new Error("Failed to download the generated video.");
-
-        const videoBlob = await videoResponse.blob();
-        const videoUrl = URL.createObjectURL(videoBlob);
-        
-        yield { status: 'completed', url: videoUrl };
-
+        return JSON.parse(response.text.trim());
     } catch (error) {
-         console.error("Error generating video:", error);
-         if (error instanceof Error && error.message.includes("Requested entity was not found")) {
-            yield { status: 'error', message: 'API key is invalid. Please select a valid key and try again.' };
-         } else {
-            yield { status: 'error', message: 'An error occurred during video generation.' };
-         }
+        console.error("Error generating workflow:", error);
+        throw new Error("Failed to generate workflow from prompt.");
+    }
+};
+
+// SEO Idea Generation
+export const generateSeoIdeas = async (url: string, topic: string): Promise<{ keywords: string[]; blogOutline: { title: string; points: string[] }; adCopy: string[] }> => {
+    if (!API_KEY) {
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        return {
+            keywords: ['mock keyword 1', 'mock keyword 2', 'mock keyword 3'],
+            blogOutline: { title: 'Mock Blog Post Title', points: ['Point A', 'Point B', 'Point C'] },
+            adCopy: ['Mock Ad Headline 1', 'Mock Ad Headline 2']
+        };
+    }
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const prompt = `Analyze the content at the URL ${url} and the topic "${topic}". Generate a comprehensive SEO strategy. I need a list of target keywords, a detailed blog post outline with a catchy title, and three different ad copy headlines.`;
+    
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-pro",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        blogOutline: {
+                            type: Type.OBJECT,
+                            properties: {
+                                title: { type: Type.STRING },
+                                points: { type: Type.ARRAY, items: { type: Type.STRING } }
+                            }
+                        },
+                        adCopy: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    }
+                }
+            }
+        });
+        return JSON.parse(response.text.trim());
+    } catch (error) {
+        console.error("Error generating SEO ideas:", error);
+        throw new Error("Failed to generate SEO ideas.");
     }
 };

@@ -1,7 +1,6 @@
 import React from 'react';
 import { AppID, WindowInstance, TaskbarTheme } from '../types';
-// FIX: Add missing agent icons
-import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon } from './Icons';
+import { ChatIcon, GridIcon, FileIcon, SettingsIcon, WorkflowIcon, JulesIcon, VoiceAssistantIcon, SparklesIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -13,31 +12,36 @@ interface DockProps {
   taskbarTheme: TaskbarTheme;
 }
 
+const TravelAgentIcon: React.FC<{className: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    </svg>
+);
+
+const MarketingIcon: React.FC<{className: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+    </svg>
+);
+
+
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
   chat: ChatIcon,
-  trips: TripIcon,
-  terminal: TerminalIcon,
+  voice: VoiceAssistantIcon,
+  workflow: WorkflowIcon,
+  travelAgent: TravelAgentIcon,
+  marketing: MarketingIcon,
   files: FileIcon,
   settings: SettingsIcon,
-  image: ImageIcon,
-  video: VideoIcon,
-  search: SearchIcon,
-  maps: MapIcon,
-  luna: LunaIcon,
-  karim: KarimIcon,
-  scout: ScoutIcon,
-  maya: MayaIcon,
-  workflow: WorkflowIcon,
-  travelPlanViewer: TripIcon,
-  transcriber: MicrophoneIcon,
-  videoAnalyzer: VideoAnalyzeIcon,
   jules: JulesIcon,
-  voice: VoiceAssistantIcon,
-  veo: VeoIcon,
-  nanoBanana: NanoBananaIcon,
-  youtube: YouTubeIcon,
-  // FIX: Use GmailIcon instead of GmailApp component
-  gmail: GmailIcon,
+  // These are not in the dock but need to be here for other components
+  terminal: JulesIcon,
+  luna: SparklesIcon,
+  karim: SparklesIcon,
+  scout: SparklesIcon,
+  maya: SparklesIcon,
+  travelPlanViewer: TravelAgentIcon,
 };
 
 const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId, onToggleLauncher, taskbarTheme }) => {
@@ -58,12 +62,9 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
   const apps: { id: AppID; name: string; }[] = [
       { id: 'chat', name: 'AI Chat' },
       { id: 'voice', name: 'Voice Assistant' },
+      { id: 'travelAgent', name: 'Travel Agent' },
+      { id: 'marketing', name: 'Marketing Copilot' },
       { id: 'workflow', name: 'Workflow Studio'},
-      { id: 'search', name: 'AI Search' },
-      { id: 'veo', name: 'Veo' },
-      { id: 'nanoBanana', name: 'Nano Banana' },
-      { id: 'youtube', name: 'YouTube' },
-      { id: 'gmail', name: 'Gmail' },
       { id: 'files', name: 'Files' },
       { id: 'settings', name: 'Settings' },
   ];

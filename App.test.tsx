@@ -1,32 +1,31 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
+// Mock the heavy HologramWallpaper component to speed up tests
+vi.mock('./components/HologramWallpaper', () => ({
+  default: () => <div data-testid="hologram-wallpaper" />,
+}));
+
 describe('App', () => {
-  it('renders the dock', () => {
+  it('renders the application dock', () => {
     render(<App />);
     const dockElement = screen.getByRole('navigation', { name: /application dock/i });
     expect(dockElement).toBeInTheDocument();
   });
 
-  it('renders the AI orb', () => {
-    render(<App />);
-    const orbElement = screen.getByRole('button', { name: /open ai assistant/i });
-    expect(orbElement).toBeInTheDocument();
-  });
-
-  it('opens the AI Chat window when the AI orb is clicked', async () => {
+  it('opens the Travel Agent app when its icon in the dock is clicked', async () => {
     render(<App />);
     
-    // Ensure the window is not present before the click
-    expect(screen.queryByRole('dialog', { name: /amrikyy ai chat/i })).not.toBeInTheDocument();
+    // Window should not be present before the click
+    expect(screen.queryByRole('dialog', { name: /travel agent pro/i })).not.toBeInTheDocument();
 
-    // Simulate user clicking the AI Orb
-    const orbElement = screen.getByRole('button', { name: /open ai assistant/i });
-    fireEvent.click(orbElement);
+    // Find the Travel Agent icon in the Dock by its accessible name
+    const travelIcon = screen.getByRole('button', { name: /travel agent/i });
+    fireEvent.click(travelIcon);
 
-    // `findByRole` waits for the element to appear, handling the lazy loading
-    const chatWindow = await screen.findByRole('dialog', { name: /amrikyy ai chat/i });
-    expect(chatWindow).toBeInTheDocument();
+    // `findByRole` waits for the element to appear
+    const travelWindow = await screen.findByRole('dialog', { name: /travel agent pro/i });
+    expect(travelWindow).toBeInTheDocument();
   });
 });

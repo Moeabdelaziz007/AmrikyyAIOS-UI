@@ -66,7 +66,7 @@ const HologramWallpaper: React.FC = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="fixed inset-0 -z-10 overflow-hidden" style={{ perspective: '1000px' }}>
+        <div ref={containerRef} className="fixed inset-0 -z-10 overflow-hidden flex items-center justify-center" style={{ perspective: '1000px' }}>
             <canvas ref={canvasRef} className="absolute inset-0" />
             <div
                 ref={gridRef}
@@ -77,6 +77,9 @@ const HologramWallpaper: React.FC = () => {
                     transformStyle: 'preserve-3d',
                 }}
             />
+            <div className="absolute font-display text-[12vw] font-bold text-white/5 select-none" style={{textShadow: '0 0 30px var(--accent-color)'}}>
+                Amrikyy
+            </div>
         </div>
     );
 };

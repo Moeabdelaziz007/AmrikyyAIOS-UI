@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SettingsAppProps, Theme, WallpaperID, TaskbarTheme } from '../../types';
+import { SettingsAppProps, Theme, WallpaperID, TaskbarTheme, WindowStyle } from '../../types';
 import { SettingsIcon } from '../Icons';
 
 type Section = 'personalization' | 'display' | 'sound';
@@ -16,6 +16,12 @@ const taskbarThemes: { id: TaskbarTheme, name: string }[] = [
     { id: 'glass', name: 'Glass' },
     { id: 'solid', name: 'Solid' },
     { id: 'transparent', name: 'Transparent' },
+]
+
+const windowStyles: { id: WindowStyle, name: string }[] = [
+    { id: 'gemini', name: 'Gemini' },
+    { id: 'macos', name: 'macOS' },
+    { id: 'futuristic', name: 'Futuristic' },
 ]
 
 const SettingsApp: React.FC<SettingsAppProps> = ({ settings, onSettingsChange }) => {
@@ -36,7 +42,6 @@ const SettingsApp: React.FC<SettingsAppProps> = ({ settings, onSettingsChange })
 
     return (
         <div className="h-full w-full flex bg-bg-secondary rounded-b-md text-text-primary">
-            {/* Sidebar */}
             <aside className="w-56 flex-shrink-0 bg-bg-tertiary p-4 border-r border-border-color">
                 <h1 className="font-display text-2xl font-bold mb-6">Settings</h1>
                 <nav className="space-y-2">
@@ -45,7 +50,6 @@ const SettingsApp: React.FC<SettingsAppProps> = ({ settings, onSettingsChange })
                     <NavItem id="sound" label="Sound" activeSection={activeSection} setActiveSection={setActiveSection} />
                 </nav>
             </aside>
-            {/* Main Content */}
             <main className="flex-grow p-6 overflow-y-auto">
                 {renderSection()}
             </main>
@@ -74,18 +78,32 @@ const NavItem: React.FC<NavItemProps> = ({ id, label, activeSection, setActiveSe
 const PersonalizationSection: React.FC<SettingsAppProps> = ({ settings, onSettingsChange }) => (
     <div>
         <h2 className="text-xl font-bold font-display mb-4">Personalization</h2>
-
         <div className="space-y-8">
-            {/* Theme Selection */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">Theme</h3>
-                <div className="flex gap-4 p-2 bg-bg-tertiary rounded-lg border border-border-color">
+                <div className="grid grid-cols-2 gap-4">
                     <ThemeButton theme="light" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
                     <ThemeButton theme="dark" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
+                    <ThemeButton theme="neon-noir" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
+                    <ThemeButton theme="synthwave-sunset" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
                 </div>
             </div>
 
-            {/* Taskbar Style */}
+            <div>
+                <h3 className="text-lg font-semibold mb-2">Window Style</h3>
+                <div className="flex gap-2 p-2 bg-bg-tertiary rounded-lg border border-border-color">
+                    {windowStyles.map(style => (
+                         <button
+                            key={style.id}
+                            onClick={() => onSettingsChange({ windowStyle: style.id })}
+                            className={`flex-1 py-2 rounded-md text-sm font-semibold transition-colors ${settings.windowStyle === style.id ? 'bg-accent text-white' : 'hover:bg-bg-primary'}`}
+                        >
+                            {style.name}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div>
                 <h3 className="text-lg font-semibold mb-2">Taskbar Style</h3>
                 <div className="flex gap-2 p-2 bg-bg-tertiary rounded-lg border border-border-color">
@@ -101,10 +119,9 @@ const PersonalizationSection: React.FC<SettingsAppProps> = ({ settings, onSettin
                 </div>
             </div>
 
-            {/* Accent Color */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">Accent Color</h3>
-                 <div className="flex flex-wrap gap-3 p-3 bg-bg-tertiary rounded-lg border border-border-color">
+                 <div className="flex flex-wrap items-center gap-3 p-3 bg-bg-tertiary rounded-lg border border-border-color">
                     {accentColors.map(color => (
                         <button
                             key={color}
@@ -114,10 +131,12 @@ const PersonalizationSection: React.FC<SettingsAppProps> = ({ settings, onSettin
                             aria-label={`Set accent color to ${color}`}
                         />
                     ))}
+                    <label htmlFor="custom-color" className="w-8 h-8 rounded-full bg-cover cursor-pointer" style={{backgroundImage: 'conic-gradient(from 180deg at 50% 50%, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)'}}>
+                       <input id="custom-color" type="color" value={settings.accentColor} onChange={(e) => onSettingsChange({ accentColor: e.target.value })} className="opacity-0 w-full h-full cursor-pointer" />
+                    </label>
                 </div>
             </div>
 
-            {/* Wallpaper Selection */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">Wallpaper</h3>
                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -143,15 +162,28 @@ interface ThemeButtonProps {
     setTheme: (theme: Theme) => void;
 }
 
+const themeDisplayNames: Record<Theme, string> = {
+    light: 'Light',
+    dark: 'Dark',
+    'neon-noir': 'Neon Noir',
+    'synthwave-sunset': 'Synthwave',
+};
+
 const ThemeButton: React.FC<ThemeButtonProps> = ({ theme, currentTheme, setTheme }) => (
     <button
         onClick={() => setTheme(theme)}
-        className={`flex-1 p-4 rounded-md border-2 transition-colors ${
+        className={`p-2 rounded-md border-2 transition-colors ${
             currentTheme === theme ? 'border-accent' : 'border-transparent hover:border-border-color'
         }`}
     >
-        <div className={`w-full h-20 rounded ${theme === 'light' ? 'bg-white' : 'bg-bg-primary'}`}></div>
-        <span className="mt-2 block text-sm font-medium capitalize">{theme}</span>
+        <div className={`w-full h-16 rounded theme-preview ${theme}`}></div>
+        <span className="mt-2 block text-sm font-medium capitalize">{themeDisplayNames[theme]}</span>
+         <style>{`
+            .theme-preview.light { background-color: #f9fafb; }
+            .theme-preview.dark { background-color: #0A0E1A; }
+            .theme-preview.neon-noir { background-color: #0d0221; }
+            .theme-preview.synthwave-sunset { background-color: #2c003e; }
+        `}</style>
     </button>
 );
 
