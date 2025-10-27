@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { SubAgent, SubAgentID, Agent } from '../../types';
 import { subAgentIcons } from '../Icons';
@@ -12,10 +13,11 @@ interface WorkflowStudioAppProps {
 }
 
 const travelWorkflowAgents: Agent[] = [
-  { name: 'Luna', role: 'Trip Planner', icon: '🌟', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
-  { name: 'Scout', role: 'Deal Finder', icon: '🔍', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['google-search'] },
-  { name: 'Karim', role: 'Budget Optimizer', icon: '💰', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
-  { name: 'Maya', role: 'Plan Compiler', icon: '💬', tasks: 0, color: '', hologram: { color: '', glow: '', task: '' }, subAgents: ['gemini-pro'] },
+  // FIX: Add aberrationColors to hologram property
+  { name: 'Luna', role: 'Trip Planner', icon: '🌟', tasks: 0, color: '', hologram: { color: '', glow: '', task: '', aberrationColors: ['#06B6D4', '#8B5CF6'] }, subAgents: ['gemini-pro'] },
+  { name: 'Scout', role: 'Deal Finder', icon: '🔍', tasks: 0, color: '', hologram: { color: '', glow: '', task: '', aberrationColors: ['#8B5CF6', '#EC4899'] }, subAgents: ['google-search'] },
+  { name: 'Karim', role: 'Budget Optimizer', icon: '💰', tasks: 0, color: '', hologram: { color: '', glow: '', task: '', aberrationColors: ['#FBBF24', '#EF4444'] }, subAgents: ['gemini-pro'] },
+  { name: 'Maya', role: 'Plan Compiler', icon: '💬', tasks: 0, color: '', hologram: { color: '', glow: '', task: '', aberrationColors: ['#EC4899', '#8B5CF6'] }, subAgents: ['gemini-pro'] },
 ];
 
 const travelWorkflowSteps = [
@@ -25,9 +27,11 @@ const travelWorkflowSteps = [
     { agent: travelWorkflowAgents[3], description: "Compiling Final Plan..." },
 ];
 
+// FIX: Add description property to satisfy SubAgent type
 const agentToSubAgent = (agent: Agent): SubAgent => ({
     id: agent.name.toLowerCase() as SubAgentID,
     name: agent.name,
+    description: agent.role,
     icon: ({ className }) => <span className={`${className} text-4xl`}>{agent.icon}</span>
 });
 

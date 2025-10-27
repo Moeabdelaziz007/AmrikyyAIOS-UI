@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
-import { SettingsAppProps, Theme, WallpaperID } from '../../types';
+import { SettingsAppProps, Theme, WallpaperID, TaskbarTheme } from '../../types';
 import { SettingsIcon } from '../Icons';
 
 type Section = 'personalization' | 'display' | 'sound';
 
-const wallpapers: { id: WallpaperID | string, name: string, thumbnail: string }[] = [
-    { id: '/wallpaper.svg', name: 'Amrikyy Default', thumbnail: '/wallpaper.svg' },
-    { id: 'live', name: 'Live Hologram', thumbnail: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%25%22 stop-color=%22%233B82F6%22/><stop offset=%22100%25%22 stop-color=%22%238B5CF6%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 fill=%22%230A0E1A%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22url(%23g)%22/></svg>' },
-    { id: '/wallpaper2.svg', name: 'Light Abstract', thumbnail: '/wallpaper2.svg' },
-    { id: '/wallpaper3.svg', name: 'Vibrant Gradient', thumbnail: '/wallpaper3.svg' },
+const wallpapers: { id: WallpaperID, name: string, thumbnail: string }[] = [
+    { id: '/wallpaper.svg', name: 'Holographic Vista', thumbnail: '/wallpaper.svg' },
+    { id: '/wallpaper2.svg', name: 'Solaris Dunes', thumbnail: '/wallpaper2.svg' },
+    { id: '/wallpaper3.svg', name: 'Cosmic Reef', thumbnail: '/wallpaper3.svg' },
 ];
 
 const accentColors = ['#3B82F6', '#8B5CF6', '#06B6D4', '#EC4899', '#10B981', '#F59E0B', '#EF4444'];
 
+const taskbarThemes: { id: TaskbarTheme, name: string }[] = [
+    { id: 'glass', name: 'Glass' },
+    { id: 'solid', name: 'Solid' },
+    { id: 'transparent', name: 'Transparent' },
+]
 
 const SettingsApp: React.FC<SettingsAppProps> = ({ settings, onSettingsChange }) => {
     const [activeSection, setActiveSection] = useState<Section>('personalization');
@@ -71,13 +75,29 @@ const PersonalizationSection: React.FC<SettingsAppProps> = ({ settings, onSettin
     <div>
         <h2 className="text-xl font-bold font-display mb-4">Personalization</h2>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Theme Selection */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">Theme</h3>
                 <div className="flex gap-4 p-2 bg-bg-tertiary rounded-lg border border-border-color">
                     <ThemeButton theme="light" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
                     <ThemeButton theme="dark" currentTheme={settings.theme} setTheme={(theme) => onSettingsChange({ theme })} />
+                </div>
+            </div>
+
+            {/* Taskbar Style */}
+            <div>
+                <h3 className="text-lg font-semibold mb-2">Taskbar Style</h3>
+                <div className="flex gap-2 p-2 bg-bg-tertiary rounded-lg border border-border-color">
+                    {taskbarThemes.map(theme => (
+                         <button
+                            key={theme.id}
+                            onClick={() => onSettingsChange({ taskbarTheme: theme.id })}
+                            className={`flex-1 py-2 rounded-md text-sm font-semibold transition-colors ${settings.taskbarTheme === theme.id ? 'bg-accent text-white' : 'hover:bg-bg-primary'}`}
+                        >
+                            {theme.name}
+                        </button>
+                    ))}
                 </div>
             </div>
 

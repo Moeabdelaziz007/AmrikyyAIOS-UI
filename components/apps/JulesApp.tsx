@@ -1,30 +1,9 @@
-
 import React from 'react';
-import { Agent, SubAgentID } from '../../types';
+import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
-import { subAgentIcons } from '../Icons';
+import { agents, subAgentDetails } from '../../data/agents';
 
-const julesAgent: Agent = {
-  name: 'Jules', 
-  role: 'AI Coding Agent', 
-  icon: '💻', 
-  tasks: 18, 
-  color: 'from-green-500 to-emerald-400',
-  hologram: { color: 'text-green-400', glow: '#34D399', task: 'Refactoring React component...' },
-  subAgents: ['gemini-pro'],
-};
-
-const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
-    'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
-    'google-search': { name: 'Google Search', icon: subAgentIcons['google-search'] },
-    'gemini-flash-image': { name: 'Nano Banana', icon: subAgentIcons['gemini-flash-image'] },
-    'veo': { name: 'Veo', icon: subAgentIcons['veo'] },
-    'google-maps': { name: 'Google Maps', icon: subAgentIcons['google-maps'] },
-    'google-flights': { name: 'Google Flights', icon: subAgentIcons['google-flights'] },
-    'youtube': { name: 'YouTube', icon: subAgentIcons['youtube'] },
-    'gemini-flash-lite': { name: 'Gemini Flash Lite', icon: subAgentIcons['gemini-flash-lite'] },
-    'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
-};
+const julesAgent = agents.find(a => a.id === 'jules') as Agent;
 
 const JulesApp: React.FC = () => {
   return (

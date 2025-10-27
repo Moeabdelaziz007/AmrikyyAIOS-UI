@@ -1,31 +1,9 @@
-
 import React from 'react';
-import { Agent, SubAgentID } from '../../types';
+import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
-import { subAgentIcons } from '../Icons';
+import { agents, subAgentDetails } from '../../data/agents';
 
-const scoutAgent: Agent = {
-  name: 'Scout', 
-  role: 'Deal Finder', 
-  icon: '🔍', 
-  tasks: 28, 
-  color: 'from-purple-500 to-indigo-400',
-  hologram: { color: 'text-primary-purple', glow: '#8B5CF6', task: 'Scanning for Hawaii deals...' },
-  subAgents: ['google-search'],
-};
-
-// FIX: Added missing SubAgentID keys to satisfy the Record type.
-const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
-    'google-search': { name: 'Google Search', icon: subAgentIcons['google-search'] },
-    'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
-    'gemini-flash-image': { name: 'Nano Banana', icon: subAgentIcons['gemini-flash-image'] },
-    'veo': { name: 'Veo', icon: subAgentIcons['veo'] },
-    'google-maps': { name: 'Google Maps', icon: subAgentIcons['google-maps'] },
-    'google-flights': { name: 'Google Flights', icon: subAgentIcons['google-flights'] },
-    'youtube': { name: 'YouTube', icon: subAgentIcons['youtube'] },
-    'gemini-flash-lite': { name: 'Gemini Flash Lite', icon: subAgentIcons['gemini-flash-lite'] },
-    'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
-};
+const scoutAgent = agents.find(a => a.id === 'scout') as Agent;
 
 const ScoutApp: React.FC = () => {
   return (

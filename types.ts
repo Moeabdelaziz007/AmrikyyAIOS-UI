@@ -1,7 +1,10 @@
-
 import React from 'react';
 
-export type AppID = 'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 'workflow' | 'travelPlanViewer' | 'transcriber' | 'videoAnalyzer' | 'jules';
+export type AppID = 
+  'chat' | 'trips' | 'terminal' | 'files' | 'settings' | 'image' | 
+  'video' | 'search' | 'maps' | 'luna' | 'karim' | 'scout' | 'maya' | 
+  'workflow' | 'travelPlanViewer' | 'transcriber' | 'videoAnalyzer' | 'jules' | 
+  'voice' | 'veo' | 'nanoBanana' | 'youtube' | 'gmail';
 
 export interface TravelPlan {
   destination: string;
@@ -31,7 +34,7 @@ export interface WindowInstance {
   height: number;
   zIndex: number;
   isMinimized: boolean;
-  appProps?: any;
+  appProps: any;
 }
 
 export interface Message {
@@ -41,15 +44,19 @@ export interface Message {
   sources?: {title: string, uri: string}[];
 }
 
-export type SubAgentID = 'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts';
+export type SubAgentID = 
+  'gemini-pro' | 'gemini-flash-image' | 'veo' | 'google-search' | 'google-maps' | 
+  'google-flights' | 'youtube' | 'gemini-flash-lite' | 'gemini-tts';
 
 export interface SubAgent {
     id: SubAgentID;
     name: string;
+    description: string;
     icon: React.FC<{className: string}>;
 }
 
 export interface Agent {
+  id: 'luna' | 'karim' | 'scout' | 'maya' | 'jules';
   name: string;
   role: string;
   icon: string;
@@ -59,17 +66,20 @@ export interface Agent {
     color: string;
     glow: string;
     task: string;
+    aberrationColors: [string, string];
   };
   subAgents: SubAgentID[];
 }
 
 export type Theme = 'dark' | 'light';
-export type WallpaperID = 'live' | '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
+export type WallpaperID = '/wallpaper.svg' | '/wallpaper2.svg' | '/wallpaper3.svg';
+export type TaskbarTheme = 'glass' | 'solid' | 'transparent';
 
 export interface Settings {
   theme: Theme;
   wallpaper: WallpaperID | string;
   accentColor: string;
+  taskbarTheme: TaskbarTheme;
 }
 
 export interface SettingsAppProps {

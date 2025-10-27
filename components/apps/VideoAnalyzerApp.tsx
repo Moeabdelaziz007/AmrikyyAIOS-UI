@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { VideoAnalyzeIcon, SparklesIcon, UploadIcon } from '../Icons';
 import { analyzeVideo } from '../../services/geminiAdvancedService';
@@ -17,6 +16,7 @@ const VideoAnalyzerApp: React.FC = () => {
         if (file && file.type.startsWith('video/')) {
             setVideoFile(file);
             setVideoPreview(URL.createObjectURL(file));
+            setAnalysis('');
             setError(null);
         } else {
             setError('Please select a valid video file.');

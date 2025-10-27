@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../../types';
 import { SearchIcon, SparklesIcon } from '../Icons';
@@ -22,10 +21,12 @@ const SearchApp: React.FC = () => {
     
         const userMessage: Message = { id: `user-${Date.now()}`, sender: 'user', text: input };
         setMessages(prev => [...prev, userMessage]);
-        setInput('');
+        
         setIsLoading(true);
 
-        const { text, sources } = await groundedSearch(input, thinkingMode);
+        const currentInput = input;
+        setInput('');
+        const { text, sources } = await groundedSearch(currentInput, thinkingMode);
         const aiMessage: Message = { id: `ai-${Date.now()}`, sender: 'ai', text, sources };
         
         setMessages(prev => [...prev, aiMessage]);
@@ -70,7 +71,7 @@ const SearchApp: React.FC = () => {
             ))}
             {isLoading && (
             <div className="flex items-end gap-3 justify-start">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center animate-pulse-glow" style={{'--glow-color': '#06B6D480'} as React.CSSProperties}>
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center animate-pulse">
                     <SparklesIcon className="h-6 w-6 text-white" />
                 </div>
                 <div className="max-w-[70%] p-3 rounded-2xl bg-bg-secondary">

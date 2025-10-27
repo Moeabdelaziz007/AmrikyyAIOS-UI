@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { AppID, WindowInstance } from '../types';
-import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon } from './Icons';
+import { AppID, WindowInstance, TaskbarTheme } from '../types';
+// FIX: Add missing agent icons
+import { ChatIcon, TripIcon, TerminalIcon, GridIcon, FileIcon, SettingsIcon, ImageIcon, VideoIcon, SearchIcon, MapIcon, LunaIcon, KarimIcon, ScoutIcon, MayaIcon, WorkflowIcon, MicrophoneIcon, VideoAnalyzeIcon, JulesIcon, VoiceAssistantIcon, VeoIcon, NanoBananaIcon, YouTubeIcon, GmailIcon } from './Icons';
 
 interface DockProps {
   openWindows: WindowInstance[];
@@ -9,6 +9,8 @@ interface DockProps {
   onRestore: (id: number) => void;
   onFocus: (id: number) => void;
   activeWindowId: number | null;
+  onToggleLauncher: () => void;
+  taskbarTheme: TaskbarTheme;
 }
 
 const appIcons: Record<AppID, React.FC<{className: string}>> = {
@@ -30,9 +32,15 @@ const appIcons: Record<AppID, React.FC<{className: string}>> = {
   transcriber: MicrophoneIcon,
   videoAnalyzer: VideoAnalyzeIcon,
   jules: JulesIcon,
+  voice: VoiceAssistantIcon,
+  veo: VeoIcon,
+  nanoBanana: NanoBananaIcon,
+  youtube: YouTubeIcon,
+  // FIX: Use GmailIcon instead of GmailApp component
+  gmail: GmailIcon,
 };
 
-const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId }) => {
+const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, activeWindowId, onToggleLauncher, taskbarTheme }) => {
 
   const handleAppClick = (appId: AppID) => {
     const window = openWindows.find(w => w.appId === appId);
@@ -48,18 +56,23 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
   };
 
   const apps: { id: AppID; name: string; }[] = [
-      { id: 'chat', name: 'Chat' },
+      { id: 'chat', name: 'AI Chat' },
+      { id: 'voice', name: 'Voice Assistant' },
       { id: 'workflow', name: 'Workflow Studio'},
-      { id: 'search', name: 'Search' },
-      { id: 'maps', name: 'Maps' },
-      { id: 'image', name: 'Image Gen' },
-      { id: 'video', name: 'Video Gen' },
-      { id: 'transcriber', name: 'Transcriber' },
-      { id: 'videoAnalyzer', name: 'Video Analyzer' },
-      { id: 'jules', name: 'Jules' },
+      { id: 'search', name: 'AI Search' },
+      { id: 'veo', name: 'Veo' },
+      { id: 'nanoBanana', name: 'Nano Banana' },
+      { id: 'youtube', name: 'YouTube' },
+      { id: 'gmail', name: 'Gmail' },
       { id: 'files', name: 'Files' },
       { id: 'settings', name: 'Settings' },
   ];
+
+  const themeClasses = {
+      glass: 'bg-dock-bg backdrop-blur-lg border-border-color',
+      solid: 'bg-bg-tertiary border-border-color',
+      transparent: 'bg-transparent border-transparent',
+  }
 
   return (
     <div
@@ -67,8 +80,9 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
       aria-label="Application Dock"
       className="fixed bottom-4 left-1/2 -translate-x-1/2"
     >
-      <div className="flex items-end justify-center space-x-2 h-20 p-2 bg-black/20 backdrop-blur-lg rounded-2xl border border-border-color shadow-2xl">
+      <div className={`flex items-end justify-center space-x-2 h-20 p-2 rounded-2xl border shadow-2xl transition-colors duration-300 ${themeClasses[taskbarTheme]}`}>
         <button
+          onClick={onToggleLauncher}
           className="group relative h-14 w-14 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ease-out hover:scale-125"
           aria-label="App Launcher"
           title="App Launcher"
@@ -76,7 +90,7 @@ const Dock: React.FC<DockProps> = ({ openWindows, onOpen, onRestore, onFocus, ac
           <GridIcon className="h-7 w-7 text-text-secondary group-hover:text-text-primary" />
         </button>
 
-        <div className="h-full w-px bg-border-color mx-1"></div>
+        <div className="h-full w-px bg-border-color/50 mx-1"></div>
 
         {apps.map(app => {
             const Icon = appIcons[app.id];

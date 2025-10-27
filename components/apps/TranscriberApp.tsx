@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { MicrophoneIcon, SparklesIcon } from '../Icons';
 import { transcribeAudio } from '../../services/geminiAdvancedService';
@@ -17,7 +16,7 @@ const TranscriberApp: React.FC = () => {
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+            mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
             mediaRecorderRef.current.ondataavailable = (event) => {
                 audioChunksRef.current.push(event.data);
             };
@@ -35,19 +34,28 @@ const TranscriberApp: React.FC = () => {
     const stopRecording = () => {
         if (mediaRecorderRef.current && recordingState === 'recording') {
             mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
             setRecordingState('stopped');
         }
     };
 
     const handleTranscription = async () => {
+        if (audioChunksRef.current.length === 0) return;
         setIsLoading(true);
+        setTranscription('');
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        // FIX: Convert Blob to File to satisfy the fileToBase64 function signature.
         const audioFile = new File([audioBlob], "recording.webm", { type: audioBlob.type });
-        const base64Audio = await fileToBase64(audioFile);
-        const result = await transcribeAudio(base64Audio.split(',')[1], audioFile.type);
-        setTranscription(result);
-        setIsLoading(false);
+        
+        try {
+            const base64Audio = await fileToBase64(audioFile);
+            const result = await transcribeAudio(base64Audio.split(',')[1], audioFile.type);
+            setTranscription(result);
+        } catch(e) {
+            setError("Failed to process transcription.");
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

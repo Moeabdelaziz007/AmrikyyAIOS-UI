@@ -1,10 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../../types';
 import { generateResponse } from '../../services/geminiService';
 import { generateSpeech } from '../../services/geminiAdvancedService';
 import { playDecodedAudio, decode } from '../../utils/audioUtils';
 import { SendIcon, SparklesIcon, SpeakerIcon } from '../Icons';
+import { Content } from '@google/genai';
 
 type AudioState = 'idle' | 'loading' | 'playing';
 
@@ -19,12 +19,20 @@ const ChatApp: React.FC = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
-      // FIX: Use webkitAudioContext for Safari compatibility.
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      // Create audio context on first user interaction if not already created
       return () => {
           audioContextRef.current?.close();
       }
   }, []);
+  
+  const initAudioContext = () => {
+       if (!audioContextRef.current) {
+          audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+       }
+       if (audioContextRef.current.state === 'suspended') {
+           audioContextRef.current.resume();
+       }
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,15 +45,17 @@ const ChatApp: React.FC = () => {
 
     const userMessage: Message = { id: `user-${Date.now()}`, sender: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    
     setIsLoading(true);
 
-    const chatHistory = messages.map(msg => ({
+    const chatHistory: Content[] = messages.map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
     }));
     
-    const aiResponseText = await generateResponse(input, chatHistory);
+    const currentInput = input;
+    setInput('');
+    const aiResponseText = await generateResponse(currentInput, chatHistory);
     const aiMessage: Message = { id: `ai-${Date.now()}`, sender: 'ai', text: aiResponseText };
     
     setMessages(prev => [...prev, aiMessage]);
@@ -53,6 +63,7 @@ const ChatApp: React.FC = () => {
   };
 
   const handlePlayAudio = async (message: Message) => {
+    initAudioContext();
     if (!audioContextRef.current) return;
     if (audioState[message.id] === 'loading' || audioState[message.id] === 'playing') return;
 
@@ -112,7 +123,7 @@ const ChatApp: React.FC = () => {
         ))}
         {isLoading && (
           <div className="flex items-end gap-3 justify-start">
-             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-primary-purple flex items-center justify-center animate-pulse-glow" style={{'--glow-color': '#3B82F680'} as React.CSSProperties}>
+             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-primary-purple flex items-center justify-center animate-pulse">
                   <SparklesIcon className="h-6 w-6 text-white" />
               </div>
             <div className="max-w-[70%] p-3 rounded-2xl bg-bg-secondary rounded-bl-none">
@@ -141,9 +152,9 @@ const ChatApp: React.FC = () => {
           />
           <button
             onClick={handleSend}
-            disabled={isLoading}
+            disabled={isLoading || !input.trim()}
             aria-label="Send message"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-primary-blue rounded-full flex items-center justify-center hover:bg-primary-blue/80 transition-colors disabled:bg-gray-500"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-primary-blue rounded-full flex items-center justify-center hover:bg-primary-blue/80 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
           >
             <SendIcon className="h-5 w-5 text-white" />
           </button>

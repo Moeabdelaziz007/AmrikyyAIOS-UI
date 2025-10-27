@@ -1,31 +1,9 @@
-
 import React from 'react';
-import { Agent, SubAgentID } from '../../types';
+import { Agent } from '../../types';
 import HologramCard from '../HologramCard';
-import { subAgentIcons } from '../Icons';
+import { agents, subAgentDetails } from '../../data/agents';
 
-const mayaAgent: Agent = {
-  name: 'Maya', 
-  role: 'Customer Support', 
-  icon: '💬', 
-  tasks: 51, 
-  color: 'from-pink-500 to-rose-400',
-  hologram: { color: 'text-primary-pink', glow: '#EC4899', task: 'Resolving booking issue...' },
-  subAgents: ['gemini-pro'],
-};
-
-// FIX: Added missing SubAgentID keys to satisfy the Record type.
-const subAgentDetails: Record<SubAgentID, {name: string, icon: React.FC<{className: string}>}> = {
-    'gemini-pro': { name: 'Gemini Pro', icon: subAgentIcons['gemini-pro'] },
-    'gemini-flash-image': { name: 'Nano Banana', icon: subAgentIcons['gemini-flash-image'] },
-    'veo': { name: 'Veo', icon: subAgentIcons['veo'] },
-    'google-search': { name: 'Google Search', icon: subAgentIcons['google-search'] },
-    'google-maps': { name: 'Google Maps', icon: subAgentIcons['google-maps'] },
-    'google-flights': { name: 'Google Flights', icon: subAgentIcons['google-flights'] },
-    'youtube': { name: 'YouTube', icon: subAgentIcons['youtube'] },
-    'gemini-flash-lite': { name: 'Gemini Flash Lite', icon: subAgentIcons['gemini-flash-lite'] },
-    'gemini-tts': { name: 'Gemini TTS', icon: subAgentIcons['gemini-tts'] },
-};
+const mayaAgent = agents.find(a => a.id === 'maya') as Agent;
 
 
 const MayaApp: React.FC = () => {

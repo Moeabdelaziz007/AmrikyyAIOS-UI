@@ -1,4 +1,3 @@
-
 export function decode(base64: string): Uint8Array {
     const binaryString = atob(base64);
     const len = binaryString.length;
@@ -15,6 +14,7 @@ async function decodeAudioData(
     sampleRate: number,
     numChannels: number,
 ): Promise<AudioBuffer> {
+    // The raw data from the API is Int16
     const dataInt16 = new Int16Array(data.buffer);
     const frameCount = dataInt16.length / numChannels;
     const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
@@ -22,6 +22,7 @@ async function decodeAudioData(
     for (let channel = 0; channel < numChannels; channel++) {
         const channelData = buffer.getChannelData(channel);
         for (let i = 0; i < frameCount; i++) {
+            // Normalize the Int16 data to the Float32 range [-1.0, 1.0]
             channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
         }
     }
@@ -32,8 +33,8 @@ export async function playDecodedAudio(decodedData: Uint8Array, audioContext: Au
     const audioBuffer = await decodeAudioData(
         decodedData,
         audioContext,
-        24000, // Sample rate for gemini-2.5-flash-preview-tts
-        1, // Number of channels
+        24000, // Sample rate for gemini-2.5-flash-preview-tts and Live API
+        1,     // Number of channels
     );
     
     return new Promise((resolve) => {
